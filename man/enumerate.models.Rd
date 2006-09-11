@@ -1,0 +1,34 @@
+\name{enumerate.models}
+\alias{enumerate.models}
+
+\title{Exhaustive enumeration of models}
+\description{
+  The function \code{enumerate.models} is used to create the model space for inference by exhaustive enumeration. 
+  It computes a list of all transitively closed directed graphs on a given number of nodes.
+}
+\usage{
+enumerate.models(n=4,name=letters[1:n],verbose=TRUE) 
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{n}{number of nodes. Default: 4}
+  \item{name}{names of nodes. Default: \code{letters[1:n]}}
+  \item{verbose}{output number of (unique) models. Default: TRUE}
+}
+\details{
+  The model space of Nested Effects Models consists of all transitively closed directed graphs. 
+  The function \code{enumerate.models} creates them in three steps: (1.) build all directed graphs on \code{n} nodes,
+  (2.) transitively close each one of them, and (3.) remove redundant models to yield a unique set.
+ 
+  I'm aware that this is inefficient!
+  It would be very desirable to enumerate the models directly (i.e. without creating all directed graphs as an intermediate step). 
+}
+\value{
+a list of models. Each entry is a transitively closed adjacency matrix with unit main diagonal.
+}
+\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\seealso{\code{\link{score}}, \code{\link{nem}}}
+\examples{
+enumerate.models(2,c("Anna","Bert"))
+}
+\keyword{graphs}
