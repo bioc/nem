@@ -34,7 +34,6 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage{Sweave}
 \begin{document}
 
 <<no.nonsense,echo=FALSE,results=hide>>=
