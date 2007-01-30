@@ -57,7 +57,7 @@ pairwise.posterior <- function(D, type="mLL", para=NULL, hyperpara=NULL,
       if (verbose) prev <- progressBar(ix/nrTest,prev)
     }
   }
-  if(verbose) cat("\n")  
+  #if(verbose) cat("\n")  
   
   ## estimate effect positions
   if (verbose) cat("Estimating effect positions in combined graph\n")
