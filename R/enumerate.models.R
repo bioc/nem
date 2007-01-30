@@ -1,4 +1,12 @@
-enumerate.models <- function(n=4,name=letters[1:n],verbose=TRUE) {
+enumerate.models <- function(x,verbose=TRUE) {
+
+if (length(x) == 1) {
+            n <- as.numeric(x)
+            name <- letters[1:n]
+        } else {
+           n <- length(x)
+           name <- x
+        }
 
 #------------------
 # Sanity checks    

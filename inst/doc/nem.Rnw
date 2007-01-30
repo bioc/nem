@@ -234,7 +234,7 @@ plot(result,what="pos")
 %--- plotting the graph
 <<echo=FALSE,results=hide>>=
 Sgenes <- unique(colnames(res.disc$dat))
-models <- enumerate.models(4,Sgenes)
+models <- enumerate.models(Sgenes)
 best5 <- -sort(-unique(result$mLL))[1:5]
 col<-c("yellow","yellow","green","blue")
 names(col) = Sgenes

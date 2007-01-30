@@ -66,7 +66,7 @@ print.score(x, ...)
    D <- BoutrosRNAiDiscrete[,9:16]
 
    # enumerate all possible models for 4 genes
-   models <- enumerate.models(4,name=unique(colnames(D)))
+   models <- enumerate.models(unique(colnames(D)))
 
    # score models with marginal likelihood
    result <- score(models,D,type="mLL",para=c(.13,.05))
