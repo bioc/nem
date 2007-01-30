@@ -388,8 +388,6 @@ plot.effects(res.disc$dat,result)
 \clearpage
 \section{Post-processing of results}
 
-\paragraph{Pruning spurious edges}
-Function \texttt{prune.graph} \ldots
 
 \paragraph{Combining strongly connected components}
 First, we identify all nodes/genes which are not distinguishable given the data.
