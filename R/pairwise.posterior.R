@@ -5,7 +5,7 @@ pairwise.posterior <- function(D, type="mLL", para=NULL, hyperpara=NULL,
   Sgenes <- unique(colnames(D))
   nrS <- length(Sgenes)
   nrTest <- nrS*(nrS-1)/2
-  if(verbose) cat(nrS,"perturbed genes ->", nrTest, "pairwise tests\n")
+  if(verbose) cat(nrS,"perturbed genes ->", nrTest, "pairs to check\n")
 
 
   ## local model prior

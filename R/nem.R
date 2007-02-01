@@ -42,7 +42,7 @@ if (inference == "pairwise"){
 
 if (inference == "triples"){
 
-        result <- triples.posterior(D,type,para,hyperpara,Pe,Pm,verbose,triples.thrsh)
+        result <- triples.posterior(D,type,para,hyperpara,Pe,Pm,triples.thrsh,verbose)
         #A.t <- transitive.lp(A)
 
     }
