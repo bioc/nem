@@ -9,6 +9,7 @@ print.score <- function(x, ...) {
   cat("$mLL:    a vector of length",length(x$mLL),"\n")
   cat("$pos:    a list   of length",length(x$pos),"\n")
   cat("$mappos: a vector of length",length(x$mappos),"\n")
+  cat("$lambda:",x$lam ,"\n")
   
   #cat("\n")  
   #cat("plot this object to see the graph\n")

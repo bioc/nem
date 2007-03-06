@@ -1,8 +1,9 @@
-enumerate.models <- function(x,verbose=TRUE) {
+enumerate.models <- function(x,name=NULL,verbose=TRUE) {
 
 if (length(x) == 1) {
             n <- as.numeric(x)
-            name <- letters[1:n]
+	    if(is.null(name))
+            	name <- letters[1:n]
         } else {
            n <- length(x)
            name <- x

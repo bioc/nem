@@ -8,7 +8,7 @@
   
 }
 \usage{
-FULLmLL(Phi, D1, D0, a0, b0, a1, b1, Pe)
+FULLmLL(Phi, D1, D0, a0, b0, a1, b1, Pe, Pm=NULL, lambda=0)
 }
 
 \arguments{
@@ -17,6 +17,8 @@ FULLmLL(Phi, D1, D0, a0, b0, a1, b1, Pe)
   \item{D0}{count matrix: phenotypes x genes. How often did we NOT see an effect after intervention?}
   \item{a0, b0, a1, b1}{Hyperparameters}
   \item{Pe}{prior of effect positions in the hierarchy. A matrix of size phenotypes x genes, where each row contains positive numbers summing to 1.}
+  \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
+  \item{lambda}{regularization parameter to incorporate prior assumptions.}
 }
 \details{
   Additionally to the marginal likelihood introduced in Markowetz et al (2005),

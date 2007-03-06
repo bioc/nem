@@ -7,11 +7,12 @@
   It computes a list of all transitively closed directed graphs on a given number of nodes.
 }
 \usage{
-enumerate.models(x,verbose=TRUE) 
+enumerate.models(x,name=NULL,verbose=TRUE) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{either the number of nodes or a vector of node names.}
+  \item{name}{optionally the nodenames, if they are not provided in x}
   \item{verbose}{if TRUE outputs number of (unique) models. Default: TRUE}
 }
 \details{

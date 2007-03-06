@@ -1,6 +1,6 @@
 # FULL log marginal likelihood of a models
 
-FULLmLL <- function(Phi,D1,D0,a0,b0,a1,b1,Pe) {
+FULLmLL <- function(Phi,D1,D0,a0,b0,a1,b1,Pe,Pm=NULL,lambda=0) {
   if (!all(diag(Phi)==1)) stop("\nnem:FULLmLL> Model main diagonal must be 1!")
   
   # make sure model is in right order wrt to count matrices
@@ -12,9 +12,12 @@ FULLmLL <- function(Phi,D1,D0,a0,b0,a1,b1,Pe) {
   n11 <- D1 %*% Phi
   n10 <- D0 %*% Phi
   s0  <- gamma(a0+b0)*gamma(n10+a0)*gamma(n00+b0)/gamma(a0)/gamma(b0)/gamma(n10+n00+a0+b0)
-  s1  <- gamma(a1+b1)*gamma(n11+a1)*gamma(n01+b1)/gamma(a1)/gamma(b1)/gamma(n11+n01+a1+b1)
+  s1  <- gamma(a1+b1)*gamma(n11+a1)*gamma(n01+b1)/gamma(a1)/gamma(b1)/gamma(n11+n01+a1+b1)  
   SP  <- s0*s1*Pe
   s   <- sum(log(rowSums(SP)))
+  
+  if((lambda != 0) && !is.null(Pm))
+  	s <- s - lambda*sum(abs(Phi - Pm))
 
   # posterior effect positions
   ep  <- SP/rowSums(SP)

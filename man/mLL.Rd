@@ -5,16 +5,19 @@
   computes the marginal likelihood of observed phenotypic data given a phenotypic hierarchy. 
 }
 \usage{
-mLL(Phi, D1, D0, a, b, Pe)
+mLL(Phi,D1,D0=NULL,a=0.05,b=0.15,Pe=NULL,Pm=NULL,lambda=0,type="mLL")
 }
 
 \arguments{
   \item{Phi}{an adjacency matrix with unit main diagonal}
-  \item{D1}{count matrix: phenotypes x genes. How often did we see an effect after interventions?}
-  \item{D0}{count matrix: phenotypes x genes. How often did we NOT see an effect after intervention?}
-  \item{a}{false positive rate: how probable is it to miss an effect?}
-  \item{b}{false negative rate: how probable is it to see a spurious effect?}
+  \item{D1}{(i) count matrix for discrete data: phenotypes x genes. How often did we see an effect after interventions? (ii) matrix describing the probabilities of an effect (iii) probability density matrix discribing the strength of an effect}
+  \item{D0}{count matrix: phenotypes x genes. How often did we NOT see an effect after intervention? Not used for continious data}
+  \item{a}{false positive rate: how probable is it to miss an effect? (for count matrix)}
+  \item{b}{false negative rate: how probable is it to see a spurious effect? (for count matrix)}
   \item{Pe}{prior of effect reporter positions in the phenotypic hierarchy}
+  \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
+  \item{lambda}{regularization parameter to incorporate prior assumptions.}
+  \item{type}{(i) "mLL" = marginal likelihood using count matrices (ii) "CONTmLL" = marginal likelihood for probability matrices (iii) "CONTmLLDens" = marginal likelihood for probability density matrices}
 }
 \details{
   It computes the marginal likelihood of a single phenotypic hierarchy.

@@ -1,6 +1,5 @@
 \name{score}
 \alias{score}
-\alias{plot.score}
 \alias{print.score}
 
 \title{Computes the marginal likelihood of phenotypic hierarchies}
@@ -8,10 +7,9 @@
    Function to compute the marginal likelihood of a set of phenotypic hierarchies.
 }
 \usage{
-score(models, D, type = "mLL", para = NULL, hyperpara = NULL, Pe = NULL, verbose = TRUE)
+score(models, D, type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=NULL, lambda=0, verbose=TRUE)
 
 # S3 metehods for class 'score'
-plot.score(x, what="graph",remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", ...)
 print.score(x, ...)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -19,29 +17,26 @@ print.score(x, ...)
   \item{models}{ a list of adjacency matrices with unit main diagonal }
   \item{D}{ data matrix. Columns correspond to the nodes in the
   silencing scheme. Rows are effect reporters. }
-  \item{type}{Marginal likelihood "mLL" depending on parameters \code{a} and \code{b}, or
-  full marginal likelihood "FULLmLL" integrated over \code{a} and \code{b} and depending on
-  hyperparameters \code{a0}, \code{a1}, \code{b0}, \code{b1}. }
-  \item{para}{Vector with parameters \code{a} and \code{b} }
-  \item{hyperpara}{Vector with hyperparameters \code{a0}, \code{b0}, \code{a1}, \code{b1}}
-  \item{Pe}{Prior position of effect reporters. Default: uniform over nodes in silencing scheme}
+  \item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability density matrices}  
+  \item{para}{Vector with parameters \code{a} and \code{b} (for "mLL" with count data)}
+  \item{hyperpara}{Vector with hyperparameters \code{a0}, \code{b0}, \code{a1}, \code{b1} for "FULLmLL"}
+  \item{Pe}{prior position of effect reporters. Default: uniform over nodes in silencing scheme}
+  \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
+  \item{lambda}{regularization parameter to incorporate prior assumptions.}
   \item{verbose}{output while running or not}
-  \item{x}{an object of class 'score'}
-  \item{what}{type of plot: 'graph', 'mLL', or 'pos'. Default: 'graph'}
-  \item{remove.singletons}{remove single nodes which are not connected to any other node when plotting? Default: FALSE}
-  \item{PDF}{output as pdf file? Default: FALSE}
-  \item{filename}{name of the pdf if any. Default: "nemplot.pdf"}
-  \item{...}{additional arguments for plotting}
+  
+  \item{x}{nem object}
+  \item{...}{other arguments to pass}
 }
 \details{
   
   Scoring models by marginal log-likelihood is implemented in function
   \code{score}. Input consists of models and data, the type of the score
   (\code{"mLL"} or \code{"FULLmLL"}), the corresponding paramters
-  (\code{para}) or hyperparameters (\code{hyperpara}) and a prior for phenotype
-  positions (\code{Pe}).
+  (\code{para}) or hyperparameters (\code{hyperpara}), a prior for phenotype
+  positions (\code{Pe}) and model structures \code{priorPhi} with regularization parameter \code{lambda}.
   
-  \code{score} is usually called from within function \code{nem}.
+  \code{score} is usually called within function \code{nem}.
 
 }
 \value{
@@ -52,6 +47,7 @@ print.score(x, ...)
   \item{type}{as used in function call}
   \item{para}{as used in function call}
   \item{hyperpara}{as used in function call}
+  \item{lambda}{as in function call}
 }
 \references{
 \item{[1]}{Markowetz F, Bloch J, Spang R, Non-transcriptional pathway features reconstructed from secondary effects of RNA interference, Bioinformatics, 2005}

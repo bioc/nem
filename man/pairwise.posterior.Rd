@@ -1,6 +1,5 @@
 \name{pairwise.posterior}
 \alias{pairwise.posterior}
-\alias{plot.pairwise}
 \alias{print.pairwise}
 
 \title{Infers a phenotypic hierarchy edge by edge}
@@ -9,28 +8,26 @@
   is involved and no exhaustive enumeration of model space is needed as in function \code{score}.
 }
 \usage{
-pairwise.posterior(D, type="mLL", para=NULL, hyperpara=NULL,Pe=NULL, Pm=NULL, verbose=TRUE)
+pairwise.posterior(D, type = "mLL", para = NULL, hyperpara = NULL, 
+    Pe = NULL, Pmlocal = NULL, Pm = NULL, lambda = 0, verbose = TRUE)
 
 #S3 methods for class 'pairwise'
-plot.pairwise(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", ...)
 print.pairwise(x,...) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{D}{data matrix. Columns correspond to the nodes in the silencing scheme. Rows are phenotypes.}
-  \item{type}{(1.) marginal likelihood "mLL" depending on paramters a and b, or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 }
-  \item{para}{vector with parameters a and b }
-  \item{hyperpara}{vector with hyperparameters a0, b0, a1, b1}
+  \item{D}{data matrix. Columns correspond to the nodes in the silencing scheme. Rows are phenotypes.}  
+  \item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability density matrices}  
+  \item{para}{vector with parameters a and b for "mLL", if count matrices are used}
+  \item{hyperpara}{vector with hyperparameters a0, b0, a1, b1 for "FULLmLL"}
   \item{Pe}{prior position of effect reporters. Default: uniform over nodes in hierarchy}
-  \item{Pm}{local model prior for the four models tested at each node: a vector of length 4 with positive entries summing to one}
-  \item{verbose}{do you want to see progress statements printed or not? Default: TRUE}
-  \item{x}{an object of class 'pairwise'}
-  \item{what}{type of plot: 'graph' or 'pos'. Default: 'graph'}
-  \item{remove.singletons}{remove single nodes which are not connected to any other node when plotting? Default: FALSE}
-  \item{PDF}{output as pdf file? Default: FALSE}
-  \item{filename}{name of the pdf if any. Default: "nemplot.pdf"}
-  \item{...}{additional arguments for plotting}
+  \item{Pmlocal}{local model prior for the four models tested at each node: a vector of length 4 with positive entries summing to one}
+  \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
+  \item{lambda}{regularization parameter to incorporate prior assumptions.}  
+  \item{verbose}{do you want to see progress statements printed or not? Default: TRUE} 
 
+  \item{x}{nem object}
+  \item{...}{other arguments to pass}
 }
 \details{
   \code{pairwise.posterior} is a fast(er) heuristic alternative to exhaustive search 
@@ -39,7 +36,7 @@ print.pairwise(x,...)
   \code{A<-B} (subset), or \code{A<->B} (undistinguishable). 
   The result is the graph built from the maximum aposteriori models for each edge.
   
-  \code{plot.pairwise} plots the inferred phenotypic hierarchy as a directed graph, and \code{print.pairwise} gives an overview over the 'pairwise' object.
+ \code{print.pairwise} gives an overview over the 'pairwise' object.
 }
 
 \value{
@@ -50,6 +47,7 @@ print.pairwise(x,...)
   \item{type}{as used in function call}
   \item{para}{as used in function call}
   \item{hyperpara}{as used in function call}
+  \item{lambda}{as in function call}
 }
 
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}

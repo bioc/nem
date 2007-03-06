@@ -16,7 +16,7 @@ nem.discretize(D,neg.control=NULL,pos.control=NULL,nfold=2,cutoff=0:10/10, pCoun
   \item{verbose}{Default: TRUE}
 }
 \details{
-  \code{nem.discretize} bla bla bla 
+  Chooses cutoff such that separation between negative and positive controls becomes optimal.
 }
 \value{
 \item{dat}{discretized data matrix}

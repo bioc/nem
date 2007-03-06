@@ -1,13 +1,13 @@
-triples.posterior <- function(D,type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm=NULL,triples.thrsh=.5,verbose=TRUE){
+triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,lambda=0, triples.thrsh=.5,verbose=TRUE){
 
   # Sgenes
   Sgenes <- unique(colnames(D))
   nrS    <- length(Sgenes)
   nrTest <- choose(nrS,3) 
-  if(verbose) cat(nrS,"perturbed genes ->", nrTest, "triples to check\n")
+  if(verbose) cat(nrS,"perturbed genes ->", nrTest, "triples to check (lambda = ",lambda,")\n")
 
   # local model prior
-  if (is.null(Pm)) Pm <- rep(1/29,29)
+  if (is.null(Pmlocal)) Pmlocal <- rep(1/29,29)
  
  
   ## 
@@ -22,24 +22,27 @@ triples.posterior <- function(D,type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm=
 
   ##=== store maximum model in a list
   mll.models   = list()
-  if (verbose) prev <- progressBar()
+  if (verbose) cat(".") #prev <- progressBar()
   for(i in 1:nrow(triples)){
 
-        D.tmp = D[,colnames(D)%in%Sgenes[triples[i,]]]
+	sel <- which(colnames(D)%in%Sgenes[triples[i,]])
+        D.tmp <- D[,sel]
         D.tmp <- D.tmp[rowSums(D.tmp)!=0,]
         colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,1]]] = "a"
         colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,2]]] = "b"
         colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,3]]] = "c"
-        tmp.mdl = score(cnd.models,D.tmp,para=para,hyperpara=hyperpara, Pe=Pe, verbose=FALSE)
+        Pesel <- Pe[,sel,drop=FALSE]                
+        Pmsel <- Pm[sel,sel,drop=FALSE]
+        tmp.mdl = score(cnd.models,D.tmp, para=para,hyperpara=hyperpara, Pe=Pesel, Pm=Pmsel, lambda=lambda,verbose=FALSE)
  
         ##== do prior stuff
-        post = tmp.mdl$mLL + log(Pm) ##=== prior needs to be in enumerate.models(3) order!
+        post = tmp.mdl$mLL + log(Pmlocal)
         winner <- cnd.models[[which.max(post)]]
         mll.models[[i]] = list()
         mll.models[[i]]$graph = winner
         mll.models[[i]]$posterior = post
         dimnames(mll.models[[i]]$graph) = list(Sgenes[triples[i,]],Sgenes[triples[i,]]) #=== rename node to inds
-        if (verbose) prev <- progressBar(i/nrTest,prev)
+        if (verbose) cat(".")#prev <- progressBar(i/nrTest,prev)
   }
 
   ##
@@ -67,14 +70,14 @@ triples.posterior <- function(D,type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm=
   }}
   B = (A>=triples.thrsh)*1-diag(nrow(A))
   graph <- as(B,"graphNEL")
-
+  if(verbose) cat("\n")
 
 
   ##
   ## 3. estimate effect positions
   ##
   if (verbose) cat("Estimating effect positions in combined graph\n")
-  ep <- score(list(transitive.closure(graph,mat=TRUE)), D, 
+  ep <- score(list(transitive.closure(graph,mat=TRUE)), D,   	       
                type=type, 
                para=para,
                hyperpara=hyperpara,
@@ -84,7 +87,7 @@ triples.posterior <- function(D,type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm=
   ##
   ## 4. output
   ##
-  res <- list(graph=graph,avg=A,pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=type,para=para,hyperpara=hyperpara)
+  res <- list(graph=graph,avg=A,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=type,para=para,hyperpara=hyperpara,lam=lambda)
   class(res) <- "triples"
   
   return(res)
