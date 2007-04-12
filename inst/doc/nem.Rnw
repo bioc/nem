@@ -378,18 +378,18 @@ plot(result3, nodeAttrs=list(fillcolor=col))
 Edge-wise learning assumes independence of edges. But this is not true in transitively closed graphs, where a direct edge must exist whenever there is a longer path between two nodes.
 Natural extension of edge-wise learning is inference from triples of nodes.
 In the package \texttt{nem} we do it by
-<<>>=
+<<eval=FALSE>>=
 result4 <- nem(res.disc$dat,para=res.disc$para,inference="triples")
 result4
 @
 
-\myincfig{.3}{
-<<label=graph3,fig=TRUE,echo=FALSE,results=hide>>=
-col<-c("yellow","yellow","green","blue")
-names(col) = nodes(result4$graph)
-plot(result4, nodeAttrs=list(fillcolor=col))
-@
-}{graph4}{Result of triple learning. Compare this to the result from global search and pairwise learning}
+%\myincfig{.3}{
+%<<label=graph3,fig=TRUE,echo=FALSE,results=hide>>=
+%col<-c("yellow","yellow","green","blue")
+%names(col) = nodes(result4$graph)
+%plot(result4, nodeAttrs=list(fillcolor=col))
+%@
+%}{graph4}{Result of triple learning. Compare this to the result from global search and pairwise learning}
 
 
 
