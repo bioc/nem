@@ -68,8 +68,7 @@ triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm
         ##=== mean number of edges from j to i (including doubles...) 
         A[j,i] = mean(unlist(lapply(tmp,function(x) x[Sgenes[j],Sgenes[i]])))
   }}
-  B = (A>=triples.thrsh)*1-diag(nrow(A))
-  graph <- as(B,"graphNEL")
+  B = (A>=triples.thrsh)*1-diag(nrow(A)) 
   if(verbose) cat("\n")
 
 
@@ -77,7 +76,7 @@ triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm
   ## 3. estimate effect positions
   ##
   if (verbose) cat("Estimating effect positions in combined graph\n")
-  ep <- score(list(transitive.closure(graph,mat=TRUE)), D,   	       
+  ep <- score(list(transitive.closure(B,mat=TRUE)), D,   	       
                type=type, 
                para=para,
                hyperpara=hyperpara,
@@ -87,7 +86,7 @@ triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm
   ##
   ## 4. output
   ##
-  res <- list(graph=graph,avg=A,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=type,para=para,hyperpara=hyperpara,lam=lambda)
+  res <- list(graph=as(B,"graphNEL"),avg=A,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=type,para=para,hyperpara=hyperpara,lam=lambda)
   class(res) <- "triples"
   
   return(res)
