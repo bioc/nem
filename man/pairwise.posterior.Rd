@@ -9,7 +9,7 @@
 }
 \usage{
 pairwise.posterior(D, type = "mLL", para = NULL, hyperpara = NULL, 
-    Pe = NULL, Pmlocal = NULL, Pm = NULL, lambda = 0, verbose = TRUE)
+    Pe = NULL, Pmlocal = NULL, Pm = NULL, lambda = 0, selEGenes=FALSE, verbose = TRUE)
 
 #S3 methods for class 'pairwise'
 print.pairwise(x,...) 
@@ -17,13 +17,14 @@ print.pairwise(x,...)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{D}{data matrix. Columns correspond to the nodes in the silencing scheme. Rows are phenotypes.}  
-  \item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability density matrices}  
+\item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability density matrices, or (5.) "CONTmLLRatio" for log-odds ratio matrices}    
   \item{para}{vector with parameters a and b for "mLL", if count matrices are used}
   \item{hyperpara}{vector with hyperparameters a0, b0, a1, b1 for "FULLmLL"}
   \item{Pe}{prior position of effect reporters. Default: uniform over nodes in hierarchy}
   \item{Pmlocal}{local model prior for the four models tested at each node: a vector of length 4 with positive entries summing to one}
   \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
   \item{lambda}{regularization parameter to incorporate prior assumptions.}  
+  \item{selEGenes}{optimize selection of E-genes for each model}
   \item{verbose}{do you want to see progress statements printed or not? Default: TRUE} 
 
   \item{x}{nem object}

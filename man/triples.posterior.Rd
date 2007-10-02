@@ -8,7 +8,7 @@
   is involved and no exhaustive enumeration of model space is needed as in function \code{score}.
 }
 \usage{
-triples.posterior(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,lambda=0, triples.thrsh=.5,verbose=TRUE)
+triples.posterior(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,lambda=0, triples.thrsh=.5, selEGenes=FALSE, verbose=TRUE)
 
 #S3 methods for class 'triples'
 print.triples(x,...) 
@@ -16,7 +16,7 @@ print.triples(x,...)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{D}{data matrix. Columns correspond to the nodes in the silencing scheme. Rows are phenotypes.}   
-  \item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability density matrices}  
+\item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability density matrices, or (5.) "CONTmLLRatio" for log-odds ratio matrices}  
   \item{para}{vector with parameters a and b for "mLL", if count matrices are used}
   \item{hyperpara}{vector with hyperparameters a0, b0, a1, b1 for "FULLmLL"}
   \item{Pe}{prior position of effect reporters. Default: uniform over nodes in hierarchy}
@@ -24,6 +24,7 @@ print.triples(x,...)
   \item{triples.thrsh}{threshold used when combining tripel models for each edge. Default: only edges appearing in more than half of triples are included in the final graph.}
   \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
   \item{lambda}{regularization parameter to incorporate prior assumptions.}  
+  \item{selEGenes}{optimize selection of E-genes for each model}
   \item{verbose}{do you want to see progress statements printed or not? Default: TRUE}  
 
   \item{x}{nem object}

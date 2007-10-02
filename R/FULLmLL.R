@@ -1,7 +1,7 @@
 # FULL log marginal likelihood of a models
 
 FULLmLL <- function(Phi,D1,D0,a0,b0,a1,b1,Pe,Pm=NULL,lambda=0) {
-  if (!all(diag(Phi)==1)) stop("\nnem:FULLmLL> Model main diagonal must be 1!")
+  if (!all(diag(Phi)==1)) diag(Phi) = 1
   
   # make sure model is in right order wrt to count matrices
   Phi <- Phi[colnames(D1),colnames(D1)]

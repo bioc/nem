@@ -4,6 +4,7 @@
 \alias{plot.pairwise}
 \alias{plot.score}
 \alias{plot.ModuleNetwork}
+\alias{plot.nem.greedy}
 
 \title{plot nested effect model}
 \description{

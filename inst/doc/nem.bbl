@@ -1,0 +1,42 @@
+\begin{thebibliography}{1}
+
+\bibitem{Boutros2002Data}
+M.~Boutros, H.~Agaisse, and N.~Perrimon.
+\newblock Sequential activation of signaling pathways during innate immune
+  responses in \emph{Drosophila}.
+\newblock {\em Developmental Cell}, 3(5):711 -- 722, 2002.
+
+\bibitem{Frohlich2007GCBRNAi}
+H.~Fr\"ohlich, M.~Fellmann, H.~S\"ultmann, A.~Poustka, and T.~Beiﬂbarth.
+\newblock Estimating large scale signaling networks through nested effects
+  models from intervention effects in microarray data.
+\newblock In {\em Proc. German Conf. on Bioinformatics}, 2007.
+
+\bibitem{HastieTibshiraniBook2001}
+T.~Hastie, R.~Tibshirani, and J.~Friedman.
+\newblock {\em The Elements of Statistical Learning}.
+\newblock Springer, 2001.
+
+\bibitem{Markowetz2006Thesis}
+F.~Markowetz.
+\newblock {\em Probabilistic Models for Gene Silencing Data}.
+\newblock PhD thesis, Free University Berlin, 2006.
+
+\bibitem{Markowetz2005Inference}
+F.~Markowetz, J.~Bloch, and R.~Spang.
+\newblock Non-transcriptional pathway features reconstructed from secondary
+  effects of rna interference.
+\newblock {\em Bioinformatics}, 21(21):4026 -- 4032, 2005.
+
+\bibitem{Markowetz2007}
+F.~Markowetz, D.~Kostka, O.~Troyanskaya, and R.~Spang.
+\newblock Nested effects models for high-dimensional phenotyping screens.
+\newblock In {\em Proc. Int. Conf. on Int. Syst. for Mol. Biol. (ISMB)}, 2007.
+\newblock in press.
+
+\bibitem{RusNor95}
+S.~Russel and P.~Norvig.
+\newblock {\em Artificial Intelligence - A Modern Approach}.
+\newblock Prentice Hall Inc., New Jersey, 1995.
+
+\end{thebibliography}

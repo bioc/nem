@@ -4,7 +4,7 @@
 \title{model selection for nested effect models}
 \description{infers models with different regularization constants, compares them via the AIC criterion and returns the highest scoring one}
 \usage{
-nemModelSelection(lambdas,D,inference="pairwise",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,verbose=TRUE,...)
+nemModelSelection(lambdas,D,inference="pairwise",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,selEGenes=FALSE,verbose=TRUE,...)
 }
 
 \arguments{
@@ -12,7 +12,7 @@ nemModelSelection(lambdas,D,inference="pairwise",models=NULL,type="mLL",para=NUL
   \item{D}{data matrix with experiments in the columns (binary or continious)}
   \item{inference}{\code{search} to use exhaustive enumeration; or \code{triples} for triple-based inference; or \code{pairwise} for the pairwise heuristic; or \code{ModuleNetwork} for the module based inference}
   \item{models}{a list of adjacency matrices for model search. If NULL, \code{enumerate.models} is used for exhaustive enumeration of all possible models.}
-  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLDens}}
+  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLDens} or \code{CONTmLLRatio}}
   \item{para}{vector of length two: false positive rate and false negative rate for non-binary data. Used by \code{mLL()}} 
   \item{hyperpara}{vector of length four: used by \code{FULLmLL()} for binary data}
   \item{Pe}{prior of effect reporter positions in the phenotypic hierarchy (same dimension as D)}
@@ -21,6 +21,7 @@ nemModelSelection(lambdas,D,inference="pairwise",models=NULL,type="mLL",para=NUL
   \item{local.prior.size}{prior expected number of edges in the graph (for pairwise learning)}
   \item{local.prior.bias}{bias towards double-headed edges. Default: 1 (no bias; for pairwise learning)}
   \item{triples.thrsh}{threshold for model averaging to combine triple models for each edge}  
+  \item{selEGenes}{optimize selection of E-genes for each model}
   \item{verbose}{do you want to see progression statements" Default: TRUE}
   \item{...}{other arguments to pass to function \code{nem} or \code{network.AIC}}
 }
@@ -43,7 +44,7 @@ and additional ones according to the function used for inference.
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
 
 
-\seealso{\code{\link{network.AIC}}, \code{\link{score}}, \code{moduleNetwork}, \code{\link{triples.posterior}}, \code{\link{pairwise.posterior}}, \code{\link{local.model.prior}}, \code{\link{enumerate.models}}}
+\seealso{\code{\link{network.AIC}}, \code{\link{score}}, \code{nem.greedy}, \code{moduleNetwork}, \code{\link{triples.posterior}}, \code{\link{pairwise.posterior}}, \code{\link{local.model.prior}}, \code{\link{enumerate.models}}}
 \examples{
    data("BoutrosRNAi2002")
    D <- BoutrosRNAiDiscrete[,9:16]

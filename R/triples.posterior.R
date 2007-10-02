@@ -1,4 +1,4 @@
-triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,lambda=0, triples.thrsh=.5,verbose=TRUE){
+triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,lambda=0, triples.thrsh=.5,selEGenes=FALSE,verbose=TRUE){
 
   # Sgenes
   Sgenes <- unique(colnames(D))
@@ -27,13 +27,13 @@ triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm
 
 	sel <- which(colnames(D)%in%Sgenes[triples[i,]])
         D.tmp <- D[,sel]
-        D.tmp <- D.tmp[rowSums(D.tmp)!=0,]
+#         D.tmp <- D.tmp[rowSums(D.tmp)!=0,]	
         colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,1]]] = "a"
         colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,2]]] = "b"
-        colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,3]]] = "c"
+        colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,3]]] = "c"	
         Pesel <- Pe[,sel,drop=FALSE]                
-        Pmsel <- Pm[sel,sel,drop=FALSE]
-        tmp.mdl = score(cnd.models,D.tmp, para=para,hyperpara=hyperpara, Pe=Pesel, Pm=Pmsel, lambda=lambda,verbose=FALSE)
+        Pmsel <- Pm[sel,sel,drop=FALSE]	
+        tmp.mdl = score(cnd.models,D.tmp, type=type, para=para,hyperpara=hyperpara, Pe=Pesel, Pm=Pmsel, lambda=lambda,selEGenes=selEGenes,verbose=FALSE)	
  
         ##== do prior stuff
         post = tmp.mdl$mLL + log(Pmlocal)
@@ -68,25 +68,24 @@ triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm
         ##=== mean number of edges from j to i (including doubles...) 
         A[j,i] = mean(unlist(lapply(tmp,function(x) x[Sgenes[j],Sgenes[i]])))
   }}
-  B = (A>=triples.thrsh)*1-diag(nrow(A)) 
+  B = (A>=triples.thrsh)*1-diag(nrow(A))
+  graph <- as(B,"graphNEL")
   if(verbose) cat("\n")
-
-
   ##
   ## 3. estimate effect positions
   ##
-  if (verbose) cat("Estimating effect positions in combined graph\n")
+  if (verbose) cat("Estimating effect positions in combined graph\n")    
   ep <- score(list(transitive.closure(B,mat=TRUE)), D,   	       
                type=type, 
                para=para,
                hyperpara=hyperpara,
-               Pe=Pe, 
-               verbose=FALSE)
-
+               Pe=Pe,                
+               selEGenes=selEGenes,
+               verbose=FALSE)  
   ##
   ## 4. output
   ##
-  res <- list(graph=as(B,"graphNEL"),avg=A,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=type,para=para,hyperpara=hyperpara,lam=lambda)
+  res <- list(graph=graph,avg=A,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=type,para=para,hyperpara=hyperpara,lam=lambda)
   class(res) <- "triples"
   
   return(res)

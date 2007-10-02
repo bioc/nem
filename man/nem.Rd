@@ -4,14 +4,14 @@
 \title{Nested Effects Models - main function}
 \description{The main function to infer a phenotypic hierarchy from data}
 \usage{
-nem(D,inference="pairwise",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,verbose=TRUE)
+nem(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,selEGenes=FALSE,verbose=TRUE)
 }
 
 \arguments{
   \item{D}{data matrix with experiments in the columns (binary or continious)}
   \item{inference}{\code{search} to use exhaustive enumeration; or \code{triples} for triple-based inference; or \code{pairwise} for the pairwise heuristic; or \code{ModuleNetwork} for the module based inference}
   \item{models}{a list of adjacency matrices for model search. If NULL, \code{enumerate.models} is used for exhaustive enumeration of all possible models.}
-  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLDens}}
+  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLDens} or \code{CONTmLLRatio}}
   \item{para}{vector of length two: false positive rate and false negative rate for non-binary data. Used by \code{mLL()}} 
   \item{hyperpara}{vector of length four: used by \code{FULLmLL()} for binary data}
   \item{Pe}{prior of effect reporter positions in the phenotypic hierarchy (same dimension as D)}
@@ -21,10 +21,11 @@ nem(D,inference="pairwise",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NU
   \item{local.prior.bias}{bias towards double-headed edges. Default: 1 (no bias; for pairwise learning)}
   \item{triples.thrsh}{threshold for model averaging to combine triple models for each edge}
   \item{lambda}{regularization parameter to incorporate prior assumptions. Default: 0 (no regularization)}
+  \item{selEGenes}{optimize selection of E-genes for each model}
   \item{verbose}{do you want to see progression statements" Default: TRUE}
 }
 \details{
-  \code{nem} is an interface to the functions \code{score()}, \code{pairwise.posterior()}, \code{triple.posterior}, \code{moduleNetwork}. 
+  \code{nem} is an interface to the functions \code{score()}, \code{pairwise.posterior()}, \code{triple.posterior}, \code{moduleNetwork}, \code{nem.greedy}. 
   
   \code{plot.nem} plots the inferred phenotypic hierarchy as a directed graph, the likelihood distribution of the models (only for exhaustive search) or the posterior position of the effected genes.
   
@@ -45,7 +46,7 @@ and additional ones according to the function used for inference.
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
 
 
-\seealso{\code{\link{score}}, \code{moduleNetwork}, \code{\link{triples.posterior}}, \code{\link{pairwise.posterior}}, \code{\link{local.model.prior}}, \code{\link{enumerate.models}}, \code{plot.nem}}
+\seealso{\code{\link{score}}, \code{moduleNetwork}, \code{nem.greedy}, \code{\link{triples.posterior}}, \code{\link{pairwise.posterior}}, \code{\link{local.model.prior}}, \code{\link{enumerate.models}}, \code{plot.nem}}
 \examples{
    data("BoutrosRNAi2002")
    D <- BoutrosRNAiDiscrete[,9:16]
@@ -54,6 +55,7 @@ and additional ones according to the function used for inference.
    res2 <- nem(D,para=p,inference="pairwise")
    res3 <- nem(D,para=p,inference="triples")
    res4 <- nem(D,para=p,inference="ModuleNetwork")
+   res5 <- nem(D,para=p,inference="nem.greedy")
    
 
    par(mfrow=c(1,4))
@@ -61,6 +63,7 @@ and additional ones according to the function used for inference.
    plot(res2,main="pairs")
    plot(res3,main="triples")
    plot(res4,main="module network")
+   plot(res5,main="greedy hillclimber")
    
 }
 \keyword{graphs}

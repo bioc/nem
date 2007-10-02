@@ -5,12 +5,12 @@
   computes the marginal likelihood of observed phenotypic data given a phenotypic hierarchy. 
 }
 \usage{
-mLL(Phi,D1,D0=NULL,a=0.05,b=0.15,Pe=NULL,Pm=NULL,lambda=0,type="mLL")
+mLL(Phi,D1,D0=NULL,a=0.15,b=0.05,Pe=NULL,Pm=NULL,lambda=0,type="mLL")
 }
 
 \arguments{
   \item{Phi}{an adjacency matrix with unit main diagonal}
-  \item{D1}{(i) count matrix for discrete data: phenotypes x genes. How often did we see an effect after interventions? (ii) matrix describing the probabilities of an effect (iii) probability density matrix discribing the strength of an effect}
+  \item{D1}{(i) count matrix for discrete data: phenotypes x genes. How often did we see an effect after interventions? (ii) matrix describing the probabilities of an effect (iii) probability density matrix discribing the strength of an effect (iv) log-odds ratio matrix describing the strength of an effect}
   \item{D0}{count matrix: phenotypes x genes. How often did we NOT see an effect after intervention? Not used for continious data}
   \item{a}{false positive rate: how probable is it to miss an effect? (for count matrix)}
   \item{b}{false negative rate: how probable is it to see a spurious effect? (for count matrix)}

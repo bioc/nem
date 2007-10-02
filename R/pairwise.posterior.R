@@ -3,7 +3,7 @@
 # in each step only a pair of nodes is involved
 
 pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL, 
-    Pe = NULL, Pmlocal = NULL, Pm = NULL, lambda = 0, verbose = TRUE)
+    Pe = NULL, Pmlocal = NULL, Pm = NULL, lambda = 0, selEGenes = FALSE, verbose = TRUE)
 {
   # Sgenes
     Sgenes <- unique(colnames(D))
@@ -45,7 +45,7 @@ pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL,
             if(support > 0){            	
             	# score            	
 		ss <- score(models, D.xy, type = type, para = para,
-			hyperpara = hyperpara, Pe = Pesel, Pm=Pmsel, lambda=lambda, verbose = FALSE)
+			hyperpara = hyperpara, Pe = Pesel, Pm=Pmsel, lambda=lambda, selEGenes=selEGenes, verbose = FALSE)
 		post <- exp(ss$mLL) * Pmlocal
 		post <- post/sum(post)		
 		post[is.na(post)] = 0           
@@ -76,6 +76,7 @@ pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL,
                para=para,
                hyperpara=hyperpara,
                Pe=Pe, 
+               selEGenes=selEGenes,
                verbose=FALSE)  
      
     # output
