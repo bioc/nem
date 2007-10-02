@@ -46,6 +46,18 @@ print.ModuleNetwork(x,...)
   \item{lambda}{as in function call}
 }
 
+\references{
+  Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T:
+  Large Scale Statistical Inference of Signaling Pathways from RNAi and
+  Microarray Data.
+  BMC Bioinformatics, 2007.
+
+  Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T:
+  Estimating Large Scale Signaling Networks through Nested Effects
+  Models from Intervention Effects in Microarray Data.
+  Proc. German Conf. Bioinformatics (GCB), pp. 45 - 54, 2007.  
+}
+  
 \author{Holger Froehlich}
 
 

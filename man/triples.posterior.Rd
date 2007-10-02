@@ -52,6 +52,12 @@ print.triples(x,...)
   \item{lambda}{as in function call}
 }
 
+\references{
+  Markowetz F, Kostka D, Troyanskaya OG, Spang R:
+  Nested effects models for high-dimensional phenotyping screens.
+  Bioinformatics. 2007; 23(13):i305-12.
+}
+
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
 
 
