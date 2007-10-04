@@ -6,8 +6,8 @@ Description: The package 'nem' allows to reconstruct features of pathways from t
 Reference: Markowetz F, Bloch J, Spang R: Non-transcriptional pathway features reconstructed from secondary effects of RNA interference, Bioinformatics 2005, 21(21):4026-4032. 
            Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T: Estimating Large Scale Signaling Networks through Nested Effects Models from Intervention Effects in Microarray Data. Proc. German Conf. Bioinformatics (GCB), pp. 45 - 54, 2007.
 Maintainer: Florian Markowetz <florian@genomics.princeton.edu>
-Depends: R (>= 2.0), e1071 (>= 1.5), graph (>= 1.10), Rgraphviz (>= 1.10), RBGL (>= 1.8.1), time (>= 1.0), cluster (>= 1.11)
-Suggests: Biobase (>= 1.10)
+Depends: R (>= 2.0), e1071 (>= 1.5), graph (>= 1.10), Rgraphviz (>= 1.10), RBGL (>= 1.8.1), time (>= 1.0)
+Suggests: Biobase (>= 1.10), cluster (>= 1.11)
 biocViews: Microarray, Statistics, GraphsAndNetworks, Pathways
 URL: http://www.bioconductor.org
 License: GPL version 2.0 or newer
