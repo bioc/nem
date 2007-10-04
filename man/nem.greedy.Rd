@@ -23,8 +23,8 @@ print.nem.greedy(x, ...)
   \item{hyperpara}{vector with hyperparameters a0, b0, a1, b1 for "FULLmLL"}  
   \item{selEGenes}{optimize selection of E-genes for each model}
   \item{verbose}{do you want to see progress statements printed or not? Default: TRUE}  
-  
-  
+
+
   \item{x}{nem object}
   \item{...}{other arguments to pass}
 }
@@ -37,7 +37,7 @@ print.nem.greedy(x, ...)
   \item{hyperpara}{as used in function call}
   \item{lambda}{as in function call}
 }
-\author{Holger Fröhlich}
+\author{Holger Froehlich}
 
 \seealso{\code{\link{nem}}} }
 \examples{

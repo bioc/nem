@@ -24,7 +24,7 @@ qbum <- function(p,a,lambda,nbisect=20){
 	mid <- rep(0,n)
 	top <- rep(1,n)
 	bot <- rep(0,n)
-	gohigher <- rep(F,n)
+	gohigher <- rep(FALSE,n)
 	for (j in 1:nbisect){
 		mid <- (top+bot)/2
 		gohigher <- (pbum(mid,a,lambda)<p)		
@@ -49,7 +49,7 @@ inv.logit <- function(x){
 
 # negative log-likelihood for given data set X with given hyperparameters
 bum.negLogLik <- function(hyper,X,lambda){
-	-sum(log(dbum(X,c(inv.logit(hyper[1]+1e-10),exp(hyper[2])+2),lambda))) - log(dbeta(inv.logit(hyper[1]),1,2)) - log(dbeta(exp(-hyper[2]),1,2))  
+	-sum(log(dbum(X,c(inv.logit(hyper[1]+1e-10),exp(hyper[2])+2),lambda))) - log(dbeta(inv.logit(hyper[1]+1e-10),1,2)) - log(dbeta(exp(-hyper[2]),1,2))  
 }
 
 # MLE estimates of parameters 
@@ -122,7 +122,7 @@ bum.qalt <- function(p,a,lambda,nbisect=20){
 	mid <- rep(0,n)
 	top <- rep(1,n)
 	bot <- rep(0,n)
-	gohigher <- rep(F,n)
+	gohigher <- rep(FALSE,n)
 	for (j in 1:nbisect){
 		mid <- (top+bot)/2
 		gohigher <- (bum.palt(mid,a,lambda)<p)		

@@ -46,7 +46,7 @@ selectEGenes <- function(Phi,D1,D0=NULL,para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL
 	}				
 	if(is.null(rownames(D1)))
 		rownames(D1) <- as.character(1:nrow(D1))
-	L <- sapply(rownames(D1),mLLWrapper,D1=D1,D0=D0,a=a,b=b,Pe=Pe,type=type)		
+	L <- sapply(rownames(D1),mLLWrapper,D1=D1,D0=D0,Pe=Pe,type=type)		
 	if(type %in% c("CONTmLLDens"))
 		sel <- order(L,decreasing=TRUE)[1:length(which(L>0))]		
 	else	
