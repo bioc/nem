@@ -37,7 +37,7 @@ print.nem.greedy(x, ...)
   \item{hyperpara}{as used in function call}
   \item{lambda}{as in function call}
 }
-\author{Holger Fröhlich}
+\author{Holger Froehlich}
 
 \seealso{\code{\link{nem}}} }
 \examples{
