@@ -10,4 +10,4 @@ Depends: R (>= 2.0), e1071 (>= 1.5), graph (>= 1.10), Rgraphviz (>= 1.10), RBGL 
 Suggests: Biobase (>= 1.10)
 biocViews: Microarray, Statistics, GraphsAndNetworks, Pathways
 URL: http://www.bioconductor.org
-License: GPL version 2.0 or newer
+License: GPL (>= 2)
