@@ -4,7 +4,7 @@
 \title{Nested Effects Models - main function}
 \description{The main function to infer a phenotypic hierarchy from data}
 \usage{
-nem(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,selEGenes=FALSE,verbose=TRUE)
+nem(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE)
 }
 
 \arguments{
@@ -12,7 +12,7 @@ nem(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=
   \item{inference}{\code{search} to use exhaustive enumeration; or \code{triples} for triple-based inference; or \code{pairwise} for the pairwise heuristic; or \code{ModuleNetwork} for the module based inference}
   \item{models}{a list of adjacency matrices for model search. If NULL, \code{enumerate.models} is used for exhaustive enumeration of all possible models.}
   \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLDens} or \code{CONTmLLRatio}}
-  \item{para}{vector of length two: false positive rate and false negative rate for non-binary data. Used by \code{mLL()}} 
+  \item{para}{vector of length two: false positive rate and false negative rate for non-binary data. Used by \code{mLL}} 
   \item{hyperpara}{vector of length four: used by \code{FULLmLL()} for binary data}
   \item{Pe}{prior of effect reporter positions in the phenotypic hierarchy (same dimension as D)}
   \item{Pm}{prior over models (n x n matrix)}
@@ -21,32 +21,33 @@ nem(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=
   \item{local.prior.bias}{bias towards double-headed edges. Default: 1 (no bias; for pairwise learning)}
   \item{triples.thrsh}{threshold for model averaging to combine triple models for each edge}
   \item{lambda}{regularization parameter to incorporate prior assumptions. Default: 0 (no regularization)}
-  \item{selEGenes}{optimize selection of E-genes for each model}
-  \item{verbose}{do you want to see progression statements" Default: TRUE}
+  \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLRatio only)}
+  \item{selEGenes}{automated E-gene subset selection (includes tuning of delta for CONTmLLRatio)}
+  \item{verbose}{do you want to see progression statements? Default: TRUE}
 }
 \details{
-  \code{nem} is an interface to the functions \code{score()}, \code{pairwise.posterior()}, \code{triple.posterior}, \code{moduleNetwork}, \code{nem.greedy}. 
-  
-  \code{plot.nem} plots the inferred phenotypic hierarchy as a directed graph, the likelihood distribution of the models (only for exhaustive search) or the posterior position of the effected genes.
-  
-  
+  \code{nem} is an interface to the functions \code{score}, \code{pairwise.posterior}, \code{triple.posterior}, \code{moduleNetwork} and \code{nem.greedy}. 
+   If Pm != NULL and lambda == 0, a Bayesian approach to include prior knowledge is used, which is the recommended method. Alternatively the regularization parameter lambda can be tuned in a model selection step via the function \code{nemModelSelection} using the AIC criterion. 
+   If automated E-gene subset selection is used and type == CONTmLLRatio, the regularization parameter delta is tuned via the AIC model selection criterion. Otherwise, an iterative algorithm is executed, which in an alternating optimization scheme reconstructs a network given the current set of E-gene and then selects the E-genes having the highest likelihood under the given network. The procedure is run until convergence.
+
+  The function \code{plot.nem} plots the inferred phenotypic hierarchy as a directed graph, the likelihood distribution of the models (only for exhaustive search) or the posterior position of the effected genes.  
 }
 \value{
-An object of class 'score' or  'pairwise' or 'triples' or 'ModuleNetwork' containing slots
-\item{graph}{the inferred phenotypic hierarchy}
-\item{pos}{posterior distribution of positions of effect reporters}
-\item{mappos}{estimated position of effects in the phenotypic hierarchy}
-\item{type}{see above}
-\item{para}{see above}
-\item{hyperpara}{see above}
-\item{lambda}{see above}
-and additional ones according to the function used for inference.
+  \item{graph}{the inferred directed graph (graphNEL object)}   
+  \item{mLL}{marginal likelihood of final model} 
+  \item{pos}{posterior over effect positions}
+  \item{mappos}{MAP estimate of effect positions} 
+  \item{type}{as used in function call}
+  \item{para}{as used in function call}
+  \item{hyperpara}{as used in function call}
+  \item{lambda}{as in function call}
+  \item{selected}{selected E-gene subset}
 }
 
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
 
 
-\seealso{\code{\link{score}}, \code{moduleNetwork}, \code{nem.greedy}, \code{\link{triples.posterior}}, \code{\link{pairwise.posterior}}, \code{\link{local.model.prior}}, \code{\link{enumerate.models}}, \code{plot.nem}}
+\seealso{\code{\link{nemModelSelection}}, \code{\link{score}}, \code{\link{moduleNetwork}}, \code{\link{nem.greedy}}, \code{\link{triples.posterior}}, \code{\link{pairwise.posterior}}, \code{\link{local.model.prior}}, \code{\link{enumerate.models}}, \code{plot.nem}}
 \examples{
    data("BoutrosRNAi2002")
    D <- BoutrosRNAiDiscrete[,9:16]

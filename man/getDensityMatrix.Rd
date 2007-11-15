@@ -7,7 +7,7 @@
   Fit a 3 component BUM model to each column of a raw p-value matrix.
 }
 \usage{
-	getDensityMatrix(Porig, dirname="", startab=c(0.3,10), startlam=c(0.6,0.1,0.3), tol=1e-4)
+	getDensityMatrix(Porig, dirname=NULL, startab=c(0.3,10), startlam=c(0.6,0.1,0.3), tol=1e-4)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,7 +21,8 @@
 	The BUM density model consists of 3 components: $f(x) = lambda_1 + lambda_2*dbeta(x,alpha,1) + lambda_3*dbeta(x,1,beta)$. The mixing coefficients and the parameters alpha and beta are fitted together via an EM algorithm.
 }
 \value{
- 	density matrix of same dimensions as Porig
+ 	log-density matrix of same dimensions as Porig
 }
+\note{Note the difference to the previous package version: the LOG-density is returned now!}
 \author{ Holger Froehlich }
 \keyword{models}

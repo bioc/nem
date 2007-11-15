@@ -6,7 +6,7 @@
   \code{plot.effects} visualizes the subset structure in the data by reordering rows and columns according to the topological order given by a phenotypic hierarchy.
 }
 \usage{
-plot.effects(x,nem,border=TRUE,...)
+\method{plot}{effects}(x,nem,border=TRUE,...)
 }
 
 \arguments{

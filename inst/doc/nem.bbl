@@ -7,10 +7,16 @@ M.~Boutros, H.~Agaisse, and N.~Perrimon.
 \newblock {\em Developmental Cell}, 3(5):711 -- 722, 2002.
 
 \bibitem{Frohlich2007GCBRNAi}
-H.~Fr\"ohlich, M.~Fellmann, H.~S\"ultmann, A.~Poustka, and T.~Beiﬂbarth.
+H.~Fr\"ohlich, M.~Fellmann, H.~S\"ultmann, A.~Poustka, and T.~Beissbarth.
 \newblock Estimating large scale signaling networks through nested effects
   models from intervention effects in microarray data.
-\newblock In {\em Proc. German Conf. on Bioinformatics}, 2007.
+\newblock In {\em Proc. German Conf. on Bioinformatics}, pages 45 -- 54, 2007.
+
+\bibitem{Frohlich2007RNAiBMC}
+H.~Fr\"ohlich, M.~Fellmann, H.~S\"ultmann, A.~Poustka, and T.~Beiﬂbarth.
+\newblock Large scale statistical inference of signaling pathways from rnai and
+  microarray data.
+\newblock {\em BMC Bioinformatics}, 8:386, 2007.
 
 \bibitem{HastieTibshiraniBook2001}
 T.~Hastie, R.~Tibshirani, and J.~Friedman.
@@ -31,8 +37,7 @@ F.~Markowetz, J.~Bloch, and R.~Spang.
 \bibitem{Markowetz2007}
 F.~Markowetz, D.~Kostka, O.~Troyanskaya, and R.~Spang.
 \newblock Nested effects models for high-dimensional phenotyping screens.
-\newblock In {\em Proc. Int. Conf. on Int. Syst. for Mol. Biol. (ISMB)}, 2007.
-\newblock in press.
+\newblock {\em Bioinformatics}, 23:i305 -- i312, 2007.
 
 \bibitem{RusNor95}
 S.~Russel and P.~Norvig.

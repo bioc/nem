@@ -8,9 +8,6 @@ print.nem.greedy <- function(x, ...) {
   cat("$graph:  phenotypic hierarchy on",ncol(x$graph),"genes)\n")  
   cat("\n")
      
-  #
-  #cat("\n")
-  #cat("plot this object to see the graph\n")
-
+  
 }
   

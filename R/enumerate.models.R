@@ -1,4 +1,4 @@
-enumerate.models <- function(x,name=NULL,verbose=TRUE) {
+enumerate.models <- function(x,name=NULL, verbose=TRUE) {
 
 if (length(x) == 1) {
             n <- as.numeric(x)
@@ -22,8 +22,8 @@ if (length(x) == 1) {
   fkt1 <- function(x,n,name) {
     M <- diag(n)
     M[which(M==0)]<-x
-    dimnames(M) <- list(name,name)
-    M <- transitive.closure(M,mat=TRUE,loops=TRUE)
+    dimnames(M) <- list(name,name)	    
+    M <- transitive.closure(M,mat=TRUE,loops=TRUE)    
     return(list(M))
   }
   

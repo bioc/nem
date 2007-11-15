@@ -1,99 +1,65 @@
-filterEGenes = function(Porig, D, ntop=100){
+filterEGenes = function(Porig, D, Padj=NULL, ntop=100, fpr=0.05, adjmethod="bonferroni", cutoff=0.05){
+	if(is.null(Padj))
+		Padj = apply(Porig, 2, p.adjust, method="fdr")	
 	ntop = min(nrow(Porig),ntop)
-	n = ncol(D)
+	n = ncol(Porig)
 	I1 = apply(Porig,2,function(x) order(x)[1:ntop])
 	I1 = unique(as.vector(I1))  # Länge ist abhängig von P!	
-	print(paste("selecting top",ntop," genes from each list -->",length(I1),"genes total"))	
-	print("Clustering E genes:")
-	DMat = as.dist(1-cor(t(D[I1,])))
-	hc = hclust(DMat,method="ward")
-	clusterData <- function(k){		
-		cl = cutree(hc,k)
-		s <- summary(silhouette(cl,DMat))$avg.width
-		if(is.null(s))
-			s = 0
-		cat(".")
-		return(list(sil=s, clust=cl, k=k))
-	}	
-	clust = lapply(unique(pmin(n*(8:20),length(I1)-1)),clusterData)	
-	maidx <- which.max(sapply(clust, function(x) x$sil))	
-	kbest <- clust[[maidx]]$k
-	sil <- clust[[maidx]]$sil
-	clust <- clust[[maidx]]$clust						
-	cat("Using ", kbest, "clusters (silhouette index:", sil ,").\n")
-	I = sapply(1:kbest, function(k){
-		cl = which(clust == k)	
-		if(length(cl) > 2)		
-			cl[order(rowSums(D[cl,]),decreasing=TRUE)[1:min(1,sum(clust==k))]]
+	print(paste("Selecting top",ntop," genes from each list -->",length(I1),"genes total"))				
+	disc = (Padj[I1,] <= fpr)*1		
+	nsig = colSums(Padj[I1,] < fpr)
+	N = nrow(disc)
+	patterns = unique(disc)		
+	patterns = patterns[-which(apply(patterns,1,function(r) all(r == 0))),]	
+	if(nrow(patterns) < 1)
+		stop("No patterns found!")	
+	idx = apply(patterns,1, function(p){
+		cl = which(apply(disc,1, function(r) all(r == p)))
 	})
-	I = unique(unlist(I))
-	I = I[which(apply(D[I,],1,var) > 0)]
-	cat("---> ", length(I), "E-genes selected\n")
-	I
+	nobserved = sapply(idx, length)
+	patterns = patterns[nobserved > 0,]
+	idx = idx[nobserved > 0]
+	nobserved = nobserved[nobserved > 0]
+	cat("Testing ", nrow(patterns), " patterns\n")
+	p.values = sapply(1:nrow(patterns), function(j){
+		p = patterns[j,]		
+		pexpected = max(0,prod((fpr*p*nsig + (1-fpr)*(1-p)*(N-nsig))/N))
+		p.value = binom.test(nobserved[j], N, pexpected, alternative="greater")$p.value
+		cat("pattern ", p, ": (#observed = ", nobserved[j], ", #expected = ", floor(pexpected*N), ", raw p-value = ", p.value,")\n")		
+		p.value
+	})
+	cat("\n")
+	p.values = p.adjust(p.values,method=adjmethod)
+	if(!any(p.values < cutoff))
+		stop("No significant patterns found!\n")
+	patterns = patterns[p.values < cutoff,]	
+	idx = idx[p.values < cutoff]
+	nobserved = nobserved[p.values < cutoff]
+	p.values = p.values[p.values < cutoff]
+	I = I1[unlist(idx)]	
+	cat(length(p.values), " significant patterns -->", length(I), "E-genes in total\n")
+	D = D[I,]	
+	list(selected=I, dat=D, patterns=patterns, nobserved=nobserved, p.values=p.values)
 }
 
-selectEGenes <- function(Phi,D1,D0=NULL,para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,lambda=0,type="mLL", nEgenes=min(5*ncol(Phi), nrow(D1))){		
-	mLLWrapper <- function(egene, D1, D0=NULL,a=0.05,b=0.15,Pe=NULL,type="mLL"){	
-		idx <- which(rownames(D1) == egene)[1]									
-		if(!is.null(Pe))	
-			Pesel <- t(as.matrix(Pe[idx,]))
-		else
-			Pesel <- NULL		
-		if(type == "FULLmLL")
-			return(FULLmLL(Phi,t(as.matrix(D1[idx,])),t(as.matrix(D0[idx,])),a0=hyperpara[1],b0=hyperpara[2],a1=hyperpara[3],b1=hyperpara[4],Pe=Pesel,Pm=NULL,lambda=0)$mLL)
-		else	
-			return(mLL(Phi,t(as.matrix(D1[idx,])),t(as.matrix(D0[idx,])),a=para[1],b=para[2],Pe=Pesel,Pm=NULL,lambda=0,type=type)$mLL)
-	}				
-	if(is.null(rownames(D1)))
-		rownames(D1) <- as.character(1:nrow(D1))
-	L <- sapply(rownames(D1),mLLWrapper,D1=D1,D0=D0,Pe=Pe,type=type)		
-	if(type %in% c("CONTmLLDens"))
-		sel <- order(L,decreasing=TRUE)[1:length(which(L>0))]		
-	else	
-		sel <- order(L,decreasing=TRUE)[1:nEgenes]			
-	if(type == "FULLmLL")
-		return(c(FULLmLL(Phi,D1[sel,],D0[sel,],a0=hyperpara[1],b0=hyperpara[2],a1=hyperpara[3],b1=hyperpara[4],Pe=Pe[sel,],Pm=Pm,lambda=lambda),loglik=L))
-	else
-		return(c(mLL(Phi,D1[sel,],D0[sel,],a=para[1],b=para[2],Pe=Pe[sel,],Pm=Pm,lambda=lambda,type=type),loglik=L))
-}
-
-getRelevantEGenes <- function(Phi, D, nEgenes=min(5*ncol(Phi), nrow(D1)), type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=NULL, lambda=0){
-	# Which Sgenes were silenced?
-	Sgenes <- unique(colnames(D))
-	nrS <- length(Sgenes)
-	
-	# check that all models have S-genes as names
-	fkt <- function(x,s){
-		ss <- sort(s)
-		c1 <- all(sort(colnames(x))==ss)
-		c2 <- all(sort(rownames(x))==ss)
-		return(c1 & c2)
-	}	
-	nrS <- length(Sgenes)    
-	# if no prior is supplied:
-	# assume uniform prior over E-gene positions
-	if (is.null(Pe)){ 
-		Pe <- matrix(1/nrS,nrow=nrow(D),ncol=nrS)
-		colnames(Pe) <- Sgenes  
-	}      
-	if(is.null(Pm)) lambda <- 0  
-	# make probability/density matrices D0 and D1  
-	# nrow=#E-genes and ncol=#S-genes        
-	if(type %in% c("CONTmLL","CONTmLLDens")){   	  	
-		# D1[i,j] = probability/density of EFFECT at E_i when S_j was silenced  	  	  	
-		D1 <- sapply(Sgenes, function(x) apply(D[, colnames(D) == x, drop=FALSE],1,mean))		
-		D0 <- NULL		
-	}  
-	else{  	
-		# D0[i,j] = how often there is NO EFFECT at E_i when S_j was silenced
-		# D1[i,j] = how often there is    EFFECT at E_i when S_j was silenced  
-		D0  <- matrix(0,ncol=nrS,nrow=nrow(D),dimnames=list(rownames(D),Sgenes))	
-		D1  <- D0
-		for (i in 1:nrS) {
-			Di     <- D[,colnames(D) == Sgenes[i],drop=FALSE]		
-			D0[,i] <- rowSums(Di==0)
-			D1[,i] <- rowSums(Di==1) 
-		}		
+getRelevantEGenes <- function(Phi, D, para=NULL, hyperpara=NULL,Pe=NULL,Pm=NULL,lambda=0, delta=1, type="CONTmLLDens", nEgenes=min(10*nrow(Phi), nrow(D))){			
+	if(type == "CONTmLLRatio"){		
+		sc = score(list(Phi), D, type=type, para=para, hyperpara=hyperpara, Pe=Pe, Pm=Pm, lambda=lambda, delta=delta, verbose=FALSE, graphClass="matrix")				
+		sel = which(unlist(sc$mappos) != "NA")			
 	}
-	selectEGenes(Phi, D1, D0, para, hyperpara, Pe, Pm, lambda, type, nEgenes)
+	else{						
+		L <- sapply(1:nrow(D), function(idx){						
+			if(!is.null(Pe))
+				Pei = t(as.matrix(Pe[idx,]))
+			else
+				Pei = NULL
+			score(list(Phi), t(as.matrix(D[idx,])), type=type, para=para, hyperpara=hyperpara, Pe=Pei, Pm=Pm, lambda=lambda, verbose=FALSE, graphClass="matrix")$mLL	
+		})			
+		L = L/sum(L)		
+		if(type %in% c("CONTmLLDens"))
+			nEgenes = max(10,length(which(L>0)))		
+		sel <- unique(order(L,decreasing=TRUE)[1:nEgenes])
+		sc = score(list(Phi), D[sel,], type=type, para=para, hyperpara=hyperpara, Pe=Pe[sel,], Pm=Pm, lambda=lambda, delta=delta, verbose=FALSE, graphClass="matrix")									
+	}					
+	list(selected=sel, mLL=sc$mLL, pos=unlist(sc$pos), mappos=unlist(sc$mappos))
 }

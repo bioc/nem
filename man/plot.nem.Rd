@@ -11,7 +11,7 @@
   plot graph of nested effect model, the marginal likelihood distribution or the posterior position of the effected genes
 }
 \usage{
-	plot.nem(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, ...)
+	\method{plot}{nem}(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, ...)
 }
 
 \arguments{
@@ -29,7 +29,7 @@
 }
 
 
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>, Holger Froehlich}
 
 \seealso{\code{\link{nem}}, \code{\link{score}}}
 

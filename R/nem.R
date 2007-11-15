@@ -1,5 +1,4 @@
-nem <- function(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,selEGenes=FALSE,verbose=TRUE){
-
+nem <- function(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE){
 #------------------------------
 # Sanity checks                
 if (!(inference %in% c("pairwise", "triples", "search","ModuleNetwork","RelNet","nem.greedy"))) 
@@ -28,6 +27,9 @@ if(lambda < 0) lambda <- abs(lambda)
 
 Sgenes <- unique(colnames(D))
 
+if(selEGenes){	
+	return(nem.featureselection(D, inference, models, type, para, hyperpara, Pe, Pm, Pmlocal, local.prior.size, local.prior.bias, triples.thrsh, lambda, verbose))
+}
 
 #------------------------------
 # PAIRWISE                     
@@ -40,13 +42,13 @@ if (inference == "pairwise"){
 			stop("\nnem> local prior parameters invalid")
         	Pmlocal <- local.model.prior(local.prior.size,length(Sgenes),local.prior.bias)
         }
-        result <- pairwise.posterior(D,type,para,hyperpara,Pe,Pmlocal,Pm,lambda,selEGenes,verbose)     
+        result <- pairwise.posterior(D,type,para,hyperpara,Pe,Pmlocal,Pm,lambda,delta,verbose)     
     }
 
 #------------------------------
 # MODULE NETWORK                       
 if(inference == "ModuleNetwork"){
-	result <- moduleNetwork(D,type,Pe,Pm,lambda,para,hyperpara,selEGenes,verbose=verbose)	
+	result <- moduleNetwork(D,type,Pe,Pm,lambda,delta,para,hyperpara,verbose=verbose)	
 }
 
 #------------------------------
@@ -54,7 +56,7 @@ if(inference == "ModuleNetwork"){
 
 if (inference == "triples"){
 
-        result <- triples.posterior(D,type,para,hyperpara,Pe,Pmlocal,Pm,lambda,triples.thrsh,selEGenes,verbose)
+        result <- triples.posterior(D,type,para,hyperpara,Pe,Pmlocal,Pm,lambda,delta,triples.thrsh,verbose)
         #A.t <- transitive.lp(A)
 
     }
@@ -62,7 +64,7 @@ if (inference == "triples"){
 #------------------------------
 # GREEDY                     
 if(inference == "nem.greedy"){
-	result <- nem.greedy(D,type=type,Pe=Pe,Pm=Pm,lambda=lambda,para=para,hyperpara=hyperpara,selEGenes=selEGenes,verbose=verbose)	
+	result <- nem.greedy(D,initial=models,type=type,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,para=para,hyperpara=hyperpara,verbose=verbose)	
 }
 
 #------------------------------
@@ -70,16 +72,8 @@ if(inference == "nem.greedy"){
 
 if (inference == "search"){ 
         if (is.null(models)) models <- enumerate.models(length(Sgenes),Sgenes,verbose)
-        result <- score(models,D,type,para,hyperpara,Pe,Pm,lambda,selEGenes,verbose)
+        result <- score(models,D,type,para,hyperpara,Pe,Pm,lambda,delta,verbose)
 }
-
-if (inference == "RelNet"){      
-  	if(is.null(para)){
-		para = c(2, 1)
-	}	
-        result <- RelNet(D, alpha=para[1], beta=para[2], Pm=Pm)
-}
-
 
 #------------------------------
 # OUTPUT                       

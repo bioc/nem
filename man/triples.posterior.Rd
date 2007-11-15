@@ -8,10 +8,9 @@
   is involved and no exhaustive enumeration of model space is needed as in function \code{score}.
 }
 \usage{
-triples.posterior(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,lambda=0, triples.thrsh=.5, selEGenes=FALSE, verbose=TRUE)
+triples.posterior(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,lambda=0,delta=1, triples.thrsh=.5,verbose=TRUE)
 
-#S3 methods for class 'triples'
-print.triples(x,...) 
+\method{print}{triples}(x,...) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,7 +23,7 @@ print.triples(x,...)
   \item{triples.thrsh}{threshold used when combining tripel models for each edge. Default: only edges appearing in more than half of triples are included in the final graph.}
   \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
   \item{lambda}{regularization parameter to incorporate prior assumptions.}  
-  \item{selEGenes}{optimize selection of E-genes for each model}
+  \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLRatio only)}
   \item{verbose}{do you want to see progress statements printed or not? Default: TRUE}  
 
   \item{x}{nem object}
@@ -42,14 +41,15 @@ print.triples(x,...)
 }
 
 \value{
-  \item{graph}{the inferred directed graph (graphNEL object)}
-  \item{avg}{matrix of edge frequencies in triple models}
+ \item{graph}{the inferred directed graph (graphNEL object)}   
+  \item{mLL}{marginal likelihood of final model} 
   \item{pos}{posterior over effect positions}
   \item{mappos}{MAP estimate of effect positions} 
   \item{type}{as used in function call}
   \item{para}{as used in function call}
   \item{hyperpara}{as used in function call}
   \item{lambda}{as in function call}
+  \item{selected}{selected E-gene subset}
 }
 
 \references{

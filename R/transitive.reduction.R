@@ -1,5 +1,6 @@
 transitive.reduction <- function(g){
-	if(class(g) == "matrix"){
+	if (!(class(g)%in%c("graphNEL","matrix"))) stop("Input must be either graphNEL object or adjacency matrix")
+	if(class(g) == "matrix"){		
 		# modified algorithm from Sedgewick book: just remove transitive edges instead of inserting them
 		g = g - diag(diag(g))
 		for(y in 1:nrow(g)){
@@ -13,24 +14,20 @@ transitive.reduction <- function(g){
 			}
 		}
 	}
-	else{
-		with.children <- sapply(edgeL(g),function(x) length(x$edges)>0)
-		# loop over nodes with children
-		for(i in nodes(g)[with.children]){
-			visited <- rep(FALSE,length(nodes(g)))
-			names(visited) <- nodes(g)
-			#loop over children of 'i' which have children of their own
-			for (j in names(which(with.children[adj(g,i)[[1]]])) ){
-			# loop over grandchildren of 'i' which have not been visited yet
-				for (k in names(which(!visited[adj(g,j)[[1]]]))){
-				# if grandchild can also be reached directly -> remove it
-					if (k %in% adj(g,i)[[1]]){
-					g <- removeEdge(i,k,g)
-					visited[k] <- TRUE
+	else{		
+		nodenames=nodes(g)		
+		for(y in 1:length(nodes(g))){
+			edges = edgeL(g)
+			x = which(sapply(edges,function(l) y %in% unlist(l)))
+			j = unlist(edges[[y]])
+			cands = sapply(edges[x], function(e) list(intersect(unlist(e),j)))			
+			cands = cands[sapply(cands,length) > 0]
+			if(length(cands) > 0)
+				for(c in 1:length(cands)){ 				
+					jj = unlist(cands[c])					
+					g = removeEdge(rep(names(cands)[c],length(jj)),nodenames[jj],g)
 				}
-			}
-			}
 		}
 	}
-	return(g)
+	g		
 }

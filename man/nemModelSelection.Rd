@@ -2,15 +2,15 @@
 \alias{nemModelSelection}
 
 \title{model selection for nested effect models}
-\description{infers models with different regularization constants, compares them via the AIC criterion and returns the highest scoring one}
+\description{Infers models with different regularization constants, compares them via the AIC criterion and returns the highest scoring one}
 \usage{
-nemModelSelection(lambdas,D,inference="pairwise",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,selEGenes=FALSE,verbose=TRUE,...)
+nemModelSelection(lambdas,D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,delta=1,selEGenes=FALSE,verbose=TRUE,...)
 }
 
 \arguments{
   \item{lambdas}{vector of regularization constants}
   \item{D}{data matrix with experiments in the columns (binary or continious)}
-  \item{inference}{\code{search} to use exhaustive enumeration; or \code{triples} for triple-based inference; or \code{pairwise} for the pairwise heuristic; or \code{ModuleNetwork} for the module based inference}
+  \item{inference}{\code{search} to use exhaustive enumeration; or \code{triples} for triple-based inference; or \code{pairwise} for the pairwise heuristic; or \code{ModuleNetwork} for the module based inference; or \code{nem.greedy} for the greedy hillclimbing}
   \item{models}{a list of adjacency matrices for model search. If NULL, \code{enumerate.models} is used for exhaustive enumeration of all possible models.}
   \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLDens} or \code{CONTmLLRatio}}
   \item{para}{vector of length two: false positive rate and false negative rate for non-binary data. Used by \code{mLL()}} 
@@ -21,8 +21,9 @@ nemModelSelection(lambdas,D,inference="pairwise",models=NULL,type="mLL",para=NUL
   \item{local.prior.size}{prior expected number of edges in the graph (for pairwise learning)}
   \item{local.prior.bias}{bias towards double-headed edges. Default: 1 (no bias; for pairwise learning)}
   \item{triples.thrsh}{threshold for model averaging to combine triple models for each edge}  
-  \item{selEGenes}{optimize selection of E-genes for each model}
-  \item{verbose}{do you want to see progression statements" Default: TRUE}
+  \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLRatio only)}
+  \item{selEGenes}{automated E-gene subset selection (includes tuning of delta for CONTmLLRatio)}
+  \item{verbose}{do you want to see progression statements? Default: TRUE}
   \item{...}{other arguments to pass to function \code{nem} or \code{network.AIC}}
 }
 \details{
@@ -30,21 +31,21 @@ nemModelSelection(lambdas,D,inference="pairwise",models=NULL,type="mLL",para=NUL
   
 }
 \value{
-An object of class 'score' or  'pairwise' or 'triples' or 'ModuleNetwork' containing slots
-\item{graph}{the inferred phenotypic hierarchy}
-\item{pos}{posterior distribution of positions of effect reporters}
-\item{mappos}{estimated position of effects in the phenotypic hierarchy}
-\item{type}{see above}
-\item{para}{see above}
-\item{hyperpara}{see above}
-\item{lambda}{see above}
-and additional ones according to the function used for inference.
+  \item{graph}{the inferred directed graph (graphNEL object)}   
+  \item{mLL}{marginal likelihood of final model} 
+  \item{pos}{posterior over effect positions}
+  \item{mappos}{MAP estimate of effect positions} 
+  \item{type}{as used in function call}
+  \item{para}{as used in function call}
+  \item{hyperpara}{as used in function call}
+  \item{lambda}{as in function call}
+  \item{selected}{selected E-gene subset}
 }
 
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Holger Froehlich}
 
 
-\seealso{\code{\link{network.AIC}}, \code{\link{score}}, \code{nem.greedy}, \code{moduleNetwork}, \code{\link{triples.posterior}}, \code{\link{pairwise.posterior}}, \code{\link{local.model.prior}}, \code{\link{enumerate.models}}}
+\seealso{\code{\link{network.AIC}}, \code{\link{nem}}, \code{\link{score}}, \code{\link{nem.greedy}}, \code{\link{moduleNetwork}}, \code{\link{triples.posterior}}, \code{\link{pairwise.posterior}}, \code{\link{local.model.prior}}, \code{\link{enumerate.models}}}
 \examples{
    data("BoutrosRNAi2002")
    D <- BoutrosRNAiDiscrete[,9:16]

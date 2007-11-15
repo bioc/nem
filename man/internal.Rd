@@ -19,6 +19,7 @@
 \alias{bum.palt}
 \alias{bum.qalt}
 \alias{bum.ralt}
+\alias{nem.featureselection}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{  internal functions  }

@@ -3,7 +3,7 @@
 # in each step only a pair of nodes is involved
 
 pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL, 
-    Pe = NULL, Pmlocal = NULL, Pm = NULL, lambda = 0, selEGenes = FALSE, verbose = TRUE)
+    Pe = NULL, Pmlocal = NULL, Pm = NULL, lambda = 0, delta=1, verbose = TRUE)
 {
   # Sgenes
     Sgenes <- unique(colnames(D))
@@ -12,9 +12,11 @@ pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL,
     if(verbose) cat(nrS,"perturbed genes ->", nrTest, "pairwise tests (lambda = ", lambda,")\n")
     
     # priors
-    if (is.null(Pm)) Pm <- matrix(0, ncol=nrS, nrow=nrS, dimnames=list(Sgenes,Sgenes))
+    if (is.null(Pm)) Pm <- matrix(0, ncol=nrS, nrow=nrS, dimnames=list(Sgenes,Sgenes))		
     if (is.null(Pmlocal)) Pmlocal <- rep(0.25,4)
-    if(is.null(Pe)) Pe <- matrix(1/nrS,nrow=nrow(D),ncol=nrS, dimnames=list(rownames(D),Sgenes))  
+    if(is.null(Pe)){ 
+	Pe <- matrix(1/nrS,nrow=nrow(D),ncol=nrS, dimnames=list(rownames(D),Sgenes))  	
+    }
     
      # init output
     graph <- diag(nrS)
@@ -45,7 +47,7 @@ pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL,
             if(support > 0){            	
             	# score            	
 		ss <- score(models, D.xy, type = type, para = para,
-			hyperpara = hyperpara, Pe = Pesel, Pm=Pmsel, lambda=lambda, selEGenes=selEGenes, verbose = FALSE)
+			hyperpara = hyperpara, Pe = Pesel, Pm=Pmsel, lambda=lambda, delta=delta, verbose = FALSE)
 		post <- exp(ss$mLL) * Pmlocal
 		post <- post/sum(post)		
 		post[is.na(post)] = 0           
@@ -75,14 +77,14 @@ pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL,
                type=type, 
                para=para,
                hyperpara=hyperpara,
-               Pe=Pe, 
-               selEGenes=selEGenes,
+               Pe=Pe,   
+	       delta=delta,
                verbose=FALSE)  
      
     # output
     graph <- graph - diag(nrS)          
     graph <- as(graph,"graphNEL")
-    res <- list(graph=graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],scores=scores,type=type,para=para,hyperpara=hyperpara,lam=lambda)
+    res <- list(graph=graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],scores=scores,type=type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected)
     class(res) <- "pairwise"
     return(res)
 }

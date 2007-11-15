@@ -4,41 +4,52 @@
 \alias{filterEGenes}
 
 \title{Automatic selection of most relevant S-genes}
-\description{
-   1. Selects those E-genes, which have the highest likelihood under the given network hypothesis.
-   2. Cluster E-genes and select one E-gene from each cluster to reduce the amount of data on the array.
+\description{   
+   1. A-priori filtering of E-genes: Select E-genes, which show a pattern of differential expression across experiments that is expected to be non-random. 
+   2. Automated E-gene subset selection: Select those E-genes, which have the highest likelihood under the given network hypothesis.
 }
 \usage{
-filterEGenes(Porig, D, ntop=100)
+filterEGenes(Porig, D, Padj=NULL, ntop=100, fpr=0.05, adjmethod="bonferroni", cutoff=0.05)
 
-getRelevantEGenes(Phi, D, nEgenes=min(5*ncol(Phi), nrow(D1)), type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=NULL, lambda=0)
-
-selectEGenes(Phi,D1,D0=NULL,para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,lambda=0,type="mLL", nEgenes=min(5*ncol(Phi), nrow(D1)))
+getRelevantEGenes(Phi, D, para=NULL, hyperpara=NULL,Pe=NULL,Pm=NULL,lambda=0, delta=1, type="CONTmLLDens", nEgenes=min(10*nrow(Phi), nrow(D)))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
+For method filterEGenes:
   \item{Porig}{matrix of raw p-values, typically from the complete array}
   \item{D}{ data matrix. Columns correspond to the nodes in the silencing scheme. Rows are effect reporters. }
+  \item{Padj}{matrix of false positive rates. If not, provided Benjamini-Hochbergs method for false positive rate computation is used.}
   \item{ntop}{number of top genes to consider from each knock-down experiment}
-
+  \item{fpr}{significance cutoff for the FDR}
+  \item{adjmethod}{adjustment method for pattern p-values}
+  \item{cutoff}{significance cutoff for patterns}
+  
+For method getRelevantEGenes:
   \item{Phi}{ adjacency matrix with unit main diagonal }    
-  \item{nEgenes}{ no. of E-genes to select}
-  \item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability density matrices, or (5.) "CONTmLLRatio" for log-odds ratio matrices}  
+  \item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability log-density matrices, or (5.) "CONTmLLRatio" for log-odds ratio matrices}  
   \item{para}{Vector with parameters \code{a} and \code{b} (for "mLL" with count data)}
   \item{hyperpara}{Vector with hyperparameters \code{a0}, \code{b0}, \code{a1}, \code{b1} for "FULLmLL"}
   \item{Pe}{prior position of effect reporters. Default: uniform over nodes in silencing scheme}
   \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
   \item{lambda}{regularization parameter to incorporate prior assumptions.}
-  
-   \item{D1}{(i) count matrix for discrete data: phenotypes x genes. How often did we see an effect after interventions? (ii) matrix describing the probabilities of an effect (iii) probability density matrix discribing the strength of an effect}
-  \item{D0}{count matrix: phenotypes x genes. How often did we NOT see an effect after intervention? Not used for continious data}
+  \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLRatio only)}
+  \item{nEgenes}{ no. of E-genes to select}  
 }
 \details{
-	uses \code{mLL} or \code{FULLmLL} to score each E-gene.
+	The method filterEGenes performs an a-priori filtering of the complete microarray. It determines how often E-genes are expected to be differentially expressed across experiments just randomly. According to this only E-genes are chosen, which show a pattern of differential expression more often than can be expected by chance.
+
+	The method getRelevantEGenes looks for the E-genes, which have the highest likelihood under the given network hypothesis. In case of the scoring type "CONTmLLDens" these are all E-genes which have a positive contribution to the total log-likelihood. In case of type "CONTmLLRatio" all E-genes not assigned to the "null" S-gene are returned. This involves the prior probability delta/no. S-genes for leaving out an E-gene.
+	For all other cases ("CONTmLL", "FULLmLL", "mLL") the nEgenes E-genes with the highest likelihood under the given network hypothesis are returned.
 }
 \value{
+For method filterEGenes:
   \item{I}{index of selected E-genes}
+  \item{dat}{subset of original data according to I }
+  \item{patterns}{significant patterns}
+  \item{nobserved}{no. of cases per observed pattern}  
 
+For method getRelevantEGenes:
+  \item{selected}{index of selected E-genes}
   \item{mLL}{marginal likelihood of a phenotypic hierarchy}
   \item{pos}{posterior distribution of effect positions in the hierarchy}
   \item{mappos}{Maximum aposteriori estimate of effect positions}
@@ -46,7 +57,7 @@ selectEGenes(Phi,D1,D0=NULL,para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,lambda=0,ty
 
 \author{Holger Froehlich}
 
-\seealso{\code{\link{nem}}, \code{score}, \code{\link{mLL}}, \code{\link{FULLmLL}}, \code{\link{enumerate.models}} }
+\seealso{\code{\link{nem}}, \code{score}, \code{\link{enumerate.models}} }
 \examples{
    # Drosophila RNAi and Microarray Data from Boutros et al, 2002
    data("BoutrosRNAi2002")
@@ -55,7 +66,7 @@ selectEGenes(Phi,D1,D0=NULL,para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,lambda=0,ty
    # enumerate all possible models for 4 genes
    models <- enumerate.models(unique(colnames(D)))  
    
-   getRelevantEGenes(models[[64]], D, para=c(.13,.05))
+   getRelevantEGenes(models[[64]], D, para=c(.13,.05), type="mLL")
 
 }
 

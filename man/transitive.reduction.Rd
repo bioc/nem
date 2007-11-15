@@ -13,14 +13,16 @@ transitive.reduction(g)
   \item{g}{graphNEL object}
 }
 \details{
-  \code{transitive.reduction} implements an interative algorithm in spirit of Wagner (2001).
+  \code{transitive.reduction} uses a modification of the classical algorithm from the Sedgewick book for computing transitive closures.
 }
 \value{
 returns a graph object with shortcuts removed
 }
-\references{Wagner A, How to reconstruct a large genetic network from $n$ gene perturbations in fewer than $n^2$ easy steps. Bioinformatics 17(12): 1183-1197 (2001)}
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\references{
+R. Sedgewick, Algorithms, Pearson, 2002.
+}
 
+\author{Holger Froehlich}
 
 \seealso{\code{\link{transitive.closure}}}
 \examples{

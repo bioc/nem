@@ -10,7 +10,7 @@ mLL(Phi,D1,D0=NULL,a=0.15,b=0.05,Pe=NULL,Pm=NULL,lambda=0,type="mLL")
 
 \arguments{
   \item{Phi}{an adjacency matrix with unit main diagonal}
-  \item{D1}{(i) count matrix for discrete data: phenotypes x genes. How often did we see an effect after interventions? (ii) matrix describing the probabilities of an effect (iii) probability density matrix discribing the strength of an effect (iv) log-odds ratio matrix describing the strength of an effect}
+  \item{D1}{(i) count matrix for discrete data: phenotypes x genes. How often did we see an effect after interventions? (ii) matrix describing the probabilities of an effect (iii) log-density matrix discribing the strength of an effect (iv) log-odds ratio matrix describing the strength of an effect}
   \item{D0}{count matrix: phenotypes x genes. How often did we NOT see an effect after intervention? Not used for continious data}
   \item{a}{false positive rate: how probable is it to miss an effect? (for count matrix)}
   \item{b}{false negative rate: how probable is it to see a spurious effect? (for count matrix)}
@@ -31,7 +31,7 @@ mLL(Phi,D1,D0=NULL,a=0.15,b=0.05,Pe=NULL,Pm=NULL,lambda=0,type="mLL")
 
 \references{Markowetz F, Bloch J, Spang R, Non-transcriptional pathway features reconstructed from secondary effects of RNA interference, Bioinformatics, 2005}
 
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Holger Froehlich, Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
 
 \seealso{\code{\link{score}}, \code{\link{FULLmLL}}}
 \examples{

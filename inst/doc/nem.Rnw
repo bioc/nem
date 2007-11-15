@@ -210,7 +210,7 @@ more than 4 or 5 perturbed genes) several heuristics have been developed and int
 \item greedy hillclimbing
 \item module networks \cite{Frohlich2007GCBRNAi}
 \end{itemize}
-An interface to all inference techniques is provided by the function \texttt{nem()}.
+An interface to all inference techniques is provided by the function \texttt{nem}.
 
 
 
@@ -422,7 +422,7 @@ plot(resultGreedy$graph, nodeAttrs=list(fillcolor=col))
 
 Rather than looking for a complete network hypothesis at once the
 idea of the module network is to build up a graph from smaller subgraphs,
-called \emph{modules} in the following \cite{Frohlich2007GCBRNAi}. The module network is thus
+called \emph{modules} in the following \cite{Frohlich2007RNAiBMC, Frohlich2007GCBRNAi}. The module network is thus
 a divide and conquer approach: We first perform a hierarchical clustering
 of the preprocessed expression profiles of all S-genes, e.g. via average linkage. The
 idea is that S-genes with a similar E-gene response profile (here:
@@ -439,8 +439,7 @@ thus be estimated by taking the highest scoring of all possible network hypothes
 \caption{\label{fig:MNIdea} Basic idea of module networks: By successively moving down the cluster hierarchy we identify the clusters (modules) of S-genes, which are marked in red. They contain 4 S-genes at most and can be estimated via exhaustive search.}
 \end{figure}
 
-Once all modules have been estimated their connections are constructed. This is done in a constraint greedy hillcimbing fashion: We successively add that edge between any pair of S-genes being contained in different modules, which increases the
-likelihood of the complete network most. This procedure is continued until no improvement can be gained any more, i.e. we have reached a local maximum of the likelihood function. 
+Once all modules have been estimated their connections are constructed. This is done in a constraint greedy hillcimbing fashion: We successively add that edge between any pair of S-genes being contained in different modules, which increases the likelihood of the complete network most. This procedure is continued until no improvement can be gained any more, i.e. we have reached a local maximum of the likelihood function. 
 
 In the package \texttt{nem} we call the module network by
 <<>>=
@@ -463,7 +462,7 @@ versus belief in data. Only trusting the data itself may lead to overfitting,
 whereas only trusting in prior assumptions does not give any new information
 and prevents learning. Therefore, we need a trade-off between both
 goals via a regularization constant $\lambda > 0$, which specifies the belief in our prior assumptions. In the simplest case our 
-assumption could be that the true network structure is sparse, i.e. there are only very few edges. More complex priors could involve separate prior edge probabilities.
+assumption could be that the true network structure is sparse, i.e. there are only very few edges. More complex priors could involve separate prior edge probabilities (c.f. \cite{Frohlich2007RNAiBMC}).
 
 <<>>=
 resultRegularization <- nem(res.disc$dat,para=res.disc$para,Pm=matrix(0,ncol=4,nrow=4), lambda=10, inference="search", verbose=FALSE)
@@ -486,11 +485,11 @@ One way of dealing with it is to tune $\lambda$ such that the \emph{Akaike
 information criterion} (AIC)\begin{equation}
 AIC(\lambda,\Phi_{opt})=-2\log P(D|\Phi_{opt})+2d(\lambda,\Phi_{opt})\end{equation}
 becomes minimal \cite{HastieTibshiraniBook2001}. Here $d(\lambda,\Phi_{opt})$
-denotes the number of parameters (i.e. the number of edges) in the highest scoring 
+denotes the number of parameters (i.e. the number of unknown edges) in the highest scoring 
 network structure $\Phi_{opt}$.
 
 <<>>=
-resultModsel <- nemModelSelection(c(0.1,1,10),res.disc$dat,para=res.disc$para,Pm=matrix(0,ncol=4,nrow=4),inference="search", verbose=FALSE)
+resultModsel <- nemModelSelection(c(0.01,1,100),res.disc$dat,para=res.disc$para,Pm=matrix(0,ncol=4,nrow=4),verbose=FALSE)
 @
 
 
@@ -505,10 +504,10 @@ plot(resultModsel, nodeAttrs=list(fillcolor=col))
 
 \subsubsection{Bayesian Model Selection}
 
-Searching for an optimal regularization constant relates to a frequentistic point of view to incorporate prior knowledge. Instead, from a Bayesian perspective one should define a prior on the regularization parameter and integrate it out. Here, this is done by assuming an inverse gamma distribution prior on $\nu=\frac{1}{2\lambda}$ with hyperparameters $1,0.5$, which leads to a simple closed form of the full prior \cite{Frohlich2007GCBRNAi}. An advantage of the Bayesian perspective is that no explicit model selection step is needed.
+Searching for an optimal regularization constant relates to a frequentistic point of view to incorporate prior knowledge. Instead, from a Bayesian perspective one should define a prior on the regularization parameter and integrate it out. Here, this is done by assuming an inverse gamma distribution prior on $\nu=\frac{1}{2\lambda}$ with hyperparameters $1,0.5$, which leads to a simple closed form of the full prior \cite{Frohlich2007GCBRNAi}. An advantage of the Bayesian perspective is that no explicit model selection step is needed. Furthermore, there is evidence, that compared to the frequentistic method the Bayesian approach using the same amount of prior knowledge yields a higher increase of the reconstructed network's sensitivity 
 
 <<>>=
-resultBayes <- nem(res.disc$dat,para=res.disc$para,Pm=matrix(0,ncol=4,nrow=4),inference="search", verbose=FALSE)
+resultBayes <- nem(res.disc$dat,para=res.disc$para,Pm=matrix(0,ncol=4,nrow=4), verbose=FALSE)
 resultBayes
 @
 
@@ -525,17 +524,53 @@ plot(resultBayes, nodeAttrs=list(fillcolor=col))
 \clearpage
 \subsection{Omitting the Data Discretization Step}
 
-In general performing a data discretization on the expression profiles as described in Sec. \ref{preprocess} can be critical. An alternative is given by taking the 
+In general performing a data discretization on the expression profiles as described in Sec. \ref{preprocess} can be critical, especially, if not both, positive and negative controls are available. An alternative is given by taking the 
 raw $p$-value profiles obtained from testing for differential gene expression. In this situation we assume the individual $p$-values in the data matrix to be drawn from a mixture of a uniform, a Beta$(1,\beta)$ and a Beta$(\alpha,1)$ distribution. The parameters of the distribution are fitted via an EM algorithm \cite{Frohlich2007GCBRNAi}. The \texttt{nem} package supports such a data format using the option \texttt{type = "CONTmLLDens"} in the call of the function \texttt{nem}. Moreover there is a function \texttt{getDensityMatrix}, which conveniently does all the fitting of the $p$-value profiles and produces diagnostic plots into a user specified directory.
 
-A second possibility to omit the data discretization step is to calculate the effect probability for each gene based on given the empirical distributions of the controls. 
+A second alternative to the $p$-value density, is to use the log-odds (B-values), which compare the likelihood of differential expression with the likelihood of non-differential expression of a gene. The \texttt{nem} package supports such a data format using the option \texttt{type = "CONTmLLRatio"} in the call of the function \texttt{nem}. 
+
+A further possibility to omit the data discretization step is to calculate the effect probability for each gene based on given the empirical distributions of the controls. Note that for this purpose both, positive and negative controls should be available.
 
 <<eval=FALSE>>=
-densities = getDensityMatrix(myPValueMatrix,dirname="DiagnosticPlots")
-nem(densities[res.disc$sel,],type="CONTmLLDens",inference="search")
+logdensities = getDensityMatrix(myPValueMatrix,dirname="DiagnosticPlots")
+nem(logdensities[res.disc$sel,],type="CONTmLLDens",inference="search")
 
 preprocessed <- nem.cont.preprocess(BoutrosRNAiExpression,neg.control=1:4,pos.control=5:8)
 nem(preprocessed$prob.influenced,type="CONTmLL",inference="search")
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\subsection{Selection of E-Genes}
+
+There exists two mechanisms to select E-genes implemented in \texttt{nem}, which can be used complementary to each other: 
+\begin{itemize}
+\item A-priori filtering of E-genes, which show a pattern of differential expression, which can be expected to be non-random
+\item Selection of most relevant E-genes for a given network hypothesis. 
+\end{itemize}
+In case of the log-odds inference scheme (\texttt{type = "CONTmLLRatio"}) selection of most relevant E-genes works as follows: A virtual "null" S-gene is used, to which E-genes are assigned, that are irrelevant. The prior probability of assigning an E-gene to the "null" S-genes is $\frac{\delta}{n}$, where $\delta>0$ and $n$ is the number of S-genes. The parameter $\delta$ is tuned via the AIC model selection criterion.
+
+In all other cases selection of relevant E-genes is performed via an alternating optimization scheme: First, the network with the highest likelihood for the given set of E-genes is determined. Then, the E-genes with the highest marginal likelihood under that network hypothesis are calculated. In case of the $p$-value profile inference scheme (\texttt{type = "CONTmLLDens"}) these are simply all E-genes with a positive contribution to the log marginal likelihood. In all other cases by default the top $10n$ E-genes are selected. With the new set of E-genes a new network is inferred and the whole procedure is repeated until convergence.
+
+<<eval=FALSE>>=
+mydat = filterEGenes(Porig, logdensities) # a-priori filtering of E-genes
+resAuto = nem(mydat,type="CONTmLLDens",selEGenes=TRUE) # automated subset selection of  E-genes 
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\subsection{Statistical Stability and Significance}
+
+An important step after network inference is some kind of validation. In abscence of the true network this step is rather difficult. We have implemented several possible tests, which may also be used in addition to each other:
+\begin{itemize}
+\item Statistical significance: Possibly the least demand we have for our inferred network is, that it should be significantly superior to a random one. We sample $N$ (default 1000) random networks from a null distribution and compare their marginal likelihood to that of the estimated network. The fraction of how often a random network is better than the inferred one yields an exact p-value.
+\item Bootstrapping: We wish our network to be stable against small changes in our set of E-genes. Therefore, we use bootstrapping: We sample $m$ E-genes with replacement for $N$ times (default 1000) and run the network inference on each bootstrap sample. At the end we count for each edge how often it was inferred in all $N$ bootstrap runs. This yields a probability for each edge. We then may only consider edges with a probability above some threshold (e.g. 50%).
+\item Jackknife: We also wish our network to be stable against removal of S-genes. Therefore, we use the jackknife: Each S-gene is left out once and the network inference run on the other S-genes. At the end we count for each edge, how often it was inferred. This yields a jackknife probability for each edge, which then may be used to filter edges.
+\end{itemize}
+
+<<eval=FALSE>>=
+significance=nem.calcSignificance(res,disc$dat, as(resultGreedy$graph,"matrix"),resultGreedy$mLL,para=res.disc$para) # assess statistical significance
+bootres=nem.bootstrap(res.disc$dat,para=res.disc$para) # bootstrapping on E-genes
+jackres=nem.jackknife(res.disc$dat,para=res.disc$para) # jackknife on S-genes
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
