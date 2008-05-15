@@ -4,25 +4,25 @@ transitive.closure <- function(g,mat=FALSE,loops=TRUE){
     g <- as(g, "matrix")
     
     #-- adjacency matrix
-#         if (class(g)=="matrix"){
-        n <- ncol(g)
-        matExpIterativ <- function(x,pow,y=x,z=x,i=1) {
-            while(i < pow) {
-                z <- z %*% x
-                y <- y+z
-                i <- i+1
-            }
-        return(y)
-        }
-
-        h <- matExpIterativ(g,n)
-        h <- (h>0)*1   
-        dimnames(h) <- dimnames(g)
-        if (!loops) diag(h) <- rep(0,n) else diag(h) <- rep(1,n)
-        if (!mat) h <- as(h,"graphNEL")	
+#     if (class(g)=="matrix"){
+		n <- ncol(g)
+		matExpIterativ <- function(x,pow,y=x,z=x,i=1) {
+		while(i < pow) {
+			z <- z %*% x
+			y <- y+z
+			i <- i+1
+		}
+		return(y)
+		}
+	
+		h <- matExpIterativ(g,n)
+		h <- (h>0)*1   
+		dimnames(h) <- dimnames(g)
+		if (!loops) diag(h) <- rep(0,n) else diag(h) <- rep(1,n)
+		if (!mat) h <- as(h,"graphNEL")	
 #     }
 
-    #-- graphNEL object
+# #     -- graphNEL object
 #     if (class(g)=="graphNEL"){
 #         tc <- RBGL::transitive.closure(g)    
 #         if (loops) tc$edges <- unique(cbind(tc$edges,rbind(tc$nodes,tc$nodes)),MARGIN=2)

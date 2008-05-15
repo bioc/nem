@@ -16,7 +16,7 @@ pairwise.posterior(D, type = "mLL", para = NULL, hyperpara = NULL,
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{D}{data matrix. Columns correspond to the nodes in the silencing scheme. Rows are phenotypes.}  
-\item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability log-density matrices, or (5.) "CONTmLLRatio" for log-odds ratio matrices}    
+\item{type}{see \code{nem}}    
   \item{para}{vector with parameters a and b for "mLL", if count matrices are used}
   \item{hyperpara}{vector with hyperparameters a0, b0, a1, b1 for "FULLmLL"}
   \item{Pe}{prior position of effect reporters. Default: uniform over nodes in hierarchy}
@@ -40,15 +40,7 @@ pairwise.posterior(D, type = "mLL", para = NULL, hyperpara = NULL,
 }
 
 \value{
-  \item{graph}{the inferred directed graph (graphNEL object)}   
-  \item{mLL}{marginal likelihood of final model} 
-  \item{pos}{posterior over effect positions}
-  \item{mappos}{MAP estimate of effect positions} 
-  \item{type}{as used in function call}
-  \item{para}{as used in function call}
-  \item{hyperpara}{as used in function call}
-  \item{lambda}{as in function call}
-  \item{selected}{selected E-gene subset}
+nem object
 }
 
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
@@ -57,7 +49,7 @@ pairwise.posterior(D, type = "mLL", para = NULL, hyperpara = NULL,
 \seealso{\code{\link{score}}, \code{\link{nem}}}
 \examples{
    data("BoutrosRNAi2002") 
-   res <- pairwise.posterior(BoutrosRNAiDiscrete[,9:16],para=c(.13,.05))
+   res <- nem(BoutrosRNAiDiscrete[,9:16],para=c(.13,.05),inference="pairwise")
    
    # plot graph
    plot(res,what="graph")

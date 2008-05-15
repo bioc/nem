@@ -36,14 +36,14 @@ FULLmLL(Phi, D1, D0, a0, b0, a1, b1, Pe, Pm=NULL, lambda=0)
   \item{mLL}{full marginal likelihood of a model}
   \item{pos}{posterior distribution of effect positions in the hierarchy}
   \item{mappos}{maximum aposteriori estimate of effect positions}
-
+  \item{LLperGene}{likelihood per E-gene}
 }
 
 \references{Markowetz F, Probabilistic Models for Gene Silencing
   Data. PhD thesis, Free University Berlin, 2006.}
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
 
-\seealso{\code{\link{score}}, \code{\link{mLL}}}
+\seealso{\code{\link{nem}}, \code{\link{score}}, \code{\link{mLL}}}
 \examples{   
    data("BoutrosRNAi2002")
    res <- nem(BoutrosRNAiDiscrete[,9:16],type="FULLmLL",hyperpara=c(1,9,9,1))

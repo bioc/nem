@@ -12,14 +12,14 @@ score(models, D, type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=NULL, lambda
 
 \method{print}{score}(x, ...)
 
-PhiDistr(Phi, Pm, a=1, b=ncol(Phi)^2)
+PhiDistr(Phi, Pm, a=1, b=0.5)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{models}{ a list of adjacency matrices with unit main diagonal }
   \item{D}{ data matrix. Columns correspond to the nodes in the
   silencing scheme. Rows are effect reporters. }
-  \item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability log-density matrices, or (5.) "CONTmLLRatio" for log-odds ratio matrices}  
+  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLBayes} or \code{CONTmLLMAP}. \code{CONTmLLDens} and \code{CONTmLLRatio} are identical to \code{CONTmLLBayes} and \code{CONTmLLMAP} and are still supported for compatibility reasons. \code{mLL} and \code{FULLmLL} are used for binary data (see \code{BoutrosRNAiDiscrete}) and \code{CONTmLL} for a matrix of effect probabilities. \code{CONTmLLBayes} and \code{CONTmLLMAP} are used, if log-odds ratios, p-value densities or any other model specifies effect likelihoods. \code{CONTmLLBayes} refers to an inference scheme, were the linking positions of E-genes to S-Genes are integrated out, and \code{CONTmLLMAP} to an inference scheme, were a MAP estimate for the linking positions is calculated.}
   \item{para}{Vector with parameters \code{a} and \code{b} (for "mLL" with count data)}
   \item{hyperpara}{Vector with hyperparameters \code{a0}, \code{b0}, \code{a1}, \code{b1} for "FULLmLL"}
   \item{Pe}{prior position of effect reporters. Default: uniform over nodes in silencing scheme}
@@ -40,31 +40,23 @@ PhiDistr(Phi, Pm, a=1, b=ncol(Phi)^2)
   
   Scoring models by marginal log-likelihood is implemented in function
   \code{score}. Input consists of models and data, the type of the score
-  (\code{"mLL"}, \code{"FULLmLL"}, \code{"CONTmLL"} or \code{"CONTmLLDens"} or \code{"CONTmLLRatio"}), the corresponding paramters (\code{para}) or hyperparameters (\code{hyperpara}), a prior for phenotype
+  (\code{"mLL"}, \code{"FULLmLL"}, \code{"CONTmLL"} or \code{"CONTmLLBayes"} or \code{"CONTmLLMAP"}), the corresponding paramters (\code{para}) or hyperparameters (\code{hyperpara}), a prior for phenotype
   positions (\code{Pe}) and model structures \code{Pm} with regularization parameter \code{lambda}. If a structure prior \code{Pm} is provided, but no regularization parameter \code{lambda}, Bayesian model averaging with an inverse gamma prior on 1/lambda is performed. 
-  With type "CONTmLLRatio" usually an automated selection of most relevant E-genes is performed by introducing a "null" S-gene. The corresponding prior probability of leaving out an E-gene is set to delta/no. S-genes. 
+  With type "CONTmLLMAP" usually an automated selection of most relevant E-genes is performed by introducing a "null" S-gene. The corresponding prior probability of leaving out an E-gene is set to delta/no. S-genes. 
   
   \code{score} is usually called within function \code{nem}.
 
 }
 \value{
-  \item{graph}{the inferred directed graph (graphNEL object)}   
-  \item{mLL}{marginal likelihood of final model} 
-  \item{pos}{posterior over effect positions}
-  \item{mappos}{MAP estimate of effect positions} 
-  \item{type}{as used in function call}
-  \item{para}{as used in function call}
-  \item{hyperpara}{as used in function call}
-  \item{lambda}{as in function call}
-  \item{selected}{selected E-gene subset}
+  nem object
 }
 \references{
 \item{[1]}{Markowetz F, Bloch J, Spang R, Non-transcriptional pathway features reconstructed from secondary effects of RNA interference, Bioinformatics, 2005.}
 \item{[2]}{Markowetz F, Probabilistic Models for Gene Silencing Data, PhD thesis, Free University Berlin, 2006.}
-\item{[3]}{Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T: Estimating Large Scale Signaling Networks through Nested Effects Models from Intervention Effects in Microarray Data. Proc. German Conf. Bioinformatics (GCB), pp. 45 - 54, 2007.}
+\item{[3]}{Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T: Estimating Large Scale Signaling Networks through Nested Effects Models from Intervention Effects in Microarray Data. Bioinformatics, 1, 2008.}
 \item{[4]}{Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T: Large Scale Statistical Inference of Signaling Pathways from RNAi and Microarray Data, BMC Bioinformatics, 8:386, 2007.}
 }
-\author{Holger Froehlich, Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Holger Froehlich <URL: http://www.dkfz.de/mga2/people/froehlich>, Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
 
 \seealso{\code{\link{nem}}, \code{\link{mLL}}, \code{\link{FULLmLL}}, \code{\link{enumerate.models}} }
 \examples{

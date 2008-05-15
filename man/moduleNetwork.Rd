@@ -16,7 +16,7 @@ moduleNetwork(D,type="mLL",Pe=NULL,Pm=NULL,lambda=0,delta=1,para=NULL,hyperpara=
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{D}{data matrix. Columns correspond to the nodes in the silencing scheme. Rows are phenotypes.}   
-\item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability density matrices, or (5.) "CONTmLLRatio" for log-odds ratio matrices}  
+  \item{type}{see \code{nem}}
   \item{Pe}{prior position of effect reporters. Default: uniform over nodes in hierarchy}  
   \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
   \item{lambda}{regularization parameter to incorporate prior assumptions.}  
@@ -36,15 +36,7 @@ moduleNetwork(D,type="mLL",Pe=NULL,Pm=NULL,lambda=0,delta=1,para=NULL,hyperpara=
 }
 
 \value{
-  \item{graph}{the inferred directed graph (graphNEL object)}   
-  \item{mLL}{marginal likelihood of final model} 
-  \item{pos}{posterior over effect positions}
-  \item{mappos}{MAP estimate of effect positions} 
-  \item{type}{as used in function call}
-  \item{para}{as used in function call}
-  \item{hyperpara}{as used in function call}
-  \item{lambda}{as in function call}
-  \item{selected}{selected E-gene subset}
+ nem object
 }
 
 \references{
@@ -55,7 +47,7 @@ moduleNetwork(D,type="mLL",Pe=NULL,Pm=NULL,lambda=0,delta=1,para=NULL,hyperpara=
   \item{[2]}{Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T:
   Estimating Large Scale Signaling Networks through Nested Effects
   Models from Intervention Effects in Microarray Data.
-  Proc. German Conf. Bioinformatics (GCB), pp. 45 - 54, 2007. }
+  Bioinformatics, 1, 2008. }
 }
   
 \author{Holger Froehlich}
@@ -64,7 +56,7 @@ moduleNetwork(D,type="mLL",Pe=NULL,Pm=NULL,lambda=0,delta=1,para=NULL,hyperpara=
 \seealso{\code{\link{score}}, \code{\link{nem}}}
 \examples{
    data("BoutrosRNAi2002") 
-   res <- moduleNetwork(BoutrosRNAiDiscrete[,9:16],para=c(.13,.05))
+   res <- nem(BoutrosRNAiDiscrete[,9:16],para=c(.13,.05),inference="ModuleNetwork")
    
    # plot graph
    plot(res,what="graph")

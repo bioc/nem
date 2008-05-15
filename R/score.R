@@ -18,21 +18,13 @@ score <- function(models, D, type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=
   nrS <- length(Sgenes)     
   # make probability/density matrices D0 and D1  
   # nrow=#E-genes and ncol=#S-genes        
-  if(type %in% c("CONTmLL","CONTmLLRatio","CONTmLLDens")){   		
-  	# D1[i,j] = probability/density of EFFECT at E_i when S_j was silenced  	  	  		
-	D1 <- D
-	D0 <- NULL		
-  }  
-  else{  	
-  	# D0[i,j] = how often there is NO EFFECT at E_i when S_j was silenced
-  	# D1[i,j] = how often there is    EFFECT at E_i when S_j was silenced  
-	D0  <- matrix(0,ncol=nrS,nrow=nrow(D),dimnames=list(rownames(D),Sgenes))	
-	D1  <- D0
-	for (i in 1:nrS) {
-		Di     <- D[,colnames(D) == Sgenes[i],drop=FALSE]		
-    		D0[,i] <- rowSums(Di==0)
-    		D1[,i] <- rowSums(Di==1) 
-	}		
+  if(type %in% c("mLL", "FULLmLL")){
+  	D1 = sapply(Sgenes, function(s) rowSums(D[,colnames(D) == s,drop=FALSE]))  
+  	D0 = sapply(Sgenes, function(s) sum(colnames(D) == s)) - D1 
+  }
+  else{
+	D1 = D
+	D0 = NULL
   }
     # if no prior is supplied:
   # assume uniform prior over E-gene positions      
@@ -40,7 +32,7 @@ score <- function(models, D, type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=
 	Pe <- matrix(1/nrS,nrow=nrow(D1),ncol=nrS)
 	colnames(Pe) <- Sgenes  		
   }          
-  if(type == "CONTmLLRatio"){		
+  if(type %in% c("CONTmLLRatio", "CONTmLLMAP")){		
   	Pe = cbind(Pe, double(nrow(D1)))  			
   	Pe[,ncol(Pe)] = delta/nrS
 	Pe = Pe/rowSums(Pe)	
@@ -64,26 +56,26 @@ score <- function(models, D, type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=
   }     
   s       <- unlist(results["mLL",])
   ep      <- results["pos",]
-  map     <- results["mappos",]   
+  map     <- results["mappos",] 
+  LLperGene = results["LLperGene",]  
   if(!is.null(Pm)){  	
   	log_pD_cond_Phi <- s  	  	  		
   	if(is.null(lambda) || (lambda == 0)){  			
 		if(verbose) cat("--> Using Bayesian model averaging to incorporate prior knowledge\n")
   		lpPhi <- sapply(models, PhiDistr, Pm, a=1, b=0.5)		
-  		ppost <- exp((log_pD_cond_Phi + lpPhi)/nrS)	
+  		ppost <- exp((log_pD_cond_Phi + lpPhi)/nrS^2)	
   		s <- log_pD_cond_Phi + lpPhi  		
   	}
   	else
-  		ppost <- exp((s + log(lambda*0.5))/nrS)
+  		ppost <- exp((s + log(lambda*0.5))/nrS^2)
   }  
   else
-	ppost = exp(s/nrS)
+	ppost = exp(s/nrS^2)
   ppost <- ppost/sum(ppost)  	# posterior model probability
-
   
   if(verbose){
 	if(length(ppost) > 1){
-		sort_ppost <- sort(ppost,decreasing=TRUE)
+		sort_ppost <- sort(ppost,decreasing=TRUE)		
 		cat("(probabilities of best and second best model for ",Sgenes, ":", sort_ppost[1],",",sort_ppost[2],")\n")
 	}
   }  
@@ -99,10 +91,14 @@ score <- function(models, D, type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=
   PHI <- matrix(0,ncol=nrS,nrow=nrS)
   dimnames(PHI) <- list(Sgenes,Sgenes)  
   for(i in 1:length(models))
-	PHI <- PHI + models[[i]]*ppost[i]           
-  selected = which(unlist(results["mappos",which.max(s)]) != "NA")	    
+	PHI <- PHI + models[[i]]*ppost[i]   
+  selected = results["mappos",which.max(s)][[1]]  
+  if(!is.null(rownames(D)))
+  	selected = rownames(D)[unique(unlist(selected[Sgenes]))]
+  else
+	selected = unique(unlist(selected[Sgenes]))
   # output  
-  res <- list(graph=gR, mLL=s, ppost=ppost, avg=PHI, pos=ep, mappos=map, type=type, para=para, hyperpara=hyperpara, lam=lambda, selected=selected)
+  res <- list(graph=gR, mLL=s, ppost=ppost, avg=PHI, pos=ep, mappos=map, type=type, para=para, hyperpara=hyperpara, lam=lambda, selected=selected, delta=delta, LLperGene=LLperGene)
   class(res) <- "score"   
   return(res)  
 }

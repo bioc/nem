@@ -17,10 +17,7 @@ transitive.closure(g, mat=FALSE, loops=TRUE)
 }
 \details{
   This function calculates the transitive closure of a given
-  graph. 
-  If the input graph is a 'graphNEL' object, \code{transitive.reduction} is essentially a wrapper around the \code{RBGL::transitive.closure},
-  to make its output more convenient for our purpose.  
-  If the input is an adjacency matrix we use the matrix exponential for a quicker way to find the transitive closure.
+  graph. We use the matrix exponential to find the transitive closure.
 }
 \value{
 returns a graphNEL object or adjacency matrix
@@ -28,7 +25,7 @@ returns a graphNEL object or adjacency matrix
 
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
 
-\seealso{\code{\link{enumerate.models}}, \code{\link{transitive.reduction}}}
+\seealso{\code{\link{transitive.reduction}}}
 \examples{
    V <- LETTERS[1:3]
    edL <- list(A=list(edges="B"),B=list(edges="C"),C=list(edges=NULL))

@@ -1,6 +1,9 @@
 \name{BoutrosRNAi2002}
 \alias{BoutrosRNAiExpression}
 \alias{BoutrosRNAiDiscrete}
+\alias{BoutrosRNAiDens}
+\alias{BoutrosRNAiLods}
+\alias{BoutrosRNAiLogFC}
 \alias{BoutrosRNAi2002}
 \docType{data}
 \title{RNAi data on Drosophila innate immune response}
@@ -27,7 +30,14 @@ stabilizing transformation (Huber et al, 2002), and probe set summarization
 using a median polish fit of an additive model (Irizarry et al, 2003).
 
 \code{BoutrosRNAiDiscrete}: contains only the 68 genes more than two-fold up-regulated between negative and positive controls.
-The continuous expression values are discretized to \code{1} (effect: closer to negative controls) and \code{0} (no effect: closer to positive controls). 
+The continuous expression values are discretized to \code{1} (effect: closer to negative controls) and \code{0} (no effect: closer to positive controls).
+
+\code{BoutrosRNAiDens}: log $p$-value density matrix for the 68 genes with more than two-fold up-regulated between negative and positive controls.
+
+\code{BoutrosRNAiLods}: B-value matrix for the 68 genes with more than two-fold up-regulated between negative and positive controls.
+
+\code{BoutrosRNAiLogFC}: matrix with log fold changes
+
 }
 \references{
   Boutros M, Agaisse H, Perrimon N, Sequential activation of signaling pathways

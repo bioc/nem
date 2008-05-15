@@ -77,14 +77,17 @@ pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL,
                type=type, 
                para=para,
                hyperpara=hyperpara,
-               Pe=Pe,   
+               Pe=Pe,  
+	       Pm=Pm,
+	       lambda=lambda, 
 	       delta=delta,
                verbose=FALSE)  
      
     # output
-    graph <- graph - diag(nrS)          
-    graph <- as(graph,"graphNEL")
-    res <- list(graph=graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],scores=scores,type=type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected)
+#     graph <- graph - diag(nrS)          
+#     graph <- as(graph,"graphNEL")
+#     res <- list(graph=graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],scores=scores,type=type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected,delta=delta)
+	res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=ep$type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected, delta=delta, LLperGene=ep$LLperGene[[1]], scores=scores)	# output: data likelihood under given model!	
     class(res) <- "pairwise"
     return(res)
 }

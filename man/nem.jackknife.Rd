@@ -1,20 +1,24 @@
 \name{nem.jackknife}
 \alias{nem.jackknife}
+\alias{print.nem.jackknife}
 
 \title{Jackknife for nested effect models}
 \description{   
  Assesses the statistical stability of a network via a jackknife procedure: Each S-gene is left out once and the network reconstructed on the remaining ones. The relative frequency of each edge to appear in n-1 jackknife samples is returned.
 }
 \usage{
-	nem.jackknife(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE)
+nem.jackknife(D,thresh=0.5, inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE)
+
+\method{print}{nem.jackknife}(x, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{D}{data matrix with experiments in the columns (binary or continious)}
-  \item{inference}{\code{search} to use exhaustive enumeration; or \code{triples} for triple-based inference; or \code{pairwise} for the pairwise heuristic; or \code{ModuleNetwork} for the module based inference}
+  \item{thresh}{only edges appearing with a higher frequency than "thresh" are returned}
+  \item{inference}{\code{search} to use exhaustive enumeration, \code{triples} for triple-based inference, \code{pairwise} for the pairwise heuristic, \code{ModuleNetwork} for the module based inference, \code{nem.greedy} for greedy hillclimbing, \code{nem.greedyMAP} for alternating MAP optimization using log odds or log p-value densities}
   \item{models}{a list of adjacency matrices for model search. If NULL, \code{enumerate.models} is used for exhaustive enumeration of all possible models.}
-  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLDens} or \code{CONTmLLRatio}}
-  \item{para}{vector of length two: false positive rate and false negative rate for non-binary data. Used by \code{mLL}} 
+  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLBayes} or \code{CONTmLLMAP}, see \code{nem}}
+  \item{para}{vector of length two: false positive rate and false negative rate for binary data. Used by \code{mLL}} 
   \item{hyperpara}{vector of length four: used by \code{FULLmLL()} for binary data}
   \item{Pe}{prior of effect reporter positions in the phenotypic hierarchy (same dimension as D)}
   \item{Pm}{prior over models (n x n matrix)}
@@ -26,17 +30,20 @@
   \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLRatio only)}
   \item{selEGenes}{automated E-gene subset selection (includes tuning of delta for CONTmLLRatio)}
   \item{verbose}{do you want to see progression statements? Default: TRUE}
+
+  \item{x}{nem object}
+  \item{...}{other arguments to pass}
 }
 \details{
 Calls \code{\link{nem}} or \code{\link{nemModelSelection}} internally, depending on whether or not lambda is a vector and Pm != NULL.
 }
 \value{
-matrix of jackknife probabilities
+nem object with edge weights being the jackknife probabilities
 }
 
 \author{Holger Froehlich}
 
-\seealso{\code{\link{nem.bootstrap}}, \code{\link{nem}}, \code{\link{nemModelSelection}}}
+\seealso{\code{\link{nem.bootstrap}}, \code{\link{nem.consensus}}, \code{\link{nem}}, \code{\link{nemModelSelection}}}
 \examples{
 \dontrun{
    data("BoutrosRNAi2002")

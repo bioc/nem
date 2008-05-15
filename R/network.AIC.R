@@ -5,8 +5,9 @@ network.AIC = function(network, Pm=NULL, k=2, verbose=TRUE){
 	if(is.null(Pm))
 		Pm = matrix(0,ncol=ncol(M),nrow=nrow(M))
 	diag(Pm) = 0
-	npar <- sum(M != 0) - sum(Pm != 0)
+	npar <- sum(abs(M - Pm)>0)
 	AIC <- -2*network$mLL + k*npar
-	if(verbose) cat(paste("==> AIC ( lambda = ",network$lam,") = ",AIC,"( #param =", npar,")===============\n"))
+	if(verbose) 
+		cat(paste("==> AIC ( lambda = ",network$lam,") = ",AIC,"( #param =", npar,")===============\n"))
 	return(AIC)
 }

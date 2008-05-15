@@ -1,4 +1,4 @@
-nem.bootstrap <- function(D,nboot=1000,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE){
+nem.bootstrap <- function(D, thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE){
 		
 	inferNetwork <- function(boot){
 		Dtmp = D[boot,]						
@@ -16,5 +16,23 @@ nem.bootstrap <- function(D,nboot=1000,inference="nem.greedy",models=NULL,type="
 	overlapBoot = matrix(round(overlapBoot,digits=2),ncol=n,nrow=n)
 	colnames(overlapBoot) = Sgenes
 	rownames(overlapBoot) = Sgenes
-	overlapBoot
+	res = nem(D,models=list((overlapBoot>thresh)*1),inference="search",type=type,para=para,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,hyperpara=hyperpara,selEGenes=selEGenes, verbose=verbose)
+	res$pos = res$pos[[1]]
+	res$mappos = res$mappos[[1]]
+	res$mLL = res$mLL[[1]]
+	res$LLperGene = res$LLperGene[[1]]
+	g = res$graph
+	edgeDataDefaults(g, "label") = 1	
+	edgeDataDefaults(g, "weight") = 1
+	for(s1 in Sgenes){
+		for(s2 in Sgenes){
+			if(s2 %in% unlist(adj(g, s1))){
+				edgeData(g, from = s1, to = s2, attr = "weight") = overlapBoot[s1,s2]			
+				edgeData(g, from = s1, to = s2, attr = "label") = overlapBoot[s1,s2]
+			}
+		}
+	}
+	res$graph = g
+	class(res) <- "nem.bootstrap"
+	res
 }

@@ -1,19 +1,23 @@
 \name{nem.bootstrap}
 \alias{nem.bootstrap}
+\alias{print.nem.bootstrap}
 
 \title{Bootstrapping for nested effect models}
 \description{Performs bootstrapping (resampling with replacement) on E-genes to assess the statistical stability of networks}
 \usage{
-nem.bootstrap(D,nboot=1000,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE)
+nem.bootstrap(D,thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE)
+
+\method{print}{nem.bootstrap}(x, ...)
 }
 
 \arguments{  
   \item{D}{data matrix with experiments in the columns (binary or continous)}
+  \item{thresh}{only edges appearing with a higher frequency than "thresh" are returned}
   \item{nboot}{number of bootstrap samples desired}
-  \item{inference}{\code{search} to use exhaustive enumeration; or \code{triples} for triple-based inference; or \code{pairwise} for the pairwise heuristic; or \code{ModuleNetwork} for the module based inference; or \code{nem.greedy} for greedy hillclimbing}
+  \item{inference}{\code{search} to use exhaustive enumeration, \code{triples} for triple-based inference, \code{pairwise} for the pairwise heuristic, \code{ModuleNetwork} for the module based inference, \code{nem.greedy} for greedy hillclimbing, \code{nem.greedyMAP} for alternating MAP optimization using log odds or log p-value densities}
   \item{models}{a list of adjacency matrices for model search}
-  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLDens} or \code{CONTmLLRatio}}
-  \item{para}{vector of length two: false positive rate and false negative rate for non-binary data. Used by \code{mLL()}} 
+  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLBayes} or \code{CONTmLLMAP}, see \code{nem}}
+  \item{para}{vector of length two: false positive rate and false negative rate for binary data. Used by \code{mLL()}} 
   \item{hyperpara}{vector of length four: used by \code{FULLmLL()} for binary data}
   \item{Pe}{prior of effect reporter positions in the phenotypic hierarchy (same dimension as D)}
   \item{Pm}{prior over models (n x n matrix)}
@@ -25,18 +29,21 @@ nem.bootstrap(D,nboot=1000,inference="nem.greedy",models=NULL,type="mLL",para=NU
   \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLRatio only)}
   \item{selEGenes}{automated E-gene subset selection (includes tuning of delta for CONTmLLRatio)}
   \item{verbose}{do you want to see progression statements? Default: TRUE} 
+
+  \item{x}{nem object}
+  \item{...}{other arguments to pass}
 }
 \details{
   Calls \code{\link{nem}} or \code{\link{nemModelSelection}} internally, depending on whether or not lambda is a vector and Pm != NULL.
 }
 \value{
-	matrix of bootstrap probabilities
+	nem object with edge weights being the bootstrap probabilities
 }
 
 \author{Holger Froehlich}
 
 
-\seealso{code{\link{nem.calcSignificance}}, code{\link{nem}}}
+\seealso{\code{\link{nem.jackknife}}, \code{\link{nem.consensus}}, \code{\link{nem.calcSignificance}}, \code{\link{nem}}}
 \examples{
 \dontrun{
    data("BoutrosRNAi2002")

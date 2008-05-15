@@ -43,23 +43,20 @@ filterEGenes = function(Porig, D, Padj=NULL, ntop=100, fpr=0.05, adjmethod="bonf
 }
 
 getRelevantEGenes <- function(Phi, D, para=NULL, hyperpara=NULL,Pe=NULL,Pm=NULL,lambda=0, delta=1, type="CONTmLLDens", nEgenes=min(10*nrow(Phi), nrow(D))){			
-	if(type == "CONTmLLRatio"){		
-		sc = score(list(Phi), D, type=type, para=para, hyperpara=hyperpara, Pe=Pe, Pm=Pm, lambda=lambda, delta=delta, verbose=FALSE, graphClass="matrix")				
-		sel = which(unlist(sc$mappos) != "NA")			
-	}
-	else{						
-		L <- sapply(1:nrow(D), function(idx){						
-			if(!is.null(Pe))
-				Pei = t(as.matrix(Pe[idx,]))
-			else
-				Pei = NULL
-			score(list(Phi), t(as.matrix(D[idx,])), type=type, para=para, hyperpara=hyperpara, Pe=Pei, Pm=Pm, lambda=lambda, verbose=FALSE, graphClass="matrix")$mLL	
-		})			
+# 	if(type %in% c("CONTmLLRatio", "CONTmLLMAP")){		
+# 		sc = score(list(Phi), D, type=type, para=para, hyperpara=hyperpara, Pe=Pe, Pm=Pm, lambda=lambda, delta=delta, verbose=FALSE, graphClass="matrix")						
+# 	}
+# 	else{						
+# 		L <- sapply(1:nrow(D), function(idx){									
+# 			score(list(Phi), D[idx,,drop=FALSE], type=type, para=para, hyperpara=hyperpara, Pe=Pe[idx,,drop=FALSE], Pm=Pm, lambda=lambda, verbose=FALSE, graphClass="matrix")$mLL	
+# 		})			
+		
+		L = score(list(Phi), D, type=type, para=para, hyperpara=hyperpara, Pe=Pe, Pm=Pm, lambda=lambda, verbose=FALSE, graphClass="matrix")$LLperGene[[1]]	
 		L = L/sum(L)		
-		if(type %in% c("CONTmLLDens"))
+		if(type %in% c("CONTmLLDens", "CONTmLLBayes","CONTmLLMAP","CONTmLLRatio"))
 			nEgenes = max(10,length(which(L>0)))		
 		sel <- unique(order(L,decreasing=TRUE)[1:nEgenes])
-		sc = score(list(Phi), D[sel,], type=type, para=para, hyperpara=hyperpara, Pe=Pe[sel,], Pm=Pm, lambda=lambda, delta=delta, verbose=FALSE, graphClass="matrix")									
-	}					
-	list(selected=sel, mLL=sc$mLL, pos=unlist(sc$pos), mappos=unlist(sc$mappos))
+		sc = score(list(Phi), D[sel,], type=type, para=para, hyperpara=hyperpara, Pe=Pe[sel,], Pm=Pm, lambda=lambda, delta=delta, verbose=FALSE, graphClass="matrix")		
+# 	}					
+	list(selected=sc$selected, mLL=sc$mLL[[1]], pos=sc$pos[[1]], mappos=sc$mappos[[1]], LLperGene=sc$LLperGene[[1]])
 }

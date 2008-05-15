@@ -3,7 +3,7 @@
 \alias{selectEGenes}
 \alias{filterEGenes}
 
-\title{Automatic selection of most relevant S-genes}
+\title{Automatic selection of most relevant E-genes}
 \description{   
    1. A-priori filtering of E-genes: Select E-genes, which show a pattern of differential expression across experiments that is expected to be non-random. 
    2. Automated E-gene subset selection: Select those E-genes, which have the highest likelihood under the given network hypothesis.
@@ -26,7 +26,7 @@ For method filterEGenes:
   
 For method getRelevantEGenes:
   \item{Phi}{ adjacency matrix with unit main diagonal }    
-  \item{type}{(1.) marginal likelihood "mLL" (only for cout matrix D), or (2.) full marginal likelihood "FULLmLL" integrated over a and b and depending on hyperparameters a0, a1, b0, b1 (only for count matrix D), or (3.) "CONTmLL" marginal likelihood for probability matrices, or (4.) "CONTmLLDens" marginal likelihood for probability log-density matrices, or (5.) "CONTmLLRatio" for log-odds ratio matrices}  
+  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLBayes} or \code{CONTmLLMAP}. \code{CONTmLLDens} and \code{CONTmLLRatio} are identical to \code{CONTmLLBayes} and \code{CONTmLLMAP} and are still supported for compatibility reasons, see \code{nem}.}
   \item{para}{Vector with parameters \code{a} and \code{b} (for "mLL" with count data)}
   \item{hyperpara}{Vector with hyperparameters \code{a0}, \code{b0}, \code{a1}, \code{b1} for "FULLmLL"}
   \item{Pe}{prior position of effect reporters. Default: uniform over nodes in silencing scheme}
@@ -38,26 +38,27 @@ For method getRelevantEGenes:
 \details{
 	The method filterEGenes performs an a-priori filtering of the complete microarray. It determines how often E-genes are expected to be differentially expressed across experiments just randomly. According to this only E-genes are chosen, which show a pattern of differential expression more often than can be expected by chance.
 
-	The method getRelevantEGenes looks for the E-genes, which have the highest likelihood under the given network hypothesis. In case of the scoring type "CONTmLLDens" these are all E-genes which have a positive contribution to the total log-likelihood. In case of type "CONTmLLRatio" all E-genes not assigned to the "null" S-gene are returned. This involves the prior probability delta/no. S-genes for leaving out an E-gene.
+	The method getRelevantEGenes looks for the E-genes, which have the highest likelihood under the given network hypothesis. In case of the scoring type "CONTmLLBayes" these are all E-genes which have a positive contribution to the total log-likelihood. In case of type "CONTmLLMAP" all E-genes not assigned to the "null" S-gene are returned. This involves the prior probability delta/no. S-genes for leaving out an E-gene.
 	For all other cases ("CONTmLL", "FULLmLL", "mLL") the nEgenes E-genes with the highest likelihood under the given network hypothesis are returned.
 }
 \value{
-For method filterEGenes:
   \item{I}{index of selected E-genes}
   \item{dat}{subset of original data according to I }
   \item{patterns}{significant patterns}
   \item{nobserved}{no. of cases per observed pattern}  
 
-For method getRelevantEGenes:
-  \item{selected}{index of selected E-genes}
+
+
+  \item{selected}{selected E-genes}
   \item{mLL}{marginal likelihood of a phenotypic hierarchy}
   \item{pos}{posterior distribution of effect positions in the hierarchy}
-  \item{mappos}{Maximum aposteriori estimate of effect positions}
+  \item{mappos}{Maximum a posteriori estimate of effect positions}
+  \item{LLperGene}{likelihood per selected E-gene}
 }
 
 \author{Holger Froehlich}
 
-\seealso{\code{\link{nem}}, \code{score}, \code{\link{enumerate.models}} }
+\seealso{\code{\link{nem}}, \code{\link{score}}, \code{\link{mLL}}, \code{\link{FULLmLL}} }
 \examples{
    # Drosophila RNAi and Microarray Data from Boutros et al, 2002
    data("BoutrosRNAi2002")

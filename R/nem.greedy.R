@@ -7,11 +7,7 @@ nem.greedy <- function(D,initial=NULL,type="mLL",Pe=NULL,Pm=NULL,lambda=0,delta=
 	else
 		Phi = initial		
 	diag(Phi) <- 1	
-	dimnames(Phi) <- list(Sgenes,Sgenes)	
-	if(verbose & !is.null(initial)){
-		cat("initial network:\n")
-		print(Phi)
-	}
+	dimnames(Phi) <- list(Sgenes,Sgenes)		
 	sco0 <- score(list(Phi),D,type=type,para=para,hyperpara=hyperpara,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,verbose=verbose)$mLL	
 	finished <- FALSE
 	while(!finished){
@@ -36,10 +32,8 @@ nem.greedy <- function(D,initial=NULL,type="mLL",Pe=NULL,Pm=NULL,lambda=0,delta=
 		}else
 			finished <- TRUE	
 	}
-	ep <- score(list(Phi),D,type=type,para=para,Pe=Pe,Pm=NULL,lambda=0,delta=delta,hyperpara=hyperpara,verbose=FALSE)
-	diag(Phi) <- 0
-	Phi <- as(Phi,"graphNEL")	
-    	res <- list(graph=Phi,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=ep$type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected)	# output: data likelihood under given model!	
+	ep <- score(list(Phi),D,type=type,para=para,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,hyperpara=hyperpara,verbose=FALSE)	
+    	res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=ep$type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected, delta=delta, LLperGene=ep$LLperGene[[1]])	# output: data likelihood under given model!	
 	class(res) <- "nem.greedy"
 	if(verbose)
 		cat("log-likelihood of model = ",res$mLL,"\n")

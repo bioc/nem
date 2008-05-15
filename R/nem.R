@@ -1,11 +1,14 @@
 nem <- function(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE){
 #------------------------------
-# Sanity checks                
-if (!(inference %in% c("pairwise", "triples", "search","ModuleNetwork","RelNet","nem.greedy"))) 
+# Sanity checks              
+if(inference == "nem.greedyMAP")
+	type = "CONTmLLMAP"
+  
+if (!(inference %in% c("pairwise", "triples", "search","ModuleNetwork","RelNet","nem.greedy","nem.greedyMAP"))) 
 	stop("\nnem> argument 'inference' is not valid\n")
-if (!(type %in% c("mLL", "FULLmLL", "CONTmLL","CONTmLLDens","CONTmLLRatio"))) 
+if (!(type %in% c("mLL", "FULLmLL", "CONTmLL","CONTmLLBayes","CONTmLLMAP", "CONTmLLDens", "CONTmLLRatio"))) 
 	stop("\nnem> argument 'type' is not valid")
-if (is.null(para) & is.null(hyperpara) & (type != "CONTmLL") & (type != "CONTmLLDens") & (type != "CONTmLLRatio") & (inference != "RelNet"))
+if (is.null(para) & is.null(hyperpara) & !(type %in% c("CONTmLL", "CONTmLLBayes", "CONTmLLMAP", "CONTmLLDens", "CONTmLLRatio")))
 	stop("\nnem> provide either 'para' or 'hyperpara'\n")
 if (inference != "RelNet" & type == "mLL" & is.null(para)) 
 	stop("\nnem> provide argument 'para'\n")
@@ -26,7 +29,6 @@ if (!is.null(para)) {
 if(lambda < 0) lambda <- abs(lambda)
 
 Sgenes <- unique(colnames(D))
-
 if(selEGenes){	
 	return(nem.featureselection(D, inference, models, type, para, hyperpara, Pe, Pm, Pmlocal, local.prior.size, local.prior.bias, triples.thrsh, lambda, verbose))
 }
@@ -40,9 +42,9 @@ if (inference == "pairwise"){
 	else{ 
 		if (local.prior.size <= 0 | local.prior.bias <= 0) 
 			stop("\nnem> local prior parameters invalid")
-        	Pmlocal <- local.model.prior(local.prior.size,length(Sgenes),local.prior.bias)
+        	Pmlocal <- local.model.prior(local.prior.size,length(Sgenes),local.prior.bias)		
         }
-        result <- pairwise.posterior(D,type,para,hyperpara,Pe,Pmlocal,Pm,lambda,delta,verbose)     
+        result <- pairwise.posterior(D,type,para,hyperpara,Pe,Pmlocal,Pm,lambda,delta,verbose)    
     }
 
 #------------------------------
@@ -64,7 +66,11 @@ if (inference == "triples"){
 #------------------------------
 # GREEDY                     
 if(inference == "nem.greedy"){
-	result <- nem.greedy(D,initial=models,type=type,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,para=para,hyperpara=hyperpara,verbose=verbose)	
+	result <- nem.greedy(D,initial=models,type=type,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,para=para,hyperpara=hyperpara, verbose=verbose)	
+}
+
+if(inference == "nem.greedyMAP"){
+	result <- nem.greedyMAP(D,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta, verbose=verbose)	
 }
 
 #------------------------------

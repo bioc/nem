@@ -1,5 +1,5 @@
 plot.effects <- function(x,nem,border=TRUE,...){
-
+	
 int        <- unique(colnames(x))
 sccg       <- SCCgraph(nem$graph,name=TRUE)
 topo.order <- tsort(sccg$graph)
@@ -23,16 +23,20 @@ Dcn        <- colnames(D)
 #      if (class(nem)=="pairwise") mappos <- nem$mappos
 #      if (class(nem)=="score")    mappos <- nem$mappos[[which.max(nem$mLL)]]
 # new: estimate them from scc graph
-colnames(D) <- sccg$which.scc[Dcn]
-M <- as(sccg$graph,"matrix") + diag(length(sccg$scc)) 
-mappos <- score(D,models=M,type=nem$type,para=nem$para,hyperpara=nem$hyperpara,verbose=FALSE)$mappos[[1]]
-colnames(D) <- Dcn
+# colnames(D) <- sccg$which.scc[Dcn]
+# M <- as(sccg$graph,"matrix") + diag(length(sccg$scc)) 
+# mappos <- score(D,models=M,type=nem$type,para=nem$para,hyperpara=nem$hyperpara,verbose=FALSE)$mappos[[1]]
+# colnames(D) <- Dcn
+if(length(nem$mLL) > 1)
+	mappos = nem$mappos[[which.max(nem$mLL)]]
+else
+	mappos = nem$mappos
 
 # order 
 v <- list()
 nr <- list()
 for (i in topo.order){
-  w <- which(mappos == i)  
+  w = unlist(mappos[sccg$scc[[i]]], use.names=FALSE)
   
   if (length(w)==0){ 
     v[[i]]  <- NA

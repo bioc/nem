@@ -1,4 +1,4 @@
-PhiDistr <- function(Phi, Pm, a=1, b=ncol(Phi)^2){	
-	d <- sum(abs(Phi - Pm)) 	# take mean instead of sum to make it numerically more stable		
+PhiDistr <- function(Phi, Pm, a=1, b=0.5){	
+	d <- sum(abs(Phi - Pm)) 		
 	a/(2*b)*(1 + d/b)^(-a-1)
 }

@@ -80,12 +80,14 @@ triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm
                para=para,
                hyperpara=hyperpara,
                Pe=Pe,
+	       Pm=Pm,
+	       lambda=lambda,
 	       delta=delta, 
                verbose=FALSE)  
   ##
   ## 4. output
   ##
-  res <- list(graph=graph,avg=A,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected)
+  res <- list(graph=graph,avg=A,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected,delta=delta, LLperGene=ep$LLperGene[[1]])
   class(res) <- "triples"
   if(verbose)
 	cat("log-likelihood of model = ",res$mLL,"\n")

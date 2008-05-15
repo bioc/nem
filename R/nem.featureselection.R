@@ -1,6 +1,6 @@
 nem.featureselection <- function(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,verbose=TRUE, tol=1e-4){
 	
-	if(type == "CONTmLLRatio"){
+	if(type %in% c("CONTmLLRatio","CONTmLLMAP")){
 		Sgenes = unique(colnames(D))
 		nrS = length(Sgenes)
 		 if (is.null(Pe)){ 	
@@ -10,8 +10,9 @@ nem.featureselection <- function(D,inference="nem.greedy",models=NULL,type="mLL"
 		deltaseq = 1:10
 		results = sapply(deltaseq, function(d){			
 			net = nem(D, inference, models, type, para, hyperpara, Pe, Pm, Pmlocal, local.prior.size, local.prior.bias, triples.thrsh, lambda, delta=d, selEGenes=FALSE,verbose=verbose)	
-			if(verbose)
-				cat("Selected E-genes (delta = ", d, ", AIC = ", -net$mLL + length(net$selected), "):", sort(net$selected),"\n")				
+			if(verbose){
+				cat(length(net$selected), " selected E-genes (delta = ", d, ", AIC = ", -net$mLL + length(net$selected), "):", sort(net$selected)[1:min(20, length(net$selected))]," ...\n")				
+			}
 			net
 		})		
  		s = -unlist(results["mLL",]) + sapply(results["selected",], length)
@@ -21,11 +22,11 @@ nem.featureselection <- function(D,inference="nem.greedy",models=NULL,type="mLL"
 	else{
 		converged = FALSE
 		while(!converged){
-			net = nem(D, inference, models, type, para, hyperpara, Pe, Pm, Pmlocal, local.prior.size, local.prior.bias, triples.thrsh, lambda, selEGenes=FALSE,verbose=verbose)
-			sel = getRelevantEGenes(as(net$graph,"matrix"), D, para, hyperpara, Pe, Pm, lambda, delta=1e-10, type=type)
+			net = nem(D, inference, models, type, para, hyperpara, Pe, Pm, Pmlocal, local.prior.size, local.prior.bias, triples.thrsh, lambda, selEGenes=FALSE,verbose=verbose)			
+			sel = getRelevantEGenes(as(net$graph,"matrix"), D, para, hyperpara, Pe, Pm, lambda, delta=1e-10, type=type)			
 			if(verbose)
-				cat("Old Likelihood = ", net$mLL, "new likelihood = ", sel$mLL, "\nSelected E-genes:", sort(sel$selected),"\n")			
-			converged = (abs(net$mLL - sel$mLL)/abs(net$mLL) < tol)
+				cat("Old Likelihood = ", net$mLL, "new likelihood = ", sel$mLL, "\n", length(sel$selected), " selected E-genes:", sort(sel$selected)[1:min(20, length(sel$selected))]," ...\n")			
+			converged = (abs(max(net$mLL) - max(sel$mLL))/abs(max(net$mLL)) < tol)
 			if(converged)
 				break
 			D = D[sel$selected,]

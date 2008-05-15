@@ -15,7 +15,7 @@ SCCgraph(x,name=TRUE,nlength=20)
   \item{nlength}{maximum length of names}
 }
 \details{
-  A graph inferred by either \code{score} or \code{pairwise.posterior} may have cycles if some phenotypic profiles are not distinguishable.
+  A graph inferred by either \code{nem} or \code{nemModelSelection} may have cycles if some phenotypic profiles are not distinguishable.
   The function \code{SCCgraph} identifies cycles in the graph (the strongly conneced components) and summarizes them in a single node.
   The resulting graph is then acyclic.  
 }
@@ -26,7 +26,7 @@ SCCgraph(x,name=TRUE,nlength=20)
  \item{which.scc}{a vector mapping nodes to SCCs}
 }
 
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>, Holger Froehlich <URL: http://www.dkfz.de/mga2/people/froehlich>}
 
 \seealso{\code{\link{nem}}, \code{\link{transitive.reduction}}}
 \examples{
