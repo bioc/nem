@@ -56,7 +56,7 @@ score <- function(models, D, type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=
   }     
   s       <- unlist(results["mLL",])
   ep      <- results["pos",]
-  map     <- results["mappos",] 
+  map     <- results["mappos",] 	
   LLperGene = results["LLperGene",]  
   if(!is.null(Pm)){  	
   	log_pD_cond_Phi <- s  	  	  		
@@ -93,10 +93,7 @@ score <- function(models, D, type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=
   for(i in 1:length(models))
 	PHI <- PHI + models[[i]]*ppost[i]   
   selected = results["mappos",which.max(s)][[1]]  
-  if(!is.null(rownames(D)))
-  	selected = rownames(D)[unique(unlist(selected[Sgenes]))]
-  else
-	selected = unique(unlist(selected[Sgenes]))
+  selected = unique(unlist(selected[Sgenes]))
   # output  
   res <- list(graph=gR, mLL=s, ppost=ppost, avg=PHI, pos=ep, mappos=map, type=type, para=para, hyperpara=hyperpara, lam=lambda, selected=selected, delta=delta, LLperGene=LLperGene)
   class(res) <- "score"   

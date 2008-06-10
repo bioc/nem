@@ -9,13 +9,14 @@
 \alias{plot.nem.bootstrap}
 \alias{plot.nem.jackknife}
 \alias{plot.nem.consensus}
+\alias{plotnem}
 
 \title{plot nested effect model}
 \description{
-  plot graph of nested effect model, the marginal likelihood distribution or the posterior position of the effected genes
+  plot graph of nested effects model, the marginal likelihood distribution or the posterior position of the effected genes
 }
 \usage{
-	\method{plot}{nem}(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, ...)
+	\method{plot}{nem}(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, D=NULL,...)
 }
 
 \arguments{
@@ -26,17 +27,17 @@
 	\item{filename}{filename of PDF-file}
 	\item{thresh}{if x has a real valued adjacency matrix (weight matrix),  don't plot edges with |weight| <= thresh}
 	\item{transitiveReduction}{plot a transitively reduced graph} 
- 	\item{plot.probs}{plot edge weights/probabilities. If regulation directions have been inferred (see \code{infer.edge.type}), upregulated edges are drawn blue and downregulated edges red. Edges, were no clear direction could be inferred, are drawn in black.} 
+ 	\item{plot.probs}{plot edge weights/probabilities. If regulation directions have been inferred (see \code{infer.edge.type}), upregulated edges are drawn red and downregulated edges blue. Edges, were no clear direction could be inferred, are drawn in black.} 
 	\item{SCC}{plot the strongly connected components graph}
-	\item{...}{other arguments to pass}
+	\item{D}{Visualize the nested subset structure of the dataset via \code{plotEffects} along with the graph and show the linking of E-genes to S-genes in the dataset. Should only be used for small networks. Default: Just plot the graph}
+	\item{...}{other arguments to be passed to the Rgraphviz plot function or to the graphics 'image' function.}
 }
 \value{
   none
 }
 
-
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>, Holger Froehlich <URL: http://www.dkfz.de/mga2/people/froehlich>}
 
-\seealso{\code{\link{nem}}, \code{\link{plot.effects}}, \code{\link{infer.edge.type}}}
+\seealso{\code{\link{nem}}, \code{\link{plotEffects}}, \code{\link{infer.edge.type}}}
 
 \keyword{models}

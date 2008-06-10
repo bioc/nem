@@ -371,7 +371,7 @@ resultPairs
 <<label=graph3,fig=TRUE,echo=FALSE>>=
 col<-c("yellow","yellow","green","blue")
 names(col) = nodes(resultPairs$graph)
-plot(resultPairs$graph, nodeAttrs=list(fillcolor=col))
+plot(resultPairs, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
 }{graph3}{Result of edge-wise learning. Compare this to the result from global search. It looks exactely the same.}
 
@@ -391,7 +391,7 @@ resultTriples
 <<label=graph4,fig=TRUE,echo=FALSE>>=
 col<-c("yellow","yellow","green","blue")
 names(col) = nodes(resultTriples$graph)
-plot(resultTriples$graph, nodeAttrs=list(fillcolor=col))
+plot(resultTriples, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
 }{graph4}{Result of triple learning. Compare this to the result from global search and pairwise learning}
 
@@ -410,7 +410,7 @@ resultGreedy
 <<label=graph44,fig=TRUE,echo=FALSE,results=hide>>=
 col<-c("yellow","yellow","green","blue")
 names(col) = nodes(resultGreedy$graph)
-plot(resultGreedy$graph, nodeAttrs=list(fillcolor=col))
+plot(resultGreedy, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
 }{graph44}{Result of greedy hillclimbing. It is exactly the same as for the exhaustive search.}
 
@@ -458,7 +458,7 @@ resGreedyMAP
 <<label=graph55,fig=TRUE,echo=FALSE,results=hide>>=
 col<-c("yellow","yellow","green","blue")
 names(col) = nodes(resGreedyMAP$graph)
-plot(resGreedyMAP$graph, nodeAttrs=list(fillcolor=col))
+plot(resGreedyMAP, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
 }{graph55}{Result of the alternating MAP optimization.}
 
@@ -487,7 +487,7 @@ resultRegularization
 <<label=graph6,fig=TRUE,echo=FALSE,results=hide>>=
 col<-c("yellow","yellow","green","blue")
 names(col) = nodes(resultRegularization$graph)
-plot(resultRegularization$graph, nodeAttrs=list(fillcolor=col))
+plot(resultRegularization, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
 }{graph6}{Result of module network learning with regularization towards sparse graph structures ($\lambda=10$).}
 
@@ -517,7 +517,7 @@ resultModsel <- nemModelSelection(c(0.01,1,100),res.disc$dat,para=res.disc$para,
 <<label=graph7,fig=TRUE,echo=FALSE,results=hide>>=
 col<-c("yellow","yellow","green","blue")
 names(col) = nodes(resultModsel$graph)
-plot(resultModsel$graph, nodeAttrs=list(fillcolor=col))
+plot(resultModsel, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
 }{graph7}{Result of module network learning with regularization towards sparse graph structures and automatic model selection.}
 
@@ -536,7 +536,7 @@ resultBayes
 <<label=graph77,fig=TRUE,echo=FALSE,results=hide>>=
 col<-c("yellow","yellow","green","blue")
 names(col) = nodes(resultBayes$graph)
-plot(resultBayes$graph, nodeAttrs=list(fillcolor=col))
+plot(resultBayes, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
 }{graph77}{Result of module network learning with a Bayesian network prior favoring sparse graphs.}
 
@@ -612,19 +612,19 @@ col<-c("yellow","yellow","green","blue")
 names(col) = nodes(resEdgeInf$graph)
 plot(resEdgeInf, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
-}{graph100}{Inferred edge types: blue = activation, red = inhibition}
+}{graph100}{Inferred edge types: blue = inhibition, red = activation}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Visualization}
 <<results=hide,fig=FALSE>>=
-plot.effects(res.disc$dat,result)
+plotEffects(res.disc$dat,result)
 @
 
 \myincfig{.4}{
 <<label=plot_effects,fig=TRUE,echo=FALSE,results=hide,width=5,height=13>>=
-plot.effects(res.disc$dat,result)
+plotEffects(res.disc$dat,result)
 @
 }{plot_effects}{plotting data according to inferred hierarchy}
 

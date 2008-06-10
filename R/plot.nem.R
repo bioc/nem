@@ -1,4 +1,4 @@
-plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, ...) {
+plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, D=NULL,...) {
 	
 	if (!(what%in%c("graph","mLL","pos"))) stop("\nnem> invalid plotting type: plot either 'graph', 'mLL', or 'pos'")
 	
@@ -10,7 +10,7 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 			for(i in 1:nrow(toremove))
 				gR = removeEdge(from=nodes(gR)[toremove[i,1]], to=nodes(gR)[toremove[i,2]], gR)
 		}
-		if(SCC){
+		if(SCC){			
 			gR = SCCgraph(gR)$graph
 			M = as(gR, "matrix")	
 		}
@@ -21,30 +21,33 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 				M = transitive.reduction(M)		
 			if(length(edgeDataDefaults(gR)) == 0){
 				edgeDataDefaults(gR, "label") <- 1
-				edgeDataDefaults(gR, "weight") <- 1
+				edgeDataDefaults(gR, "weight") <- 1				
 			}
-			edgeDataDefaults(gR, "arrowType") = "normal"	    
+			edgeDataDefaults(gR, "arrowhead") = "normal"
+			edgeDataDefaults(gR, "style") = "bold" 
 			nodes <- colnames(M)
 			nodenames = vector("character", length(M[abs(M) > 0]))
 			probs = double(length(nodenames))	    
-			arr = character(length(probs))	    
+			arr = character(length(probs))	   
+			penwidth = rep("bold",length(probs))
 			k = 1
 			for (i in 1:ncol(M)) {
 				for (j in 1:nrow(M)) {
 					if (M[i, j] != 0) {					
 						probs[k] = ifelse(abs(M[i,j]) > 1, abs(M[i,j])-1, abs(M[i,j]))		
+						edgeData(gR, from = nodes[i], to = nodes[j], attr = "style") = "bold"
 						edgeData(gR, from = nodes[i], to = nodes[j], attr = "label") = probs[k]
 						edgeData(gR, from = nodes[i], to = nodes[j], attr = "weight") = M[i,j]
 						if((M[i,j] > 0) & (M[i,j] <= 1)){
-							edgeData(gR, from = nodes[i], to = nodes[j], attr = "arrowType") = "normal"
+							edgeData(gR, from = nodes[i], to = nodes[j], attr = "arrowhead") = "normal"
 							arr[k] = "normal"
 						}
 						else if(M[i,j] > 1){
-							edgeData(gR, from = nodes[i], to = nodes[j], attr = "arrowType") = "vee"
+							edgeData(gR, from = nodes[i], to = nodes[j], attr = "arrowhead") = "vee"
 							arr[k] = "vee"
 						}
 						else{
-							edgeData(gR, from = nodes[i], to = nodes[j], attr = "arrowType") = "tee"
+							edgeData(gR, from = nodes[i], to = nodes[j], attr = "arrowhead") = "tee"
 							arr[k] = "tee"
 						}
 						nodenames[k] <- paste(nodes[i], "~", nodes[j],
@@ -58,21 +61,41 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 				}   
 			}         
 			names(arr) = nodenames 
-			names(probs) = nodenames	
+			names(probs) = nodenames
+			names(penwidth) = nodenames	
 			fontcol = arr
-			fontcol[arr == "tee"] = "red"
+			fontcol[arr == "tee"] = "blue"
 			fontcol[arr == "normal"] = "black"
-			fontcol[arr == "vee"] = "blue"
+			fontcol[arr == "vee"] = "red"
 			if(plot.probs)
-				edgeattr = list(label = probs, arrowhead = arr, fontcolor = fontcol, color=fontcol)
+				edgeattr = list(label = probs, arrowhead = arr, fontcolor = fontcol, color=fontcol, style=penwidth)
 			else
-				edgeattr = list(arrowhead = arr, fontcolor = fontcol, color=fontcol)
-			buildEdgeList(gR, recipEdges="combined", edgeAttrs=edgeattr) 
+				edgeattr = list(arrowhead = arr, fontcolor = fontcol, color=fontcol, style=penwidth)	
 		}		
-
+		el = buildEdgeList(gR, recipEdges="combined", edgeAttrs=edgeattr) 
+		nodeattr=list(color=rep("white",length(nodes(gR))))			
+		names(nodeattr$color)=nodes(gR)
+		args = list(...)			
+		if("nodeAttrs" %in% names(args))
+			nodeattr = c(nodeattr, args[[match("nodeAttrs", names(args))]])
+		if("edgeAttrs" %in% names(args))
+			edgeattr = c(edgeattr, args[[match("edgeAttrs", names(args))]])			
+		main=NULL			
+		if("main" %in% names(args))
+			main = args[["main"]]			
+		G = agopen(gR,name="test",edges=el, edgeAttrs=edgeattr, nodeAttrs=nodeattr)		
+		
 		if (PDF) pdf(file=filename)   
 		par(cex.main=2) 
-		plot(x=gR, y="dot",edgeAttrs=edgeattr,...)
+		if(is.null(D))
+			plot(G, main=main)		
+		else{
+			zlim = NULL
+			if("zlim" %in% names(args))
+				zlim = args[["zlim"]]			
+			plotnem(D, G, x, SCC=SCC, main=main, zlim=zlim)		
+		}
+
 		if (PDF) dev.off()
 		save(gR, file=paste(unlist(strsplit(filename,".pdf")),".rda",sep=""))	
 		toDotR(gR, paste(unlist(strsplit(filename,".pdf")),".dot",sep=""))

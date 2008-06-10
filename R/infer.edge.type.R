@@ -19,9 +19,9 @@ infer.edge.type = function(x, logFC, alpha=0.05, adj.method="BY"){
 	for(eout in names(myedges)){				
 		for(ein in myedges[[eout]]){						
 			if(ein %in% rownames(logFC))
-				eff = unique(c(names(pos[[ein]]), ein))
+				eff = unique(c(pos[[ein]], ein))
 			else
-				eff = names(pos[[ein]])				
+				eff = pos[[ein]]
 			intype =  table(sign(logFC[eff,eout]))			
 			if(length(intype) > 1)
 				pval = binom.test(intype, length(eff))$p.value	
@@ -31,15 +31,15 @@ infer.edge.type = function(x, logFC, alpha=0.05, adj.method="BY"){
 			names(p.values)[k] = paste(eout, ein,sep="~")
 			k = k + 1			
 		}
-	}		
+	}			
 	p.values = p.adjust(p.values, method=adj.method)	
 	
 	for(eout in names(myedges)){				
 		for(ein in myedges[[eout]]){				
 			if(ein %in% rownames(logFC))
-				eff = unique(c(names(pos[[ein]]), ein))
+				eff = unique(c(pos[[ein]], ein))
 			else
-				eff = names(pos[[ein]])
+				eff = pos[[ein]]
 			intype =  table(sign(logFC[eff,eout]))				
 			if(length(intype) > 1)
 				type = -(intype[1] > intype[2])*1				

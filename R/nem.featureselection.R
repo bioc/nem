@@ -7,17 +7,18 @@ nem.featureselection <- function(D,inference="nem.greedy",models=NULL,type="mLL"
 			Pe <- matrix(1/nrS,nrow=nrow(D),ncol=nrS)
 			colnames(Pe) <- Sgenes  		
   		}    		
-		deltaseq = 1:10
+		deltaseq = 0:10
 		results = sapply(deltaseq, function(d){			
 			net = nem(D, inference, models, type, para, hyperpara, Pe, Pm, Pmlocal, local.prior.size, local.prior.bias, triples.thrsh, lambda, delta=d, selEGenes=FALSE,verbose=verbose)	
 			if(verbose){
 				cat(length(net$selected), " selected E-genes (delta = ", d, ", AIC = ", -net$mLL + length(net$selected), "):", sort(net$selected)[1:min(20, length(net$selected))]," ...\n")				
-			}
+			}			
 			net
 		})		
  		s = -unlist(results["mLL",]) + sapply(results["selected",], length)
  		winner = which.min(s)		
-		net = results[,winner]		
+		net = results[,winner]	
+		class(net) = inference
 	}
 	else{
 		converged = FALSE

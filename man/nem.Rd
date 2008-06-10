@@ -5,7 +5,7 @@
 \title{Nested Effects Models - main function}
 \description{The main function to infer a phenotypic hierarchy from data}
 \usage{
-nem(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE)
+nem(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,trans.close=TRUE,verbose=TRUE)
 
 \method{print}{nem}(x, ...)
 }
@@ -26,6 +26,7 @@ nem(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=
   \item{lambda}{regularization parameter to incorporate prior assumptions. Default: 0 (no regularization)}
   \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLMAP only)}
   \item{selEGenes}{automated E-gene subset selection (includes tuning of delta for CONTmLLMAP)}  
+  \item{trans.close}{Should always transitive closed graphs be computed? Default: TRUE. NOTE: This has only an impact for the  \code{nem.greedyMAP} method.}
   \item{verbose}{do you want to see progression statements? Default: TRUE}
 
   \item{x}{nem object}
@@ -74,7 +75,7 @@ nem(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=
    plot(res3,main="triples")
    plot(res4,main="module network")
    plot(res5,main="greedy hillclimber")      
-   plot(res6,main="alternating optimization")
+   plot(res6,main="alternating MAP optimization")
 }
 \keyword{graphs}
 \keyword{models}

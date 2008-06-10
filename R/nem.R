@@ -1,4 +1,4 @@
-nem <- function(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE){
+nem <- function(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,trans.close=TRUE,verbose=TRUE){
 #------------------------------
 # Sanity checks              
 if(inference == "nem.greedyMAP")
@@ -70,7 +70,7 @@ if(inference == "nem.greedy"){
 }
 
 if(inference == "nem.greedyMAP"){
-	result <- nem.greedyMAP(D,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta, verbose=verbose)	
+	result <- nem.greedyMAP(D,Pe=Pe,Pm=Pm,lambda=lambda, delta=delta, trans.close=trans.close, verbose=verbose)	
 }
 
 #------------------------------

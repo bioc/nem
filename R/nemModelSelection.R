@@ -1,7 +1,6 @@
-nemModelSelection <- function(lambdas,D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,delta=1,selEGenes=FALSE, verbose=TRUE,...){
-
+nemModelSelection <- function(lambdas,D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,delta=1,selEGenes=FALSE, trans.close=TRUE, verbose=TRUE,...){
 	infer <- function(lam){					
-		res <- nem(D,inference=inference,models=models,type=type,para=para,hyperpara=hyperpara,Pe=Pe,Pmlocal=Pmlocal,Pm=Pm,local.prior.size=local.prior.size,local.prior.bias=local.prior.bias,lambda=lam,delta=delta,selEGenes=selEGenes, verbose=verbose) # ACHTUNG: nem spuckt immer den MAP score aus!!!					
+		res <- nem(D,inference=inference,models=models,type=type,para=para,hyperpara=hyperpara,Pe=Pe,Pmlocal=Pmlocal,Pm=Pm,local.prior.size=local.prior.size,local.prior.bias=local.prior.bias,lambda=lam,delta=delta,selEGenes=selEGenes, verbose=verbose,trans.close=trans.close) # ACHTUNG: nem spuckt immer den MAP score aus!!!		
 		if(length(res$selected) <= 1)
 			res$mLL = -Inf
 		else{	

@@ -1,4 +1,4 @@
-sampleRndNetwork = function(Sgenes, scaleFree=FALSE, gamma=3, maxOutDegree=3, maxInDegree=1){		
+sampleRndNetwork = function(Sgenes, scaleFree=TRUE, gamma=3, maxOutDegree=3, maxInDegree=2, trans.close=TRUE){		
 	n = length(Sgenes)
 	S = diag(n) # network of S-genes	
 	maxOutDegree = min(n,maxOutDegree)	
@@ -16,12 +16,13 @@ sampleRndNetwork = function(Sgenes, scaleFree=FALSE, gamma=3, maxOutDegree=3, ma
 				idx = which(colSums(S[,idx0]) <= maxInDegree)
 				if(length(idx) > 0){			
 					idx = sample(idx0[idx],min(outdeg,length(idx0[idx])),replace=TRUE)
-					S[i,idx] = 1
-					S = transitive.closure(S, mat=TRUE,loop=TRUE)					
+					S[i,idx] = 1					
 				}			
 			}	
 		}
 	}						
+	if(trans.close)
+		S = transitive.closure(S, mat=TRUE,loop=FALSE)					
 	diag(S) = 0			
 	colnames(S) = Sgenes
 	rownames(S) = Sgenes

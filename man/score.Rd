@@ -70,17 +70,17 @@ PhiDistr(Phi, Pm, a=1, b=0.5)
    # score models with marginal likelihood
    result <- score(models,D,type="mLL",para=c(.13,.05))
    
-   # plot graph
+   # plot graph of the best model
    plot(result,what="graph")
 
    # plot scores
    plot(result,what="mLL") 
     
-   # plot posterior of E-gene positions
+   # plot posterior of E-gene positions according to best model
    plot(result,what="pos")
    
-   # MAP estimate of effect positions
-   result$mappos[[which.max(result$mLL)]]
+   # MAP estimate of effect positions for the best model
+   result$mappos
 
 }
 

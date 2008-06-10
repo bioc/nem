@@ -5,7 +5,7 @@
 \title{Random networks and data sampling}
 \description{1. Random network generation; 2. sampling of data from a given network topology}
 \usage{
-sampleRndNetwork(Sgenes, scaleFree=FALSE, gamma=3, maxOutDegree=3, maxInDegree=1)
+sampleRndNetwork(Sgenes, scaleFree=TRUE, gamma=3, maxOutDegree=3, maxInDegree=2, trans.close=TRUE)
 
 sampleData(Phi, m, prob=NULL, uninformative=0, type="binary", alpha=sample(seq(0.1,0.9,by=0.1),ncol(Phi),replace=TRUE), beta=sample(5:50,ncol(Phi),replace=TRUE), lambda=matrix(sample(seq(0.01,0.49,by=0.01),ncol(Phi)*2,replace=TRUE),ncol=2), meansH1=rep(0.5, ncol(Phi)), meansH0=rep(-0.5, ncol(Phi)), sdsH1=sample(seq(0.1,1,by=0.1),ncol(Phi),replace=TRUE), sdsH0=sample(seq(0.1,1,by=0.1),ncol(Phi),replace=TRUE))
 }
@@ -16,6 +16,7 @@ sampleData(Phi, m, prob=NULL, uninformative=0, type="binary", alpha=sample(seq(0
 \item{gamma}{for scale free networks: out-degrees of nodes are sampled from $\frac{1}{Z} * (0:maxOutDegree)^{-\gamma}$, where Z is a normalization factor}
 \item{maxOutDegree}{maximal out-degree of nodes}
 \item{maxInDegree}{maximal in-degree of nodes prior to transitive closure}
+\item{trans.close}{Should the transitive closure of the graph be returned? Default: TRUE}
 
 \item{Phi}{adjacency matrix}
 \item{m}{number of E-genes to sample}
@@ -34,8 +35,7 @@ sampleData(Phi, m, prob=NULL, uninformative=0, type="binary", alpha=sample(seq(0
 Random networks are generated as follows:
 For each S-gene $S_{k}$ we randomly choose the number $o$ of outgoing
 edges between 0 and maxOutDegree. This is either done uniform randomly or, if scale free networks are created, according to a power law distribution specified by gamma. We then select $o$ S-genes having at most
-maxInDegree ingoing edge, connected $S_{k}$ to them and transitively close
-the graph. 
+maxInDegree ingoing edge and connected $S_{k}$ to them. 
 
 Data is sampled from a given network topology as follows: We first attach E-genes to S-genes according to the probabilities prob (default: uniform). We then simulate knock-downs of the individual S-genes. For those E-genes, where no
 effects are expected, values are sampled from a null distribution, otherwise from an alternative distribution. In the simplest case we only sample binary data, where 1 indicates an effect an 0 no effect. Alternatively, we can sample log "p-value" densities according to a beta-uniform mixture model, where the null distribution is uniform and the alternative a mixture of two beta distributions. A third possibility is to sample log odds ratios, where alternative and null distribution are both normal.

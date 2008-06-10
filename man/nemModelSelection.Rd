@@ -4,7 +4,7 @@
 \title{model selection for nested effect models}
 \description{Infers models with different regularization constants, compares them via the AIC criterion and returns the highest scoring one}
 \usage{
-nemModelSelection(lambdas,D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,delta=1,selEGenes=FALSE,verbose=TRUE,...)
+nemModelSelection(lambdas,D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,delta=1,selEGenes=FALSE,trans.close=TRUE,verbose=TRUE,...)
 }
 
 \arguments{
@@ -23,11 +23,12 @@ nemModelSelection(lambdas,D,inference="nem.greedy",models=NULL,type="mLL",para=N
   \item{triples.thrsh}{threshold for model averaging to combine triple models for each edge}  
   \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLMAP only)}
   \item{selEGenes}{automated E-gene subset selection (includes tuning of delta for CONTmLLMAP)}  
+  \item{trans.close}{Should always transitive closed graphs be computed? Default: TRUE. NOTE: This has only an impact for the  \code{nem.greedyMAP} method.}
   \item{verbose}{do you want to see progression statements? Default: TRUE}
   \item{...}{other arguments to pass to function \code{nem} or \code{network.AIC}}
 }
 \details{
-  \code{nemModelSelection} internally calls \code{nem} to infer a model with a given regularization constant. The comparison between models is based on the BIC criterion (\code{network.AIC}).
+  \code{nemModelSelection} internally calls \code{nem} to infer a model with a given regularization constant. The comparison between models is based on the BIC or AIC criterion, depending on the parameters passed to \code{network.AIC}.
   
 }
 \value{

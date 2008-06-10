@@ -17,7 +17,7 @@ mLL <- function(Phi,D1,D0=NULL,a=0.15,b=0.05,Pe=NULL,Pm=NULL,lambda=0,type="mLL"
 	L = t((Phi%*%(Theta*1)>0)*1)*D1[,Sgenes]
 	LLperGene=rowSums(L)			
 	s = sum(LLperGene)	
-	map = apply(Theta,1,which)
+	map = apply(Theta,1,which)	
   }
   if(!(type %in% c("CONTmLLMAP","CONTmLLRatio"))){
 	if(!is.null(Pe))
@@ -29,7 +29,9 @@ mLL <- function(Phi,D1,D0=NULL,a=0.15,b=0.05,Pe=NULL,Pm=NULL,lambda=0,type="mLL"
 	Theta = apply(ep,1,function(e) e ==max(e))
 	s  <- sum(LLperGene)
   	map = apply(Theta,1,which)			
-  }    
+  }      
+  if(!is.null(rownames(D1)))
+	map = sapply(map, names)  
   if((lambda != 0) && !is.null(Pm))
   	s <- s - lambda*sum(abs(Phi - Pm))    
   list(mLL=s,pos=ep,mappos=map,LLperGene=LLperGene)
