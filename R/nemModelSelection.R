@@ -10,7 +10,7 @@ nemModelSelection <- function(lambdas,D,inference="nem.greedy",models=NULL,type=
 		return(res)
 	}	
 	results <- lapply(lambdas,infer)			
-	AICs <- lapply(results,network.AIC,verbose=verbose,Pm,k=log(ncol(Pm)),...)		
+	AICs <- lapply(results,network.AIC,verbose=verbose,Pm,k=log(nrow(D)),...)		
 	winner <- results[[which.min(AICs)]]	
 	if(verbose)
 		cat(paste("====> chosen best model with lambda =",winner$lam,"\n"))		
