@@ -35,7 +35,7 @@ score <- function(models, D, type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=
   if(type %in% c("CONTmLLRatio", "CONTmLLMAP")){		
   	Pe = cbind(Pe, double(nrow(D1)))  			
   	Pe[,ncol(Pe)] = delta/nrS
-	Pe = Pe/rowSums(Pe)	
+	Pe = Pe/rowSums(Pe)		
   }
   if(is.null(Pm)) lambda <- 0 
    
@@ -57,20 +57,18 @@ score <- function(models, D, type="mLL", para=NULL, hyperpara=NULL, Pe=NULL, Pm=
   s       <- unlist(results["mLL",])
   ep      <- results["pos",]
   map     <- results["mappos",] 	
-  LLperGene = results["LLperGene",]  
+  LLperGene = results["LLperGene",]    
   if(!is.null(Pm)){  	
   	log_pD_cond_Phi <- s  	  	  		
   	if(is.null(lambda) || (lambda == 0)){  			
 		if(verbose) cat("--> Using Bayesian model averaging to incorporate prior knowledge\n")
-  		lpPhi <- sapply(models, PhiDistr, Pm, a=1, b=0.5)		
-  		ppost <- exp((log_pD_cond_Phi + lpPhi)/nrS^2)	
-  		s <- log_pD_cond_Phi + lpPhi  		
+  		lpPhi <- sapply(models, PhiDistr, Pm, a=1, b=0.5)		  		
+  		s <- log_pD_cond_Phi + lpPhi 		
   	}
   	else
-  		ppost <- exp((s + log(lambda*0.5))/nrS^2)
-  }  
-  else
-	ppost = exp(s/nrS^2)
+		s = s + nrS^2*log(lambda*0.5)  			
+  }    
+  ppost = exp(s - max(s))
   ppost <- ppost/sum(ppost)  	# posterior model probability
   
   if(verbose){

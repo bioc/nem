@@ -13,7 +13,7 @@ transitive.reduction(g)
   \item{g}{adjacency matrix}
 }
 \details{
-  \code{transitive.reduction} uses a modification of the classical algorithm from the Sedgewick book for computing transitive closures.
+  \code{transitive.reduction} uses a modification of the classical algorithm from the Sedgewick book for computing transitive closures. The so-called "transitive reduction" is neither necessarily unique (only for DAGs) nor minimal in the number of edges (this could be improved). 
 }
 \value{
 returns an adjacency matrix with shortcuts removed

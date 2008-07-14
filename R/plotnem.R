@@ -1,10 +1,12 @@
-plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL){
+plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL, draw.lines=FALSE){
 	if(length(x$mLL) > 1){
 		winner <- which.max(x$mLL)
 		mappos <- x$mappos[[winner]]		
 	}
 	else{
-		mappos <- x$mappos		
+		mappos <- x$mappos	
+		if(length(mappos) == 1)
+			mappos = mappos[[1]]	
 	}						
 	nf = split.screen(rbind(c(0,1,0.4,1),c(0,0.8,0,0.4), c(0.9,1,0,0.4)))
 	erase.screen(2)
@@ -18,7 +20,7 @@ plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL){
 	if(!is.null(zlim))
 		ord = plotEffects(D, x, legend=FALSE, order=nodenames, orderSCC=SCC, zlim=zlim)		
 	else
-		ord = plotEffects(D, x, legend=FALSE, order=nodenames, orderSCC=SCC)		
+		ord = plotEffects(D, x, legend=FALSE, order=nodenames, orderSCC=SCC)	
 	erase.screen(3)		
 	screen(3)
 	nrcolors = 200; half = 1+nrcolors/2 # nrcolors must be an even number
@@ -34,23 +36,32 @@ plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL){
 
 	erase.screen(1)
 	screen(1)
-	par(mar=c(0,0,0,0))
-	plot(G, main=main)				
-	ma = 0.82*getX(upRight(boundBox(G)))		
-	xrescale = function(x,a2=0,b2=ma){
-		alpha = (a2-b2)/(1-length(ord))
-		beta = a2 - alpha*1		
-		alpha*x + beta
-	}
-	for(i in 1:length(mynodes)){
-		xy = getNodeXY(mynodes[[i]])		
-		nodenames = strsplit(name(mynodes[[i]]),":")[[1]]
-		to = xrescale(match(unique(unlist(mappos[nodenames])),ord))
-		for(j in 1:length(to)){			
-			lines(xy.coords(c(xy$x, to[j]),c(xy$y-0.5*getNodeHeight(mynodes[[i]]), 0)), col="grey", lty=1, lwd=1, type="b", pch=19, cex=0.3)	
+	par(mar=c(0,0,0,0), cex=1, cex.main=2)
+	plot(G, main=main)
+	if(draw.lines){
+		c = 0.7912	# Problem: Woher bekomme ich den rechten Rand des unteren Bildes in Koordinaten des oberen?
+		ma = c*par()$usr[2]			
+		mi = getX(botLeft(boundBox(G)))		
+		may = getY(upRight(boundBox(G)))			
+		miy = min(xy$y)	 # weiteres Problem bei größeren Datensätzen: unteres Bild wird über oberes geschoben. Wo ist das tatsächliche Minimum des oberen?
+		if(miy - max(getNodeHeight(G)) > 0)	
+			miy = 0
+		xrescale = function(x,a2=mi,b2=ma){		
+			alpha = (b2-a2)/length(ord)
+			beta = mi
+			alpha*x + beta
+		}
+		for(i in 1:length(mynodes)){
+			xy = getNodeXY(mynodes[[i]])				
+			nodenames = strsplit(name(mynodes[[i]]),":")[[1]]				
+			to = xrescale(match(unique(unlist(mappos[nodenames])),ord)-0.5)		
+			to = sort(to)				
+			for(j in 1:length(to)){			
+				segments(xy$x, max(miy, xy$y-7), to[j], miy, col="grey", lty=1, lwd=1, type="b", pch=19, cex=0.3)			
+			}		
 		}		
+		screen(1)
+		plot(G, main=main)
 	}	
-	screen(1)
-	plot(G, main=main)	
 	close.screen(c(1,2,3),all.screens=TRUE)					
 }

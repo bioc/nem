@@ -4,14 +4,15 @@ transitive.reduction <- function(g){
 		g = as(g, "matrix")		
 	}
 # 	if(class(g) == "matrix"){		
-		# modified algorithm from Sedgewick book: just remove transitive edges instead of inserting them
-		g = g - diag(diag(g))
+		# modified algorithm from Sedgewick book: just remove transitive edges instead of inserting them		
+		g = g - diag(diag(g))		
+		type = (g > 1)*1 - (g < 0)*1		
 		for(y in 1:nrow(g)){
 			for(x in 1:nrow(g)){
 				if(g[x,y] != 0){
 					for(j in 1:nrow(g)){
-						if((g[y,j] != 0) && (g[x,j] != 0) && (sign(g[x,j]-1)*sign(g[x,y]-1)*sign(g[y,j]-1) != -1))
-							g[x,j] = 0
+						if((g[y,j] != 0) && (g[x,j] != 0) & (sign(type[x,j])*sign(type[x,y])*sign(type[y,j]) != -1))
+							g[x,j] = 0						
 					}
 				}
 			}

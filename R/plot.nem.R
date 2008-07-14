@@ -1,4 +1,4 @@
-plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, D=NULL,...) {
+plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, D=NULL, draw.lines=FALSE,...) {
 	
 	if (!(what%in%c("graph","mLL","pos"))) stop("\nnem> invalid plotting type: plot either 'graph', 'mLL', or 'pos'")
 	
@@ -34,7 +34,7 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 			for (i in 1:ncol(M)) {
 				for (j in 1:nrow(M)) {
 					if (M[i, j] != 0) {					
-						probs[k] = ifelse(abs(M[i,j]) > 1, abs(M[i,j])-1, abs(M[i,j]))		
+						probs[k] = signif(ifelse(abs(M[i,j]) > 1, abs(M[i,j])-1, abs(M[i,j])), 2)		
 						edgeData(gR, from = nodes[i], to = nodes[j], attr = "style") = "bold"
 						edgeData(gR, from = nodes[i], to = nodes[j], attr = "label") = probs[k]
 						edgeData(gR, from = nodes[i], to = nodes[j], attr = "weight") = M[i,j]
@@ -73,8 +73,10 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 				edgeattr = list(arrowhead = arr, fontcolor = fontcol, color=fontcol, style=penwidth)	
 		}		
 		el = buildEdgeList(gR, recipEdges="combined", edgeAttrs=edgeattr) 
-		nodeattr=list(color=rep("white",length(nodes(gR))))			
+		nodeattr=list(color=rep("white",length(nodes(gR))), penwidth=rep(0, length(nodes(gR))), fontsize=rep(14,length(nodes(gR))))			
 		names(nodeattr$color)=nodes(gR)
+		names(nodeattr$penwidth)=nodes(gR)
+		names(nodeattr$fontsize)=nodes(gR)
 		args = list(...)			
 		if("nodeAttrs" %in% names(args))
 			nodeattr = c(nodeattr, args[[match("nodeAttrs", names(args))]])
@@ -86,14 +88,14 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 		G = agopen(gR,name="test",edges=el, edgeAttrs=edgeattr, nodeAttrs=nodeattr)		
 		
 		if (PDF) pdf(file=filename)   
-		par(cex.main=2) 
+		par(cex.main=2, cex=1) 		
 		if(is.null(D))
-			plot(G, main=main)		
+			plot(G, main=main)				
 		else{
 			zlim = NULL
 			if("zlim" %in% names(args))
 				zlim = args[["zlim"]]			
-			plotnem(D, G, x, SCC=SCC, main=main, zlim=zlim)		
+			plotnem(D, G, x, SCC=SCC, main=main, zlim=zlim, draw.lines=draw.lines)		
 		}
 
 		if (PDF) dev.off()
@@ -178,5 +180,9 @@ plot.triples <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, fi
 }
 
 plot.nem.greedyMAP <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, ...) {
+	plot.nem(x, what, remove.singletons, PDF, filename, thresh, transitiveReduction, plot.probs, SCC, ...)
+}
+
+plot.nem.BN <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, ...) {
 	plot.nem(x, what, remove.singletons, PDF, filename, thresh, transitiveReduction, plot.probs, SCC, ...)
 }

@@ -1,4 +1,4 @@
-nem.featureselection <- function(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,verbose=TRUE, tol=1e-4){
+nem.featureselection <- function(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,trans.close=TRUE,verbose=TRUE, tol=1e-4){
 	
 	if(type %in% c("CONTmLLRatio","CONTmLLMAP")){
 		Sgenes = unique(colnames(D))
@@ -9,14 +9,15 @@ nem.featureselection <- function(D,inference="nem.greedy",models=NULL,type="mLL"
   		}    		
 		deltaseq = 0:10
 		results = sapply(deltaseq, function(d){			
-			net = nem(D, inference, models, type, para, hyperpara, Pe, Pm, Pmlocal, local.prior.size, local.prior.bias, triples.thrsh, lambda, delta=d, selEGenes=FALSE,verbose=verbose)	
+			net = nem(D, inference, models, type, para, hyperpara, Pe, Pm, Pmlocal, local.prior.size, local.prior.bias, triples.thrsh, lambda, delta=d, trans.close=trans.close, selEGenes=FALSE,verbose=verbose)	
 			if(verbose){
-				cat(length(net$selected), " selected E-genes (delta = ", d, ", AIC = ", -net$mLL + length(net$selected), "):", sort(net$selected)[1:min(20, length(net$selected))]," ...\n")				
+				cat(length(net$selected), " selected E-genes (delta = ", d, ", BIC = ", -2*net$mLL + log(nrow(D))*length(net$selected), "):", sort(net$selected)[1:min(20, length(net$selected))]," ...\n")				
 			}			
 			net
 		})		
- 		s = -unlist(results["mLL",]) + sapply(results["selected",], length)
- 		winner = which.min(s)		
+ 		s = -2*unlist(results["mLL",]) + log(nrow(D))*sapply(results["selected",], length) # BIC model selection
+# 		s = -unlist(results["mLL",])/sapply(results["selected",], length) # Achim's original approach		
+ 		winner = which.min(s)				
 		net = results[,winner]	
 		class(net) = inference
 	}

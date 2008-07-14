@@ -219,8 +219,7 @@ An interface to all inference techniques is provided by the function \texttt{nem
 
 Scoring models by marginal log-likelihood is implemented in function
 \texttt{score}.  Input consists of models, data and the type of the score
-((\texttt{"mLL"}, \texttt{"FULLmLL"}, \texttt{"CONTmLL"}, \texttt{"CONTmLLBayes"}, \texttt{"CONTmLLMAP"}). Furthermore, there are several additional options, which allow you to specify parameters, priors for the network structure and for the position of E-genes, and so on. Here, we only need to pass the error probabilities $alpha$ and $beta$ in the argument \texttt{para}.
-
+(\texttt{"mLL"}, \texttt{"FULLmLL"}, \texttt{"CONTmLL"}, \texttt{"CONTmLLBayes"}, \texttt{"CONTmLLMAP"}). Furthermore, there are several additional options, which allow you to specify parameters, priors for the network structure and for the position of E-genes, and so on. The score types \texttt{"mLL"} and \texttt{"FULLmLL"} refer to discretized data, which we use in this example. The score types \texttt{"CONTmLL"}, \texttt{"CONTmLLBayes"}, \texttt{"CONTmLLMAP"} are discussed in Section \ref{sub:disc_omitted}. With type \texttt{"mLL"} we need to pass error probabilities $alpha$ and $beta$ in the argument \texttt{para}:
 <<>>=
 result <- nem(res.disc$dat,para=res.disc$para,inference="search",verbose=FALSE)
 result
@@ -234,7 +233,6 @@ plot(result,what="graph")
 plot(result,what="mLL")
 plot(result,what="pos")
 @
-
 %--- plotting the graph
 <<echo=FALSE,results=hide>>=
 Sgenes <- unique(colnames(res.disc$dat))
@@ -252,8 +250,6 @@ for (i in 1:5) {
    dev.off()
    }
 @
-
-
 \begin{figure}[ht]
 \begin{center}
 \framebox{\includegraphics[width=.18\textwidth]{topo1}}
@@ -265,8 +261,6 @@ for (i in 1:5) {
 \end{center}
 \caption{\label{topologies}The five silencing schemes getting high scores in Fig.~\ref{scores1}. It takes a second to see it, but Nr.2 to 5 are not that different from Nr.1. The main feature, ie. the branching downstream of \gene{tak} is conserved in all of them.}
 \end{figure}
-
-
 %--- plotting the scores
 \myincfig{.4}{
 <<label=scores1,fig=TRUE,echo=FALSE,results=hide>>=
@@ -274,8 +268,6 @@ plot(result,what="mLL")
 @
 }
 {scores1}{The best 30 scores}
-
-
 %--- plotting the posterior positions
 \myincfig{.4}{
 <<label=pos1,fig=TRUE,echo=FALSE,results=hide,width=5,height=13>>=
@@ -296,14 +288,10 @@ the PhD thesis \cite{Markowetz2006Thesis} contains equations for a ``full margin
 likelihood'' in which error probabilities $\alpha$ and $\beta$ are integrated
 out. This section shows that using this score we learn the same pathways as
 before.
-
 <<>>=
 result2 <- nem(res.disc$dat,type="FULLmLL",hyperpara=c(1,9,9,1),inference="search",verbose=FALSE)
 result2
 @
-
-
-
 %--- plotting the graphs
 <<echo=FALSE,results=hide>>=
 best5 <- -sort(-unique(result2$mLL))[1:5]
@@ -317,8 +305,6 @@ for (i in 1:5) {
    dev.off()
    }
 @
-
-
 \begin{figure}[ht]
 \begin{center}
 \framebox{\includegraphics[width=.18\textwidth]{topo21}}
@@ -330,8 +316,6 @@ for (i in 1:5) {
 \end{center}
 \caption{\label{topologies2}Same topologies as before.}
 \end{figure}
-
-
 %--- plotting the scores
 \myincfig{.4}{
 <<label=scores2,fig=TRUE,echo=FALSE,results=hide>>=
@@ -339,7 +323,6 @@ plot(result2,what="mLL")
 @
 }
 {scores2}{The best 30 scores by full marginal likelihood}
-
 %--- plotting the posterior positions
 \myincfig{.4}{
 <<label=pos2,fig=TRUE,echo=FALSE,results=hide,width=5,height=13>>=
@@ -361,12 +344,10 @@ $A \cdot \cdot B$ (unconnected),
 $A \rightarrow B$ (effects of A are superset of effects of B),
 $A \leftarrow B$ (subset), and
 $A \leftrightarrow B$ (undistinguishable effects).
-
 <<>>=
 resultPairs <- nem(res.disc$dat,para=res.disc$para,inference="pairwise",verbose=FALSE)
 resultPairs
 @
-
 \myincfig{.3}{
 <<label=graph3,fig=TRUE,echo=FALSE>>=
 col<-c("yellow","yellow","green","blue")
@@ -386,7 +367,6 @@ In the package \texttt{nem} we do it by
 resultTriples <- nem(res.disc$dat,para=res.disc$para,inference="triples",verbose=FALSE)
 resultTriples
 @
-
 \myincfig{.3}{
 <<label=graph4,fig=TRUE,echo=FALSE>>=
 col<-c("yellow","yellow","green","blue")
@@ -400,12 +380,10 @@ plot(resultTriples, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 \subsection{Inference with greedy hillclimbing}
 
 Greedy hillclimbing is a general search and optimization strategy known from the literature \cite{RusNor95}. Given an initial network hypothesis (usually an empty graph) we want to arrive at a local maximum of the likelihood function by successively adding that edge, which adds the most benefit to the current network's likelihood. This procedure is continued until no improving edge can be found any more.
-
 <<>>=
 resultGreedy <- nem(res.disc$dat,para=res.disc$para,inference="nem.greedy",verbose=FALSE)
 resultGreedy
 @
-
 \myincfig{.3}{
 <<label=graph44,fig=TRUE,echo=FALSE,results=hide>>=
 col<-c("yellow","yellow","green","blue")
@@ -448,12 +426,10 @@ resultMN <- nem(res.disc$dat,para=res.disc$para,inference="ModuleNetwork",verbos
 \subsection{Alternating optimization}
 
 The alternating optimization scheme was proposed in \cite{Tresch2008NEMs}. In contrast to the original approach by Markowetz et al. \cite{Markowetz2005Inference} there is a MAP estimate of the linking positions of E-genes to S-genes. The algorithm works as follows: Starting with an initial estimate of the linking of E-genes to S-genes from the data, we perform an alternating MAP optimization of the S-genes graph and the linking graph until convergence. As a final step we find a transitively closed graph most similar to the one resulting from the alternating optimization.
-
 <<>>=
 resGreedyMAP <- nem(BoutrosRNAiLods, inference="nem.greedyMAP", verbose=FALSE)
 resGreedyMAP
 @
-
 \myincfig{.3}{
 <<label=graph55,fig=TRUE,echo=FALSE,results=hide>>=
 col<-c("yellow","yellow","green","blue")
@@ -477,19 +453,17 @@ versus belief in data. Only trusting the data itself may lead to overfitting,
 whereas only trusting in prior assumptions does not give any new information
 and prevents learning. Therefore, we need a trade-off between both
 goals via a regularization constant $\lambda > 0$, which specifies the belief in our prior assumptions. In the simplest case our assumption could be that the true network structure is sparse, i.e. there are only very few edges. More complex priors could involve separate prior edge probabilities (c.f. \cite{Frohlich2007RNAiBMC, Frohlich2008NEMsBioinformatics}).
-
 <<>>=
-resultRegularization <- nem(res.disc$dat,para=res.disc$para,Pm=matrix(0,ncol=4,nrow=4), lambda=10, inference="search", verbose=FALSE)
+resultRegularization <- nem(res.disc$dat,para=res.disc$para,Pm=matrix(0,ncol=4,nrow=4), lambda=100, inference="search", verbose=FALSE)
 resultRegularization
 @
-
 \myincfig{.3}{
 <<label=graph6,fig=TRUE,echo=FALSE,results=hide>>=
 col<-c("yellow","yellow","green","blue")
 names(col) = nodes(resultRegularization$graph)
 plot(resultRegularization, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
-}{graph6}{Result of module network learning with regularization towards sparse graph structures ($\lambda=10$).}
+}{graph6}{Result of module network learning with regularization towards sparse graph structures ($\lambda=100$).}
 
 
 In practice we would like to choose a $\lambda$ in an automated fashion.
@@ -507,7 +481,6 @@ network structure $\Phi_{opt}$ haven $n$ S-genes. Here the number of parameters 
 d(\lambda,\Phi) = \sum_{i,j} 1_{|\Phi_{ij} - \hat{\Phi}_{ij}| > 0}
 \end{equation}
 where $\hat{\Phi}$ is the prior network.
-
 <<>>=
 resultModsel <- nemModelSelection(c(0.01,1,100),res.disc$dat,para=res.disc$para,Pm=matrix(0,ncol=4,nrow=4),verbose=FALSE)
 @
@@ -525,13 +498,10 @@ plot(resultModsel, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 \subsubsection{Bayesian Model Selection}
 
 Searching for an optimal regularization constant relates to a frequentistic point of view to incorporate prior knowledge. Instead, from a Bayesian perspective one should define a prior on the regularization parameter and integrate it out. Here, this is done by assuming an inverse gamma distribution prior on $\nu=\frac{1}{2\lambda}$ with hyperparameters $1,0.5$, which leads to a simple closed form of the full prior \cite{Frohlich2008NEMsBioinformatics}. An advantage of the Bayesian perspective is that no explicit model selection step is needed. Furthermore, there is evidence, that compared to the frequentistic method the Bayesian approach using the same amount of prior knowledge yields a higher increase of the reconstructed network's sensitivity 
-
 <<>>=
 resultBayes <- nem(res.disc$dat,para=res.disc$para,Pm=matrix(0,ncol=4,nrow=4), verbose=FALSE)
 resultBayes
 @
-
-
 \myincfig{.3}{
 <<label=graph77,fig=TRUE,echo=FALSE,results=hide>>=
 col<-c("yellow","yellow","green","blue")
@@ -542,12 +512,12 @@ plot(resultBayes, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
-\subsection{Omitting the Data Discretization Step}
+\subsection{Omitting the Data Discretization Step \label{sub:disc_omitted}}
 
-In general performing a data discretization on the expression profiles as described in Sec. \ref{preprocess} can be critical, especially, if not both, positive and negative controls are available. An alternative is given by taking the 
-raw $p$-value profiles obtained from testing for differential gene expression. In this situation we assume the individual $p$-values in the data matrix to be drawn from a mixture of a uniform, a Beta$(1,\beta)$ and a Beta$(\alpha,1)$ distribution. The parameters of the distribution are fitted via an EM algorithm \cite{Frohlich2008NEMsBioinformatics}. The \texttt{nem} package supports such a data format using the options \texttt{type = "CONTmLLBayes"} and  \texttt{type = "CONTmLLMAP"} in the call of the function \texttt{nem}. Moreover there is a function \texttt{getDensityMatrix}, which conveniently does all the fitting of the $p$-value profiles and produces diagnostic plots into a user specified directory.
+In general, performing a data discretization on the expression profiles as described in Sec. \ref{preprocess} can be critical, especially, if not both, positive and negative controls are available. An alternative is given by taking the 
+raw $p$-value profiles obtained from testing for differential gene expression. In this situation we assume the individual $p$-values in the data matrix to be drawn from a mixture of a uniform, a Beta$(1,\beta)$ and a Beta$(\alpha,1)$ distribution. The parameters of the distribution are fitted via an EM algorithm \cite{Frohlich2008NEMsBioinformatics}. The \texttt{nem} package supports such a data format using the options \texttt{type = "CONTmLLBayes"} and  \texttt{type = "CONTmLLMAP"} in the call of the function \texttt{nem}. Moreover there is a function \texttt{getDensityMatrix}, which conveniently does all the fitting of the $p$-value densities and produces diagnostic plots into a user specified directory. We always recommend to use the full microarray without any filtering for fitting the $p$-value densities, since filtering could destroy the supposed form of the $p$-value distributions.
 
-An alternative to the $p$-value density, is to use log-odds (B-values), which compare the likelihood of differential expression with the likelihood of non-differential expression of a gene. B-values can be used in the \texttt{nem} package in the same way as (log) $p$-value densities. The inference scheme \texttt{type = "CONTmLLBayes"} corresponds to the original one in \cite{Markowetz2005Inference}, where linkage positions of E-genes to S-genes are integrated out. The inference scheme \texttt{type = "CONTmLLMAP"} was proposed in \cite{Tresch2008NEMs}, where we have a MAP estimate of linkage positions.
+An alternative to the $p$-value density (which we do not recommend here from our practical experience), is to use log-odds (B-values), which compare the likelihood of differential expression with the likelihood of non-differential expression of a gene. B-values can be used in the \texttt{nem} package in the same way as (log) $p$-value densities. The inference scheme \texttt{type = "CONTmLLBayes"} corresponds to the original one in \cite{Markowetz2005Inference}, where linkage positions of E-genes to S-genes are integrated out. The inference scheme \texttt{type = "CONTmLLMAP"} was proposed in \cite{Tresch2008NEMs}, where we have a MAP estimate of linkage positions.
 
 A further possibility to omit the data discretization step is to calculate the effect probability for each gene based on given the empirical distributions of the controls. Note that for this purpose both, positive and negative controls should be available.
 
@@ -566,15 +536,15 @@ nem(preprocessed$prob.influenced,type="CONTmLL",inference="search")
 There exists two mechanisms to select E-genes implemented in \texttt{nem}, which can be used complementary to each other: 
 \begin{itemize}
 \item A-priori filtering of E-genes, which show a pattern of differential expression, which can be expected to be non-random
-\item Selection of most relevant E-genes for a given network hypothesis. 
+\item Automated subset selection of most relevant E-genes within the network estimation procedure. 
 \end{itemize}
-In case of inference scheme (\texttt{"CONTmLLMAP"}) a selection of most relevant E-genes works as follows: A virtual "null" S-gene is used, to which E-genes are assigned, that are irrelevant. The prior probability of assigning an E-gene to the "null" S-genes is $\frac{\delta}{n}$, where $\delta>0$ and $n$ is the number of S-genes. The parameter $\delta$ is tuned via the AIC model selection criterion.
+In case of inference scheme (\texttt{"CONTmLLMAP"}) automated subset selection of most relevant E-genes works as follows: A virtual "null" S-gene is used, to which E-genes are assigned, that are irrelevant. The prior probability of assigning an E-gene to the "null" S-genes is $\frac{\delta}{n}$, where $\delta>0$ and $n$ is the number of S-genes. The parameter $\delta$ is tuned via the BIC model selection criterion.
 
-In all other cases selection of relevant E-genes is performed via an alternating optimization scheme: First, the network with the highest likelihood for the given set of E-genes is determined. Then, the E-genes with the highest marginal likelihood under that network hypothesis are calculated. In case of the $p$-value profile inference scheme these are simply all E-genes with a positive contribution to the log marginal likelihood. In all other cases by default the top $10n$ E-genes are selected. With the new set of E-genes a new network is inferred and the whole procedure is repeated until convergence.
-
+In all other cases automated subset selection of relevant E-genes is performed via an alternating optimization scheme: First, the network with the highest likelihood for the given set of E-genes is determined. Then, the E-genes with the highest marginal likelihood under that network hypothesis are calculated. When using (log) $p$-value densities as our data format these are simply all E-genes with a positive contribution to the log marginal likelihood. In all other cases by default the top $10n$ E-genes are selected. With the new set of E-genes a new network is inferred and the whole procedure is repeated until convergence.
 <<eval=FALSE>>=
 mydat = filterEGenes(Porig, logdensities) # a-priori filtering of E-genes
-resAuto = nem(mydat,type="CONTmLLBayes",selEGenes=TRUE) # automated subset selection of  E-genes 
+
+resAuto = nem(mydat,type="CONTmLLBayes",selEGenes=TRUE) # use filtered data to estimate a network; perform automated subset selection of E-genes 
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

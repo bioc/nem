@@ -32,7 +32,7 @@ For method getRelevantEGenes:
   \item{Pe}{prior position of effect reporters. Default: uniform over nodes in silencing scheme}
   \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
   \item{lambda}{regularization parameter to incorporate prior assumptions.}
-  \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLRatio only)}
+  \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLMAP only)}
   \item{nEgenes}{ no. of E-genes to select}  
 }
 \details{

@@ -8,7 +8,7 @@ if(is.null(order))
 	myorder = topo.order
 else{		
 	if(!orderSCC)
-		myorder = rev(unique(sccg$which.scc[match(names(sccg$which.scc), order)]))	
+		myorder = rev(unique(sccg$which.scc[match(order, names(sccg$which.scc))]))	
 	else
 		myorder = rev(names(sccg$scc[order]))
 }
@@ -40,7 +40,9 @@ if(length(nem$mLL) > 1){
 	mappos = nem$mappos[[which.max(nem$mLL)]]	
 }
 else{
-	mappos = nem$mappos	
+	mappos = nem$mappos
+	if(length(mappos) == 1)
+		mappos = mappos[[1]]	
 }
 selected = nem$selected
 if(nem$type != "CONTmLLMAP"){
@@ -83,7 +85,8 @@ nr <- rev(unlist(nr))
 D2 <- matrix(0,nrow=length(v),ncol=ncol(D))
 D2[which(!is.na(v)),] <- D[v[which(!is.na(v))],]
 dimnames(D2) <- list(rownames(D)[v],colnames(D))
-
+colorder = unlist(sccg$scc[topo.order], use.names=FALSE)
+D2 = D2[,colorder]
 #----------------------------
 # PLOT                       
 #----------------------------
@@ -99,9 +102,9 @@ if(legend){
 	erase.screen(1)
 }
 if(nrow(D2) < maxwrittenrows)
-	par(las=2,mgp=c(5.5,1,0),mar=c(5,1.235,0,0),cex.lab=1.7,cex.main=2,lwd=2, oma=c(5,0,0,0))
+	par(las=2,mgp=c(5.5,1,0),mar=c(5,1.235,0,0),cex.lab=1.7,cex.main=2,lwd=2, oma=c(8,0,0,0))
 else
-	par(las=2,mgp=c(5.5,1,0),mar=c(0,1.235,0,0),cex.lab=1.7,cex.main=2,lwd=2, oma=c(5,0,0,0))
+	par(las=2,mgp=c(5.5,1,0),mar=c(0,1.235,0,0),cex.lab=1.7,cex.main=2,lwd=2, oma=c(8,0,0,0))
 
 args = list(...)
 if("zlim" %in% names(args))
@@ -120,7 +123,7 @@ image(x=1:nrow(D2),y=1:ncol(D2),z=D2,xaxt="n",yaxt="n",xlab="",ylab="",col=color
 if(nrow(D2) < maxwrittenrows)
 	axis(side=1,at=1:nrow(D2),labels=rownames(D2),las=2,cex.axis=0.75, tick=!is.na(v))
 axis(side=4,at=1:ncol(D2),labels=colnames(D2),tick=FALSE,las=1, cex.axis=0.75) 
-axis(side=1, at=c(0,cs) + nr/2 ,labels=rev(myorder),tick=FALSE, cex.axis=1, las=2, outer=TRUE)
+axis(side=1, at=c(0,cs) + nr/2 ,labels=rev(myorder),tick=FALSE, cex.axis=0.6, las=2, outer=TRUE)
 box()
 
 # image(x   = 1:ncol(D2),

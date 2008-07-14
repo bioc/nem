@@ -66,6 +66,10 @@ print.nem.consensus = function(x, ...){
 	print.nem(x, ...)
 }
 
+print.nem.BN = function(x, ...){
+	print.nem(x, ...)
+}
+
 print.score <- function(x, ...) {	
 	cat("scores for ",length(x$mLL)," models\n")	
 	best = which.max(x$mLL)
@@ -76,6 +80,3 @@ print.score <- function(x, ...) {
 	#cat("\n")  
 	#cat("plot this object to see the graph\n")
 }
-  
-
-

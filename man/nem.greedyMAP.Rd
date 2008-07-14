@@ -7,7 +7,7 @@
    Starting with an initial estimate of the linking of E-genes to S-genes from the data, this method performs an alternating MAP optimization of the S-genes graph and the linking graph until convergence. As a final step the function \code{closest.transitive.greedy} can be invoked to find a transitively closed graph most similar to the original one.
 }
 \usage{
-nem.greedyMAP(D,Pe=NULL,Pm=NULL,lambda=0,delta=1, tol=1e-4, trans.close=TRUE, verbose=TRUE)
+nem.greedyMAP(D,Pe=NULL,Pm=NULL,lambda=0,delta=1, trans.close=TRUE, verbose=TRUE)
 
 \method{print}{nem.greedyMAP}(x, ...)
 }
@@ -18,7 +18,6 @@ nem.greedyMAP(D,Pe=NULL,Pm=NULL,lambda=0,delta=1, tol=1e-4, trans.close=TRUE, ve
   \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
   \item{lambda}{regularization parameter to incorporate prior assumptions.}  
   \item{delta}{regularization parameter for automated E-gene subset selection}
-  \item{tol}{convergence tolerance}
   \item{trans.close}{find a similar transitively closed graph}
   \item{verbose}{do you want to see progress statements printed or not? Default: TRUE}  
 
