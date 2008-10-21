@@ -1,6 +1,6 @@
 Package: nem
 Title: Nested Effects Models to reconstruct phenotypic hierarchies
-Version: 2.6.0
+Version: 2.7.0
 Author: Florian Markowetz, Holger Froehlich, Achim Tresch, Matthias Maneck, Claudio Lottaz, Tim Beissbarth
 Description: The package 'nem' allows to reconstruct features of pathways from the nested structure of perturbation effects. It takes as input (1.) a set of pathway components, which were perturbed, and (2.) high-dimensional phenotypic readout of these perturbations (e.g. gene expression or morphological profiles). The output is a directed graph representing the phenotypic hierarchy.
 Reference: Markowetz F, Bloch J, Spang R: Non-transcriptional pathway features reconstructed from secondary effects of RNA interference, Bioinformatics 2005, 21(21):4026-4032. 
