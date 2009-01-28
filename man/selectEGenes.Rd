@@ -3,15 +3,15 @@
 \alias{selectEGenes}
 \alias{filterEGenes}
 
-\title{Automatic selection of most relevant E-genes}
+\title{Automatic selection of most relevant effect reporters}
 \description{   
-   1. A-priori filtering of E-genes: Select E-genes, which show a pattern of differential expression across experiments that is expected to be non-random. 
-   2. Automated E-gene subset selection: Select those E-genes, which have the highest likelihood under the given network hypothesis.
+   1. A-priori filtering of effect reporters/E-genes: Select effect reporters, which show a pattern of differential expression across experiments that is expected to be non-random. 
+   2. Automated effect reporters subset selection: Select those effect reporters, which have the highest likelihood under the given network hypothesis.
 }
 \usage{
 filterEGenes(Porig, D, Padj=NULL, ntop=100, fpr=0.05, adjmethod="bonferroni", cutoff=0.05)
 
-getRelevantEGenes(Phi, D, para=NULL, hyperpara=NULL,Pe=NULL,Pm=NULL,lambda=0, delta=1, type="CONTmLLDens", nEgenes=min(10*nrow(Phi), nrow(D)))
+getRelevantEGenes(Phi, D, control, nEgenes=min(10*nrow(Phi), nrow(D)))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,13 +26,7 @@ For method filterEGenes:
   
 For method getRelevantEGenes:
   \item{Phi}{ adjacency matrix with unit main diagonal }    
-  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLBayes} or \code{CONTmLLMAP}. \code{CONTmLLDens} and \code{CONTmLLRatio} are identical to \code{CONTmLLBayes} and \code{CONTmLLMAP} and are still supported for compatibility reasons, see \code{nem}.}
-  \item{para}{Vector with parameters \code{a} and \code{b} (for "mLL" with count data)}
-  \item{hyperpara}{Vector with hyperparameters \code{a0}, \code{b0}, \code{a1}, \code{b1} for "FULLmLL"}
-  \item{Pe}{prior position of effect reporters. Default: uniform over nodes in silencing scheme}
-  \item{Pm}{prior on model graph (n x n matrix) with entries 0 <= priorPhi[i,j] <= 1 describing the probability of an edge between gene i and gene j.}
-  \item{lambda}{regularization parameter to incorporate prior assumptions.}
-  \item{delta}{regularization parameter for automated E-gene subset selection (CONTmLLMAP only)}
+  \item{control}{list of parameters: see \code{set.default.parameters}}
   \item{nEgenes}{ no. of E-genes to select}  
 }
 \details{
@@ -65,9 +59,10 @@ For method getRelevantEGenes:
    D <- BoutrosRNAiDiscrete[,9:16]
 
    # enumerate all possible models for 4 genes
-   models <- enumerate.models(unique(colnames(D)))  
+   Sgenes = unique(colnames(D))
+   models <- enumerate.models(Sgenes)  
    
-   getRelevantEGenes(models[[64]], D, para=c(.13,.05), type="mLL")
+   getRelevantEGenes(models[[64]], D, control=set.default.parameters(Sgenes, para=c(.13,.05), type="mLL"))
 
 }
 

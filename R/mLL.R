@@ -1,26 +1,36 @@
 # log marginal likelihood of model
-mLL <- function(Phi,D1,D0=NULL,a=0.15,b=0.05,Pe=NULL,Pm=NULL,lambda=0,type="mLL") {       
+mLL <- function(Phi,D1,D0=NULL,control, verbose=FALSE) {       
    if (!all(diag(Phi)==1)) 
   	diag(Phi) <- 1 	        
-  if(type == "mLL")
-  	L  <- a^(D1 %*% (1-Phi)) * (1-a)^(D0 %*% (1-Phi)) * (1-b)^(D1 %*% Phi) * b^(D0 %*% Phi)  	    
-  else if(type %in% c("CONTmLLBayes", "CONTmLLDens"))	
+  para=NULL
+  if(control$type == "mLL")
+  	L  <- control$para[1]^(D1 %*% (1-Phi)) * (1-control$para[1])^(D0 %*% (1-Phi)) * (1-control$para[2])^(D1 %*% Phi) * control$para[2]^(D0 %*% Phi)  	    
+  else if(control$type %in% c("CONTmLLBayes", "CONTmLLDens"))	
 	L <- exp(D1%*%Phi)
-  else if(type == "CONTmLL")
+  else if(control$type == "CONTmLL")
 	L <- exp(log(D1)%*%Phi + log((1-D1))%*%(1-Phi)) 
-  else if(type %in% c("CONTmLLMAP", "CONTmLLRatio")){			
-	Phi = cbind(Phi, double(ncol(Phi)))
-	colnames(Phi)[ncol(Phi)] = "null"
-	ep = D1%*%Phi + log(Pe)	
+  else if(control$type %in% c("CONTmLLMAP", "CONTmLLRatio")){			
+	Phi2 = cbind(Phi, double(ncol(Phi)))
+	colnames(Phi2)[ncol(Phi2)] = "null"
+	ep = D1%*%Phi2 + log(control$Pe)	
 	Theta = apply(ep,1,function(e) e ==max(e))
-	L = t((Phi%*%(Theta*1)>0)*1)*D1
+	L = t((Phi2%*%(Theta*1)>0)*1)*D1
 	LLperGene=rowSums(L)		
 	s = sum(LLperGene)			
 	map = apply(Theta,1,which)	
   }
-  if(!(type %in% c("CONTmLLMAP","CONTmLLRatio"))){
-	if(!is.null(Pe))
-		LP <- L*Pe
+  else if(control$type == "gnem"){	
+	res = score.network(D1, Phi, control)
+	s = res$loglik
+	LLperGene = res$LLperSample
+	ep = effect.likelihood(D1, res$net)		
+	Theta = apply(ep,1,function(e) e ==max(e))
+	map = apply(Theta,1,which)
+	para = res$net$parameters
+  }
+  if(!(control$type %in% c("CONTmLLMAP","CONTmLLRatio", "gnem"))){	
+	if(!is.null(control$Pe))
+		LP <- L*control$Pe
 	else
 		LP <- L	
 	LLperGene = log(rowSums(LP))
@@ -30,9 +40,17 @@ mLL <- function(Phi,D1,D0=NULL,a=0.15,b=0.05,Pe=NULL,Pm=NULL,lambda=0,type="mLL"
   	map = apply(Theta,1,which)			
   }      
   if(!is.null(rownames(D1)))
-	map = sapply(map, names)  
-  if((lambda != 0) && !is.null(Pm))
-  	s <- s - lambda*sum(abs(Phi - Pm))    
-  list(mLL=s,pos=ep,mappos=map,LLperGene=LLperGene)
+	map = sapply(map, names)    
+  if(!is.null(control$Pm)){
+  	if(control$lambda != 0){
+		if(verbose) cat("--> Using regularization to incorporate prior knowledge\n")			
+  		s <- s - control$lambda*sum(abs(Phi - control$Pm)) + ncol(Phi)^2*log(control$lambda*0.5)    
+	}
+	else{
+		if(verbose) cat("--> Using Bayesian model averaging to incorporate prior knowledge\n")
+		s = s + PhiDistr(Phi, control$Pm, a=1, b=0.5)
+	}
+  }
+  list(mLL=s,pos=ep,mappos=map,LLperGene=LLperGene, para=para)
 }
 

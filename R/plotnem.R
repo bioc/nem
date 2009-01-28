@@ -1,4 +1,4 @@
-plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL, draw.lines=FALSE){
+plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL, draw.lines=FALSE, palette="BlueRed"){
 	if(length(x$mLL) > 1){
 		winner <- which.max(x$mLL)
 		mappos <- x$mappos[[winner]]		
@@ -18,13 +18,18 @@ plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL, draw.lines=FALSE){
 	right = xy$x > max(xy$x)*0.5	
 	nodenames = c(nodenames[left][order(xy$x[left] + xy$y[left])], nodenames[right][order(xy$x[right] + xy$y[right],decreasing=TRUE)])		
 	if(!is.null(zlim))
-		ord = plotEffects(D, x, legend=FALSE, order=nodenames, orderSCC=SCC, zlim=zlim)		
+		ord = plotEffects(D, x, legend=FALSE, order=nodenames, orderSCC=SCC, zlim=zlim, palette=palette)	
 	else
-		ord = plotEffects(D, x, legend=FALSE, order=nodenames, orderSCC=SCC)	
+		ord = plotEffects(D, x, legend=FALSE, order=nodenames, orderSCC=SCC, palette=palette)	
 	erase.screen(3)		
 	screen(3)
 	nrcolors = 200; half = 1+nrcolors/2 # nrcolors must be an even number
-	colpal = c(brewer.pal(9,"Blues")[9:1],brewer.pal(9,"OrRd")[1:9])
+	if(palette == "BlueRed")
+	 	colpal = c(brewer.pal(9,"Blues")[9:1],brewer.pal(9,"OrRd")[1:9])
+	else if(palette == "Grey")
+		colpal = brewer.pal(9, "Greys")
+	else
+		stop("Unknown palette!")
 	allcolors = colorRampPalette(colpal)(nrcolors)
 	if(is.null(zlim)){
 		r = c(quantile(D[D<0],0.95), quantile(D[D>0],0.95))

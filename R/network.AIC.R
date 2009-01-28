@@ -1,5 +1,5 @@
 # 	get AIC for network
-network.AIC = function(network, Pm=NULL, k=2, verbose=TRUE){	
+network.AIC = function(network, Pm=NULL, k=length(nodes(network$graph)), verbose=TRUE){	
 	M <- as(network$graph,"matrix")
 	diag(M) = 0
 	if(is.null(Pm))

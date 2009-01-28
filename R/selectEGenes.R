@@ -42,7 +42,7 @@ filterEGenes = function(Porig, D, Padj=NULL, ntop=100, fpr=0.05, adjmethod="bonf
 	list(selected=I, dat=D, patterns=patterns, nobserved=nobserved, p.values=p.values)
 }
 
-getRelevantEGenes <- function(Phi, D, para=NULL, hyperpara=NULL,Pe=NULL,Pm=NULL,lambda=0, delta=1, type="CONTmLLDens", nEgenes=min(10*nrow(Phi), nrow(D))){			
+getRelevantEGenes <- function(Phi, D, control, nEgenes=min(10*nrow(Phi), nrow(D))){			
 # 	if(type %in% c("CONTmLLRatio", "CONTmLLMAP")){		
 # 		sc = score(list(Phi), D, type=type, para=para, hyperpara=hyperpara, Pe=Pe, Pm=Pm, lambda=lambda, delta=delta, verbose=FALSE, graphClass="matrix")						
 # 	}
@@ -51,12 +51,13 @@ getRelevantEGenes <- function(Phi, D, para=NULL, hyperpara=NULL,Pe=NULL,Pm=NULL,
 # 			score(list(Phi), D[idx,,drop=FALSE], type=type, para=para, hyperpara=hyperpara, Pe=Pe[idx,,drop=FALSE], Pm=Pm, lambda=lambda, verbose=FALSE, graphClass="matrix")$mLL	
 # 		})			
 		
-		L = score(list(Phi), D, type=type, para=para, hyperpara=hyperpara, Pe=Pe, Pm=Pm, lambda=lambda, verbose=FALSE, graphClass="matrix")$LLperGene[[1]]	
+		L = score(list(Phi), D, control, verbose=FALSE, graphClass="matrix")$LLperGene[[1]]	
 		L = L/sum(L)		
-		if(type %in% c("CONTmLLDens", "CONTmLLBayes","CONTmLLMAP","CONTmLLRatio"))
+		if(control$type %in% c("CONTmLLDens", "CONTmLLBayes","CONTmLLMAP","CONTmLLRatio"))
 			nEgenes = max(10,length(which(L>0)))		
 		sel <- unique(order(L,decreasing=TRUE)[1:nEgenes])
-		sc = score(list(Phi), D[sel,], type=type, para=para, hyperpara=hyperpara, Pe=Pe[sel,], Pm=Pm, lambda=lambda, delta=delta, verbose=FALSE, graphClass="matrix")		
+		control$Pe = control$Pe[sel,]
+		sc = score(list(Phi), D[sel,], control, verbose=FALSE, graphClass="matrix")		
 # 	}					
 	list(selected=sc$selected, mLL=sc$mLL[[1]], pos=sc$pos[[1]], mappos=sc$mappos[[1]], LLperGene=sc$LLperGene[[1]])
 }

@@ -21,7 +21,7 @@
 	The BUM density model consists of 3 components: $f(x) = lambda_1 + lambda_2*dbeta(x,alpha,1) + lambda_3*dbeta(x,1,beta)$. The mixing coefficients and the parameters alpha and beta are fitted together via an EM algorithm.
 }
 \value{
- 	log-density matrix of same dimensions as Porig
+ 	log-density matrix of same dimensions as Porig: The log-densities can be interpreted as log signal-to-noise ratios. A value > 0 means higher signal than noise, and a value < 0 a higher noise than signal.
 }
 \note{Note the difference to the previous package version: the LOG-density is returned now!}
 \author{ Holger Froehlich }

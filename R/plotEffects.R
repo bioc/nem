@@ -1,4 +1,4 @@
-plotEffects <- function(D,nem,border=TRUE,legend=TRUE,order=NULL,orderSCC=TRUE,...){
+plotEffects <- function(D,nem,border=TRUE,legend=TRUE,order=NULL,orderSCC=TRUE,palette="BlueRed",...){
 
 if(!(class(D) %in% c("matrix","data.frame"))) stop("First argument has to be the data matrix and second the nem object!")
 # int        <- unique(colnames(x))
@@ -45,7 +45,7 @@ else{
 		mappos = mappos[[1]]	
 }
 selected = nem$selected
-if(nem$type != "CONTmLLMAP"){
+if(nem$control$type != "CONTmLLMAP"){
 	if(!is.null(rownames(D)))
 		null.genes = setdiff(rownames(D), selected)	
 	else
@@ -93,7 +93,12 @@ D2 = D2[,colorder]
 cs <- cumsum(nr)[-length(nr)]
 
 nrcolors = 200; half = 1+nrcolors/2 # nrcolors must be an even number
-colpal = c(brewer.pal(9,"Blues")[9:1],brewer.pal(9,"OrRd")[1:9])
+if(palette == "BlueRed")
+	colpal = c(brewer.pal(9,"Blues")[9:1],brewer.pal(9,"OrRd")[1:9])
+else if(palette == "Grey")
+	colpal = brewer.pal(9, "Greys")[9:1]
+else
+	stop("Unknown palette!")
 allcolors = colorRampPalette(colpal)(nrcolors)
 
 maxwrittenrows = 60    	
@@ -145,7 +150,10 @@ if(legend){
 	erase.screen(2)
 	screen(2)	
 	par(mar=c(0,0,0,1))
-	color.legend(0.5,0.1,1,1,signif(seq(rangeall[1],rangeall[2],length.out=10),digits=1),rect.col=allcolors[length(allcolors):1],gradient="y", cex=0.75)
+	if(palette == "BlueRed")
+		color.legend(0.5,0.1,1,1,signif(seq(rangeall[1],rangeall[2],length.out=10),digits=1),rect.col=allcolors[length(allcolors):1],gradient="y", cex=0.75)
+	else if(palette == "Grey")
+		color.legend(0.5,0.1,1,1,signif(seq(rangeall[1],rangeall[2],length.out=10),digits=1),rect.col=allcolors,gradient="y", cex=0.75)
 	close.screen(c(1,2),all.screens=TRUE)
 }
 return(v)

@@ -1,10 +1,11 @@
-nem.greedyMAP <- function(D, Pe=NULL, Pm=NULL, lambda=0, delta=1, trans.close=TRUE, verbose=TRUE){		
-	Sgenes = unique(colnames(D))
+nem.greedyMAP <- function(D, control, verbose=TRUE){		
+	Sgenes = setdiff(unique(colnames(D)), "time")
 	n <- length(Sgenes)		
-	cat("Alternating optimization for",n,"S-genes (lambda =", lambda,")...\n\n")
+	cat("Alternating optimization for",n,"S-genes (lambda =", control$lambda,")...\n\n")
 	Theta = apply(D,1, function(e) (e == max(e)) & (e>0))*1			
 	best = NULL
 	converged = FALSE
+	control$type="CONTmLLMAP"
 	i = 1		
 	while(!converged){
 # 		if(trans.close & (n < 9)){
@@ -30,8 +31,8 @@ nem.greedyMAP <- function(D, Pe=NULL, Pm=NULL, lambda=0, delta=1, trans.close=TR
 # 			readline()					
 # 		}
 # 		else
-			Phi = apply(Theta%*%D, 1, function(e) (e > 0))*1
-		sco <- score(list(Phi),D,type="CONTmLLMAP",Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,verbose=verbose)
+			Phi = apply(Theta%*%D, 1, function(e) (e > 0))*1		
+		sco <- nem(D,models=list(Phi), inference="search", control=control,verbose=verbose)
 		if(verbose){
 			cat("iteration ", i, ": likelihood = ", sco$mLL, "\n")
 		}
@@ -45,10 +46,11 @@ nem.greedyMAP <- function(D, Pe=NULL, Pm=NULL, lambda=0, delta=1, trans.close=TR
 		i = i + 1
 	}			
 	Phi = as(sco$graph, "matrix")	
-	if(trans.close)	
+	if(control$trans.close)	
 		Phi = closest.transitive.greedy(Phi, verbose)
-	ep <- score(list(Phi),D,type="CONTmLLMAP",Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,verbose=verbose)
-    	res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=ep$type[[1]],para=ep$para,hyperpara=ep$hyperpara,lam=lambda,selected=ep$selected,delta=delta,LLperGene=ep$LLperGene[[1]])	# output: data likelihood under given model!	
+	ep <- nem(D,models=list(Phi), inference="search", control=control,verbose=FALSE)
+    	res <-
+	list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],control=control,selected=ep$selected, LLperGene=ep$LLperGene[[1]], para=ep$para[[1]])	# output: data likelihood under given model!	)	# output: data likelihood under given model!	
 	class(res) <- "nem.greedyMAP"	
 	return(res)
 }

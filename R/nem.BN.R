@@ -1,9 +1,9 @@
-nem.BN = function(D, inference="greedy", mode="binary_ML", lambda=0, verbose=TRUE){
+nem.BN = function(D, inference="greedy", mode="binary_Bayesian", Pm=NULL, lambda=0, verbose=TRUE){
 	if(!(inference %in% c("greedy", "exhaustive"))) stop("Inference method has to be either 'greedy' or 'exhaustive'")
 	if(!(mode %in% c("binary_ML", "continous_ML","binary_Bayesian","continous_Bayesian"))) stop(paste("Unknown mode '", mode, "'\n"))
 	Sgenes = unique(colnames(D))
 	BN = createBN(D, nullnode=FALSE)	
-	best = fit.BN(BN, method=inference, mode=mode, trace=TRUE)				
+	best = fit.BN(BN, method=inference, mode=mode, Pm=Pm, lambda=lambda, trace=TRUE)				
 	diag(best$BN$coregraph) = 0
 	graph = as(best$BN$coregraph, "graphNEL")		
 	mLL = best$BN$score

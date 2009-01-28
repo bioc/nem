@@ -38,6 +38,28 @@
 \alias{score_continuous_ML}
 \alias{score_discrete_Bayesian}
 \alias{score_discrete_ML}
+\alias{FULLmLL}
+\alias{mLL}
+\alias{score}
+\alias{moduleNetwork}
+\alias{enumerate.models2}
+\alias{nem.greedy}
+\alias{nem.greedyMAP}
+\alias{pairwise.posterior}
+\alias{triples.posterior}
+\alias{nem.BN}
+\alias{data.likelihood} 
+\alias{effect.likelihood}
+\alias{encode.interventions}
+\alias{erase.cycles}
+\alias{learn}
+\alias{learn.conditionals}
+\alias{PhiDistr} 
+\alias{sample.effect.likelihood} 
+\alias{sample.likelihood}
+\alias{score_BN}
+\alias{score.network}
+\alias{sim.interventions}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{  internal functions  }

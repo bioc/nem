@@ -1,9 +1,11 @@
-plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, D=NULL, draw.lines=FALSE,...) {
+plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, D=NULL, draw.lines=FALSE, palette="BlueRed", ...) {
 	
 	if (!(what%in%c("graph","mLL","pos"))) stop("\nnem> invalid plotting type: plot either 'graph', 'mLL', or 'pos'")
 	
 	if (what=="graph"){		
 		gR = x$graph	
+		if(numEdges(gR) == 0)	
+			stop("Graph contains no edges - nothing to draw!")
 		M = as(gR, "matrix")
 		toremove = which((abs(M) <= thresh) & (abs(M) > 0), arr.ind=TRUE)
 		if(nrow(toremove) > 0){
@@ -95,7 +97,7 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 			zlim = NULL
 			if("zlim" %in% names(args))
 				zlim = args[["zlim"]]			
-			plotnem(D, G, x, SCC=SCC, main=main, zlim=zlim, draw.lines=draw.lines)		
+			plotnem(D, G, x, SCC=SCC, main=main, zlim=zlim, draw.lines=draw.lines, palette=palette)		
 		}
 
 		if (PDF) dev.off()
@@ -186,3 +188,4 @@ plot.nem.greedyMAP <- function(x, what="graph", remove.singletons=FALSE, PDF=FAL
 plot.nem.BN <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, ...) {
 	plot.nem(x, what, remove.singletons, PDF, filename, thresh, transitiveReduction, plot.probs, SCC, ...)
 }
+

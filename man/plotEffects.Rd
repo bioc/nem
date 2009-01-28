@@ -6,7 +6,7 @@
   \code{plotEffects} visualizes the subset structure in the data by reordering rows and columns according to the topological order given by a phenotypic hierarchy.
 }
 \usage{
-plotEffects(D,nem,border=TRUE,legend=TRUE,order=NULL,orderSCC=TRUE,...)
+plotEffects(D,nem,border=TRUE,legend=TRUE,order=NULL,orderSCC=TRUE,palette="BlueRed",...)
 }
 
 \arguments{
@@ -16,6 +16,7 @@ plotEffects(D,nem,border=TRUE,legend=TRUE,order=NULL,orderSCC=TRUE,...)
   \item{legend}{plot a legend. Default: TRUE}
   \item{order}{pre-define an order of the S-genes instead of the topological order to visualize the subset structure. Default: Use topological order.}
   \item{orderSCC}{Is the pre-defined order given on strongly connected components rather than on individual nodes?}
+  \item{palette}{color palette to use: either 'BlueRed' (default) or 'Grey'}
   \item{...}{additional parameters for the graphics function 'image'}
 }
 \details{
@@ -36,7 +37,7 @@ plotEffects(D,nem,border=TRUE,legend=TRUE,order=NULL,orderSCC=TRUE,...)
 \examples{
    data("BoutrosRNAi2002")
    D <- BoutrosRNAiDiscrete[,9:16]
-   res <- nem(D,para=c(.13,.05))
+   res <- nem(D,control=set.default.parameters(unique(colnames(D)), para=c(.13,.05)))
    plotEffects(D,res)
 }
 \keyword{graphs}

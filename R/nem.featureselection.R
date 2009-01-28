@@ -1,15 +1,16 @@
-nem.featureselection <- function(D,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,trans.close=TRUE,verbose=TRUE, tol=1e-4){
+nem.featureselection <- function(D,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))),verbose=TRUE, tol=1e-4){
 	
-	if(type %in% c("CONTmLLRatio","CONTmLLMAP")){
-		Sgenes = unique(colnames(D))
+	control$selEGenes=FALSE	
+	if(control$type %in% c("CONTmLLRatio","CONTmLLMAP")){
+		Sgenes = setdiff(unique(colnames(D)), "time")
 		nrS = length(Sgenes)
-		 if (is.null(Pe)){ 	
-			Pe <- matrix(1/nrS,nrow=nrow(D),ncol=nrS)
-			colnames(Pe) <- Sgenes  		
+		 if (is.null(control$Pe)){ 	
+			control$Pe <- matrix(1/nrS,nrow=nrow(D),ncol=nrS)
+			colnames(control$Pe) <- Sgenes  		
   		}    		
 		deltaseq = 0:10
-		results = sapply(deltaseq, function(d){			
-			net = nem(D, inference, models, type, para, hyperpara, Pe, Pm, Pmlocal, local.prior.size, local.prior.bias, triples.thrsh, lambda, delta=d, trans.close=trans.close, selEGenes=FALSE,verbose=verbose)	
+		results = sapply(deltaseq, function(d){					
+			net = nem(D, inference, models,control,verbose=verbose)	
 			if(verbose){
 				cat(length(net$selected), " selected E-genes (delta = ", d, ", BIC = ", -2*net$mLL + log(nrow(D))*length(net$selected), "):", sort(net$selected)[1:min(20, length(net$selected))]," ...\n")				
 			}			
@@ -24,8 +25,9 @@ nem.featureselection <- function(D,inference="nem.greedy",models=NULL,type="mLL"
 	else{
 		converged = FALSE
 		while(!converged){
-			net = nem(D, inference, models, type, para, hyperpara, Pe, Pm, Pmlocal, local.prior.size, local.prior.bias, triples.thrsh, lambda, selEGenes=FALSE,verbose=verbose)			
-			sel = getRelevantEGenes(as(net$graph,"matrix"), D, para, hyperpara, Pe, Pm, lambda, delta=1e-10, type=type)			
+			net = nem(D, inference, models, control,verbose=verbose)
+			control$delta = 1e-10
+			sel = getRelevantEGenes(as(net$graph,"matrix"), D, control)			
 			if(verbose)
 				cat("Old Likelihood = ", net$mLL, "new likelihood = ", sel$mLL, "\n", length(sel$selected), " selected E-genes:", sort(sel$selected)[1:min(20, length(sel$selected))]," ...\n")			
 			converged = (abs(max(net$mLL) - max(sel$mLL))/abs(max(net$mLL)) < tol)

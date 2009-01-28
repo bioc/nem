@@ -1,26 +1,29 @@
-nem.bootstrap <- function(D, thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,type="mLL",para=NULL,hyperpara=NULL,Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(unique(colnames(D))),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE,verbose=TRUE){
+nem.bootstrap <- function(D, thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))), verbose=TRUE){
 		
 	inferNetwork <- function(boot){
-		Dtmp = D[boot,]						
-		PeBoot = Pe[boot,]		
-		if(!is.null(Pm) & length(lambda) > 1)
-			res = as.vector(as(nemModelSelection(lambda,Dtmp,inference,models,type,para,hyperpara,PeBoot,Pm,Pmlocal,local.prior.size,local.prior.bias,triples.thrsh,delta,selEGenes,verbose)$graph,"matrix"))
+		Dtmp = D[boot,]		
+		controltmp = control				
+		controltmp$Pe = control$Pe[boot,]		
+		if(!is.null(control$Pm) & length(control$lambda) > 1)
+			res = as.vector(as(nemModelSelection(control$lambda,Dtmp,inference,models,controltmp,verbose)$graph,"matrix"))
 		else
-			res = as.vector(as(nem(Dtmp,inference,models,type,para,hyperpara,PeBoot,Pm,Pmlocal,local.prior.size,local.prior.bias,triples.thrsh,lambda,delta,selEGenes,verbose)$graph,"matrix"))
+			res = as.vector(as(nem(Dtmp,inference,models,controltmp,verbose)$graph,"matrix"))
 		res
 	}
 	results = bootstrap(1:nrow(D),nboot,theta=inferNetwork)$thetastar
-	Sgenes = unique(colnames(D))
+	Sgenes = setdiff(unique(colnames(D)), "time")
 	n = length(Sgenes)
 	overlapBoot = rowMeans(results)
 	overlapBoot = matrix(round(overlapBoot,digits=2),ncol=n,nrow=n)
 	colnames(overlapBoot) = Sgenes
 	rownames(overlapBoot) = Sgenes
-	res = nem(D,models=list((overlapBoot>thresh)*1),inference="search",type=type,para=para,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,hyperpara=hyperpara,selEGenes=selEGenes, verbose=verbose)
+	res = nem(D,models=list((overlapBoot>thresh)*1),inference="search",control, verbose=verbose)
 	res$pos = res$pos[[1]]
 	res$mappos = res$mappos[[1]]
 	res$mLL = res$mLL[[1]]
 	res$LLperGene = res$LLperGene[[1]]
+	res$para = res$para[[1]]
+	res$control= control
 	g = res$graph
 	edgeDataDefaults(g, "label") = 1	
 	edgeDataDefaults(g, "weight") = 1

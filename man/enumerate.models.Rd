@@ -7,12 +7,13 @@
   It computes a list of all transitively closed directed graphs on a given number of nodes.
 }
 \usage{
-enumerate.models(x,name=NULL,verbose=TRUE) 
+enumerate.models(x,name=NULL,trans.close=TRUE,verbose=TRUE) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{either the number of nodes or a vector of node names.}
   \item{name}{optionally the nodenames, if they are not provided in x}
+  \item{trans.close}{should graphs be transitively closed?}
   \item{verbose}{if TRUE outputs number of (unique) models. Default: TRUE}
 }
 \details{
@@ -28,7 +29,7 @@ enumerate.models(x,name=NULL,verbose=TRUE)
 a list of models. Each entry is a transitively closed adjacency matrix with unit main diagonal.
 }
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
-\seealso{\code{\link{score}}, \code{\link{nem}}}
+\seealso{\code{\link{nem}}}
 \examples{
 enumerate.models(2)
 enumerate.models(c("Anna","Bert"))

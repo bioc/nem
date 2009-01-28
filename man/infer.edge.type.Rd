@@ -26,11 +26,10 @@ infer.edge.type(x, logFC, alpha=0.05, adj.method="BY")
 
 \examples{
    	data("BoutrosRNAi2002") 
-	D <- BoutrosRNAiDiscrete[,9:16]
-   	p <- c(.13,.05)
-	result = nem(D, para=p)
+	D <- BoutrosRNAiDiscrete[,9:16]   	
+	result = nem(D, control=set.default.parameters(unique(colnames(D)), para=c(0.13,0.05)))
    	resEdgeInf = infer.edge.type(result, BoutrosRNAiLogFC)
-   	plot(resEdgeInf)
+   	plot.nem(resEdgeInf)
 }
 
 \keyword{models}

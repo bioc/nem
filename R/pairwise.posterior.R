@@ -2,20 +2,19 @@
 # Estimate the hierarchy edge by edge
 # in each step only a pair of nodes is involved
 
-pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL, 
-    Pe = NULL, Pmlocal = NULL, Pm = NULL, lambda = 0, delta=1, verbose = TRUE)
+pairwise.posterior = function (D, control, verbose = TRUE)
 {
   # Sgenes
-    Sgenes <- unique(colnames(D))
+    Sgenes <- setdiff(unique(colnames(D)), "time")
     nrS <- length(Sgenes)
     nrTest <- nrS*(nrS-1)/2
-    if(verbose) cat(nrS,"perturbed genes ->", nrTest, "pairwise tests (lambda = ", lambda,")\n")
+    if(verbose) cat(nrS,"perturbed genes ->", nrTest, "pairwise tests (lambda = ", control$lambda,")\n")
     
     # priors
-    if (is.null(Pm)) Pm <- matrix(0, ncol=nrS, nrow=nrS, dimnames=list(Sgenes,Sgenes))		
-    if (is.null(Pmlocal)) Pmlocal <- rep(0.25,4)
-    if(is.null(Pe)){ 
-	Pe <- matrix(1/nrS,nrow=nrow(D),ncol=nrS, dimnames=list(rownames(D),Sgenes))  	
+    if (is.null(control$Pm)) control$Pm <- matrix(0, ncol=nrS, nrow=nrS, dimnames=list(Sgenes,Sgenes))		
+    if (is.null(control$Pmlocal)) control$Pmlocal <- rep(0.25,4)
+    if(is.null(control$Pe)){ 
+	control$Pe <- matrix(1/nrS,nrow=nrow(D),ncol=nrS, dimnames=list(rownames(D),Sgenes))  	
     }
     
      # init output
@@ -37,18 +36,18 @@ pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL,
             
             # get local priors
             sel <- c(i,j)
-            Pesel <- Pe[sel2, sel, drop=FALSE] 
-            Pesel[rowSums(Pesel) == 0,] = 1e-10 
-            Pmsel <- Pm[sel, sel, drop=FALSE]                        
+	    controltmp = control
+            controltmp$Pe <- control$Pe[sel2, sel, drop=FALSE] 
+            controltmp$Pe[rowSums(controltmp$Pe) == 0,] = 1e-10 
+            controltmp$Pm <- control$Pm[sel, sel, drop=FALSE]                        
             support <- nrow(D.xy)            
             
             # four models per edge: x..y  x->y  x<-y  x<->y
-      	    models <- enumerate.models(2,name=c(x,y),verbose=FALSE)
+      	    models <- enumerate.models(2,name=c(x,y),trans.close=control$trans.close, verbose=FALSE)
             if(support > 0){            	
             	# score            	
-		ss <- score(models, D.xy, type = type, para = para,
-			hyperpara = hyperpara, Pe = Pesel, Pm=Pmsel, lambda=lambda, delta=delta, verbose = FALSE)
-		post <- exp(ss$mLL) * Pmlocal
+		ss <- score(models, D.xy, controltmp, verbose = FALSE)
+		post <- exp(ss$mLL) *control$Pmlocal
 		post <- post/sum(post)		
 		post[is.na(post)] = 0           
 	    }
@@ -73,21 +72,17 @@ pairwise.posterior = function (D, type = "mLL", para = NULL, hyperpara = NULL,
     
      # estimate effect positions
     if (verbose) cat("estimating effect positions\n")
-    ep <- score(list(transitive.closure(graph,mat=TRUE)), D,     	       
-               type=type, 
-               para=para,
-               hyperpara=hyperpara,
-               Pe=Pe,  
-	       Pm=Pm,
-	       lambda=lambda, 
-	       delta=delta,
+    if(control$trans.close)
+	graph = transitive.closure(graph,mat=TRUE)
+    ep <- score(list(graph), D,     	       
+               control,
                verbose=FALSE)  
      
     # output
 #     graph <- graph - diag(nrS)          
 #     graph <- as(graph,"graphNEL")
 #     res <- list(graph=graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],scores=scores,type=type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected,delta=delta)
-	res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=ep$type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected, delta=delta, LLperGene=ep$LLperGene[[1]], scores=scores)	# output: data likelihood under given model!	
+	res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],control=control, selected=ep$selected, LLperGene=ep$LLperGene[[1]], scores=scores, para=ep$para[[1]])	# output: data likelihood under given model!	
     class(res) <- "pairwise"
     return(res)
 }

@@ -1,12 +1,12 @@
-moduleNetwork <- function(D,type="mLL",Pe=NULL,Pm=NULL,lambda=0,delta=1,para=NULL,hyperpara=NULL,verbose=TRUE){				
-	Sgenes = unique(colnames(D))	
+moduleNetwork <- function(D,control,verbose=TRUE){				
+	Sgenes = setdiff(unique(colnames(D)), "time")	
 	n <- length(Sgenes)	
 	P <- sapply(Sgenes, function(x) rowSums(D[, colnames(D) == x, drop=FALSE]))	
-	cat("Estimating module network of",n,"S-genes (lambda =", lambda,")...\n\n")	
+	cat("Estimating module network of",n,"S-genes (lambda =", control$lambda,")...\n\n")	
 	C = cor(P)			
-	if(is.null(Pe)){
-		Pe <- matrix(1/n,nrow=nrow(D),ncol=n)	
-		colnames(Pe) <- Sgenes			
+	if(is.null(control$Pe)){
+		control$Pe <- matrix(1/n,nrow=nrow(D),ncol=n)	
+		colnames(control$Pe) <- Sgenes					
 	}		
 	modeltotal <- matrix(0,ncol=n,nrow=n)
 	colnames(modeltotal) <- Sgenes
@@ -44,18 +44,22 @@ moduleNetwork <- function(D,type="mLL",Pe=NULL,Pm=NULL,lambda=0,delta=1,para=NUL
 				idx = c(idx, list(variables))		
 				vars <- colnames(P)[variables]							
 				varidx <- sapply(vars,function(x) which(colnames(D) %in% x))	
-				modeltotal <- moduleNetwork.aux(D[,varidx,drop=FALSE],modeltotal,variables,Pe=Pe[,variables],Pm=Pm[variables,variables],lambda=lambda,delta=delta,para=para,hyperpara=hyperpara,type=type,verbose=verbose)
+				controltmp = control
+				controltmp$Pe = control$Pe[,variables]
+				controltmp$Pm = control$Pm[variables,variables]
+				modeltotal <- moduleNetwork.aux(D[,varidx,drop=FALSE],modeltotal,variables,controltmp,verbose=verbose)
 			}	
 		}		
 	}
 	if(length(idx) > 1)
-		res <- connectModules(D, modeltotal, idx, Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,para=para,hyperpara=hyperpara,type=type,verbose=verbose)
+		res <- connectModules(D, modeltotal, idx, control,verbose=verbose)
 	else{
-		modeltotal <- transitive.closure(modeltotal, mat=TRUE,loop=TRUE)	
+		if(control$trans.close)
+			modeltotal <- transitive.closure(modeltotal, mat=TRUE,loop=TRUE)	
 		diag(modeltotal) <- 0	
-		ep <- score(list(modeltotal),D,type=type,para=para,Pe=Pe,Pm=Pm, lambda=lambda,delta=delta,hyperpara=hyperpara,verbose=FALSE)		
+		ep <- score(list(modeltotal),D,control,verbose=FALSE)		
 	# output		
-		res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=ep$type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected, delta=delta, LLperGene=ep$LLperGene[[1]])	# output: data likelihood under given model!	
+		res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],control=control,selected=ep$selecte, LLperGene=ep$LLperGene[[1]], para=ep$para[[1]])	# output: data likelihood under given model!	
 		class(res) <- "ModuleNetwork"
 		if(verbose){
 			cat("log-likelihood of model = ",res$mLL,"\n")
@@ -64,15 +68,15 @@ moduleNetwork <- function(D,type="mLL",Pe=NULL,Pm=NULL,lambda=0,delta=1,para=NUL
 	return(res)
 }
 
-moduleNetwork.aux <- function(D,modeltotal, variables,Pe=NULL,Pm=NULL,lambda=0,delta=1,para=NULL,hyperpara=NULL,type="mLL",verbose=TRUE){
+moduleNetwork.aux <- function(D,modeltotal, variables, control, verbose=TRUE){
 	if(verbose){
 		cat("estimating network of genes:\n")
 		cat(variables,"\n")
 	}
 	n <- length(variables)
 	if(n > 1){			
-		models <- enumerate.models(n,name=unique(colnames(D)),verbose=verbose)
-		sco <- score(models,D,type=type,para=para,hyperpara=hyperpara,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,verbose=verbose,graphClass="matrix")
+		models <- enumerate.models(n,name=unique(colnames(D)), trans.close=control$trans.close, verbose=verbose)
+		sco <- score(models,D,control,verbose=verbose,graphClass="matrix")
 		modellocal <- sco$graph
 	}
 	else
@@ -81,14 +85,14 @@ moduleNetwork.aux <- function(D,modeltotal, variables,Pe=NULL,Pm=NULL,lambda=0,d
 	modeltotal
 }
 
-connectModules <- function(D, Phi, modules, type="mLL",Pe=NULL,Pm=NULL,lambda=0,delta=1,para=NULL,hyperpara=NULL,verbose=TRUE){
+connectModules <- function(D, Phi, modules, control, verbose=TRUE){
 	Sgenes = unique(colnames(D))
 	n <- length(Sgenes)	
 	if(verbose){	
 		dev.off()
 		cat("Connecting modules using constraint greedy hillclimbing ...\n\n")	
 	}
-	sco0 <- score(list(Phi),D,type=type,para=para,hyperpara=hyperpara,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,verbose=verbose,graphClass="matrix")$mLL			
+	sco0 <- score(list(Phi),D,control,verbose=verbose,graphClass="matrix")$mLL			
 	BetweenModules = matrix(0,n,n)
 	dimnames(BetweenModules) = dimnames(Phi)
 	for(i in 1:length(modules)){
@@ -101,6 +105,7 @@ connectModules <- function(D, Phi, modules, type="mLL",Pe=NULL,Pm=NULL,lambda=0,
 			}
 		}
 	}	
+	BetweenModules0 = BetweenModules
 	finished <- FALSE
 	while(!finished){		
 # 		propose new edges between modules									
@@ -110,11 +115,12 @@ connectModules <- function(D, Phi, modules, type="mLL",Pe=NULL,Pm=NULL,lambda=0,
 			for(i in 1:length(idx)){ # test all possible new edges
 				Phinew = Phi
 				Phinew[idx[i]] = 1
-				Phinew = transitive.closure(Phinew, mat=TRUE, loops=TRUE)	
+				if(control$trans.close)
+					Phinew = transitive.closure(Phinew, mat=TRUE, loops=TRUE)	
 				models[[i]] <- Phinew				
 			}				
 			models <- unique(models)
-			sconew <- score(models,D,type=type,para=para,hyperpara=hyperpara,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,verbose=verbose,graphClass="matrix")			
+			sconew <- score(models,D, control, verbose=verbose,graphClass="matrix")			
 			maidx = which.max(sconew$mLL)
 			if(sconew$mLL[maidx] > sco0){
 				newedges = which(sconew$graph - Phi == 1)
@@ -128,10 +134,40 @@ connectModules <- function(D, Phi, modules, type="mLL",Pe=NULL,Pm=NULL,lambda=0,
 		else
 			finished <- TRUE	
 	}
-	ep <- score(list(Phi),D,type=type,para=para,Pe=Pe,Pm=Pm,lambda=lambda,delta=delta,hyperpara=hyperpara,verbose=FALSE,graphClass="matrix")	
-    	res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=ep$type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected, delta=delta, LLperGene=ep$LLperGene[[1]])	# output: data likelihood under given model!	
+	if(!control$backward.elimination & !control$trans.close){
+		if(verbose)
+			cat("Backward elimination step:\n\n")
+		finished <- FALSE
+		while(!finished){		
+	# 		delete new edges between modules								
+			idx = which(BetweenModules0*Phi == 1)
+			if(length(idx) > 0){	
+				models <- list()
+				for(i in 1:length(idx)){ # test all possible edge deletions
+					Phinew = Phi
+					Phinew[idx[i]] = 0					
+					models[[i]] <- Phinew				
+				}				
+				models <- unique(models)
+				sconew <- score(models,D, control, verbose=verbose,graphClass="matrix")			
+				maidx = which.max(sconew$mLL)
+				if(sconew$mLL[maidx] > sco0){
+					newedges = which(sconew$graph - Phi == 1)
+					BetweenModules[newedges] = 0
+					sco0 <- sconew$mLL[maidx]
+					Phi <- sconew$graph
+				}
+				else # otherwise no improving edge could be deleted
+					finished <- TRUE
+			}
+			else
+				finished <- TRUE	
+		}
+	}
+	ep <- score(list(Phi),D, control, verbose=FALSE,graphClass="matrix")	
+    	res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],control=control,selected=ep$selected, LLperGene=ep$LLperGene[[1]], para=ep$para[[1]])	# output: data likelihood under given model!	
 	class(res) <- "ModuleNetwork"
 	if(verbose)
-		cat("log (posterior) marginal likelihood of model = ",res$mLL,"\n")
+		cat("log (posterior) (marginal) likelihood of model = ",res$mLL,"\n")
 	return(res)
 }

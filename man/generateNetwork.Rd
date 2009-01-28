@@ -57,7 +57,7 @@ For sampleRndNetwork an adjacency matrix, for sampleData a data matrix, for samp
 	D = sampleData(Phi, 100, type="density")$D	
 	plot(as(transitive.reduction(Phi),"graphNEL"), main="original graph")
 	x11()
-	plot(nem(D, type="CONTmLLBayes"), transitiveReduction=TRUE, SCC=FALSE, main="inferred graph")
+	plot.nem(nem(D, control=set.default.parameters(unique(colnames(D)), type="CONTmLLBayes")), transitiveReduction=TRUE, SCC=FALSE, main="inferred graph")
 }
 \keyword{graphs}
 \keyword{models}

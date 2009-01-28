@@ -32,12 +32,12 @@ SCCgraph(x,name=TRUE,nlength=20)
 \examples{
    data("BoutrosRNAi2002")
    D   <- BoutrosRNAiDiscrete[,9:16]
-   res <- nem(D,para=c(.13,.05))
+   res <- nem(D,control=set.default.parameters(unique(colnames(D)), para=c(.13,.05)))
    # 
    sccg <- SCCgraph(res$graph,name=TRUE)
    #
    par(mfrow=c(1,2))
-   plot(res, main="inferred from data")
+   plot.nem(res, main="inferred from data")
    plot(sccg$graph, main="condensed (rel,key)")
 }
 \keyword{graphs}

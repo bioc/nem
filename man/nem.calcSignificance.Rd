@@ -6,17 +6,14 @@
  Assess statistical significance of a network hypothesis by comparing it to a null hypothesis. 
 }
 \usage{
-	nem.calcSignificance(D, x, N=1000, seed=1, Pe=NULL, Pm=NULL, selEGenes=(length(x$selected) != nrow(D)))
+	nem.calcSignificance(D, x, N=1000, seed=1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{D}{data matrix with experiments in the columns (binary or continious)}  
   \item{x}{nem object}  
   \item{N}{number of random networks to sample}
-  \item{seed}{random seed}  
-  \item{Pe}{prior of effect reporter positions in the phenotypic hierarchy (same dimension as D)}
-    \item{Pm}{prior over models (n x n matrix)}
-  \item{selEGenes}{automated E-gene subset selection yes/no}  
+  \item{seed}{random seed}    
 }
 \details{
 Given data, N random network hypotheses from a null distribution are drawn as follows:  For each S-gene $S_k$ we randomly choose a number o of outgoing edges between 0 and 3. We then select o S-genes having at most 1 ingoing edge, connected  $S_k$ to them and transitively closed the graph. 
@@ -38,9 +35,8 @@ Finally, comparison to randomly perturbed networks (insertion or deletion of 1 e
 \examples{
 \dontrun{
    data("BoutrosRNAi2002")
-   D <- BoutrosRNAiDiscrete[,9:16]
-   p <- c(.13,.05)
-   res = nem(D, para=p) # get best network
+   D <- BoutrosRNAiDiscrete[,9:16]   
+   res = nem(D, control=set.default.parameters(unique(colnames(D)), para=c(0.13,0.05))) # get best network
    nem.calcSignificance(D,res) # assess its statistical significance
 }
 }

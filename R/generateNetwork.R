@@ -78,6 +78,31 @@ sampleData = function(Phi, m, prob=NULL, uninformative=0, type="binary", replica
 	list(D=D, epos=Sgenes[epos])
 }
 
+# sampleData.gnem = function(net, m, int, map, t){	
+# 	nnodes = length(net$measure.nodes)
+# 	t = as.character(t)
+# 	D = matrix(0, ncol=nnodes, nrow=m)
+# 	if(length(int) == 0){
+# 		for(i in 1:nnodes){		
+# 			cond = net$parameters[[i]]									
+# 			D[,i] = rnorm(m, mean=cond[[t]]$no_intervention["mu"], sd=cond[[t]]$no_intervention["sd"])	
+# 		}
+# 		return(D)
+# 	}
+# 	else{		
+# 		effected = simulate.interventions(net, int, map)		
+# 		for(i in 1:nnodes){		
+# 			cond = net$parameters[[i]]			
+# 			if(net$measure.nodes[i] %in% effected)
+# 				D[,i] = rnorm(m, mean=cond[[t]]$intervention["mu"], sd=cond[[t]]$intervention["sd"])
+# 			else
+# 				D[,i] = rnorm(m, mean=cond[[t]]$no_intervention["mu"], sd=cond[[t]]$no_intervention["sd"])			
+# 		}	
+# 	}	
+# 	D
+# }
+
+
 # sampleData.BN = function(core, reporters=40, nr_intven=3, beta1=0.9, nullnode=FALSE){		
 # 	vert = ncol(core)	
 # 	original = core

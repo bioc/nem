@@ -1,13 +1,13 @@
-triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pmlocal=NULL,Pm=NULL,lambda=0,delta=1, triples.thrsh=.5,verbose=TRUE){
+triples.posterior <- function(D, control,verbose=TRUE){
 
   # Sgenes
-  Sgenes <- unique(colnames(D))
+  Sgenes <- setdiff(unique(colnames(D)), "time")
   nrS    <- length(Sgenes)
   nrTest <- choose(nrS,3) 
-  cat(nrS,"perturbed genes ->", nrTest, "triples to check (lambda = ",lambda,")\n")
+  cat(nrS,"perturbed genes ->", nrTest, "triples to check (lambda = ",control$lambda,")\n")
 
   # local model prior
-  if (is.null(Pmlocal)) Pmlocal <- rep(1/29,29)
+  if (is.null(control$Pmlocal)) control$Pmlocal <- rep(1/29,29)
  
  
   ## 
@@ -18,7 +18,7 @@ triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm
   triples = subsets(nrS,3)
 
   ##=== 29 candidate models for each triple
-  cnd.models   = enumerate.models(3,verbose=FALSE)
+  cnd.models   = enumerate.models(3,trans.close=control$trans.close,verbose=FALSE)
 
   ##=== store maximum model in a list
   mll.models   = list()
@@ -31,12 +31,14 @@ triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm
         colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,1]]] = "a"
         colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,2]]] = "b"
         colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,3]]] = "c"	
-        Pesel <- Pe[,sel,drop=FALSE]                
-        Pmsel <- Pm[sel,sel,drop=FALSE]	
-        tmp.mdl = score(cnd.models,D.tmp, type=type, para=para,hyperpara=hyperpara, Pe=Pesel, Pm=Pmsel, lambda=lambda,delta=delta,verbose=FALSE)	
+	controltmp = control
+        controltmp$Pe <- control$Pe[,sel,drop=FALSE]            
+	if(!is.null(control$Pm))    
+        	controltmp$Pm <- control$Pm[sel,sel,drop=FALSE]				
+        tmp.mdl = score(cnd.models,D.tmp, controltmp,verbose=FALSE)	
  
         ##== do prior stuff
-        post = tmp.mdl$mLL + log(Pmlocal)
+        post = tmp.mdl$mLL + log(control$Pmlocal)
         winner <- cnd.models[[which.max(post)]]
         mll.models[[i]] = list()
         mll.models[[i]]$graph = winner
@@ -68,26 +70,23 @@ triples.posterior <- function(D, type="mLL",para=NULL, hyperpara=NULL,Pe=NULL,Pm
         ##=== mean number of edges from j to i (including doubles...) 
         A[j,i] = mean(unlist(lapply(tmp,function(x) x[Sgenes[j],Sgenes[i]])))
   }}
-  B = (A>=triples.thrsh)*1-diag(nrow(A))
-  graph <- as(B,"graphNEL")
+  B = (A>=control$triples.thrsh)*1-diag(nrow(A)) 
   if(verbose) cat("\n")
   ##
   ## 3. estimate effect positions
   ##
   if (verbose) cat("Estimating effect positions in combined graph\n")    
-  ep <- score(list(transitive.closure(B,mat=TRUE)), D,   	       
-               type=type, 
-               para=para,
-               hyperpara=hyperpara,
-               Pe=Pe,
-	       Pm=Pm,
-	       lambda=lambda,
-	       delta=delta, 
+    if(control$trans.close)
+	B = transitive.closure(B,mat=TRUE)
+  diag(B) = 0
+  graph <- as(B,"graphNEL")
+  ep <- score(list(B), D,     	       
+               control,
                verbose=FALSE)  
   ##
   ## 4. output
   ##
-  res <- list(graph=graph,avg=A,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],type=type,para=para,hyperpara=hyperpara,lam=lambda,selected=ep$selected,delta=delta, LLperGene=ep$LLperGene[[1]])
+  res <- list(graph=graph,avg=A,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],control=control,selected=ep$selected, LLperGene=ep$LLperGene[[1]], para=ep$para[[1]])
   class(res) <- "triples"
   if(verbose)
 	cat("log-likelihood of model = ",res$mLL,"\n")
