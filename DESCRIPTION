@@ -1,12 +1,13 @@
 Package: nem
 Title: Nested Effects Models to reconstruct phenotypic hierarchies
-Version: 2.7.2
-Author: Holger Froehlich, Florian Markowetz, Achim Tresch, Matthias Maneck, Claudio Lottaz, Tim Beissbarth
+Version: 2.7.3
+Author: Holger Froehlich, Florian Markowetz, Achim Tresch, Christian Bender, Matthias Maneck, Claudio Lottaz, Tim Beissbarth
 Description: The package 'nem' allows to reconstruct features of pathways from the nested structure of perturbation effects. It takes as input (1.) a set of pathway components, which were perturbed, and (2.) high-dimensional phenotypic readout of these perturbations (e.g. gene expression or morphological profiles). The output is a directed graph representing the phenotypic hierarchy.
-Reference: Markowetz F, Bloch J, Spang R: Non-transcriptional pathway features reconstructed from secondary effects of RNA interference, Bioinformatics 2005, 21(21):4026-4032. 
-           Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T: Estimating Large Scale Signaling Networks through Nested Effects Models from Intervention Effects in Microarray Data. Bioinformatics, 24:2650-2656 2008.
-           Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T: Large Scale Statistical Inference of Signaling Pathways from RNAi and Microarray Data, BMC Bioinformatics, 8:386, 2007.
-Maintainer: Holger Froehlich <h.froehlich@dkfz-heidelberg.de>
+Reference: Markowetz F, Bloch J, Spang R: Non-transcriptional pathway features reconstructed from secondary effects of RNA interference, Bioinformatics, 2005, 21:4026-4032.
+           Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T: Large Scale Statistical Inference of Signaling Pathways from RNAi and Microarray Data, BMC Bioinformatics, 2007, 8:386.
+           Froehlich H, Fellmann M, Sueltmann H, Poustka A, Beissbarth T: Estimating Large Scale Signaling Networks through Nested Effects Models from Intervention Effects in Microarray Data. Bioinformatics, 2008, 24:2650-2656.
+           Froehlich H, Beissbarth T, Tresch A, Kostka D, Jacob J, Spang R, Markowetz F: Analyzing gene perturbation screens with nested effects models in R and bioconductor, Bioinformatics, 2008, 24:2549-50.
+Maintainer: Christian Bender <c.bender@dkfz-heidelberg.de>
 Depends: R (>= 2.0), e1071 (>= 1.5), graph (>= 1.10), Rgraphviz (>= 1.10), RBGL (>= 1.8.1), time (>= 1.0), cluster (>= 1.11), bootstrap (>= 1.0-20), RColorBrewer, plotrix
 Suggests: Biobase (>= 1.10)
 LazyLoad: Yes

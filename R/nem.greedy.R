@@ -81,8 +81,8 @@ nem.greedy <- function(D,initial=NULL,control, verbose=TRUE){
             finished <- TRUE    
     }
     if(control$backward.elimination & !control$trans.close){               
-	if(verbose)
-		cat("Backward elimination step:\n\n")
+        if(verbose)
+            cat("Backward elimination step:\n\n")
         finished <- FALSE
         while(!finished){
     #       delete edges        
