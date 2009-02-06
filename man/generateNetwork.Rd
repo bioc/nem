@@ -14,7 +14,9 @@ sampleData(Phi, m, prob=NULL, uninformative=0, type="binary", replicates=4, type
 \arguments{
 \item{Sgenes}{character vector of S-genes}
 \item{scaleFree}{should the network topology be scale free?}
-\item{gamma}{for scale free networks: out-degrees of nodes are sampled from $\frac{1}{Z} * (0:maxOutDegree)^{-\gamma}$, where Z is a normalization factor}
+\item{gamma}{for scale free networks: out-degrees of nodes are sampled from
+  \eqn{\frac{1}{Z} * (0:maxOutDegree)^{-\gamma}}, where Z is a normalization
+  factor} 
 \item{maxOutDegree}{maximal out-degree of nodes}
 \item{maxInDegree}{maximal in-degree of nodes prior to transitive closure}
 \item{trans.close}{Should the transitive closure of the graph be returned? Default: TRUE}
@@ -28,9 +30,11 @@ sampleData(Phi, m, prob=NULL, uninformative=0, type="binary", replicates=4, type
 \item{replicates}{number of replicate measurements to simulate for binary data}
 \item{typeI.err}{simulated type I error for binary data}
 \item{typeII.err}{simulated type II error for binary data}
-\item{alpha}{parameter for $Beta(\alpha,1)$ distribution: one parameter per S-gene}
-\item{beta}{parameter for $Beta(1,\beta)$ distribution: one parameter per S-gene}
-\item{lambda}{mixing coefficients for beta-uniform mixture model of the form: $\lambda_1 + \lambda_2*Beta(\alpha,1) + \lambda_3*Beta(1,\beta)$. There is a vector of 3 mixing coefficients per model and one model per S-gene.}
+\item{alpha}{parameter for \eqn{Beta(\alpha,1)} distribution: one parameter per S-gene}
+\item{beta}{parameter for \eqn{Beta(1,\beta)} distribution: one parameter per S-gene}
+\item{lambda}{mixing coefficients for beta-uniform mixture model of the form:
+  \eqn{\lambda_1 + \lambda_2*Beta(\alpha,1) + \lambda_3*Beta(1,\beta)}. There
+  is a vector of 3 mixing coefficients per model and one model per S-gene.} 
 \item{meansH1}{normal distribution means of log odds ratios under the hypothesis of expecting an effect: one mean per S-gene}
 \item{meansH0}{normal distribution means of log odds ratios under the null hypothesis: one mean per S-gene}
 \item{sdsH1}{normal distribution standard deviations of log odds values under the hypothesis of expecting an effect: one sd per S-gene}
@@ -38,9 +42,9 @@ sampleData(Phi, m, prob=NULL, uninformative=0, type="binary", replicates=4, type
 }
 \details{
 Random networks are generated as follows:
-For each S-gene $S_{k}$ we randomly choose the number $o$ of outgoing
-edges between 0 and maxOutDegree. This is either done uniform randomly or, if scale free networks are created, according to a power law distribution specified by gamma. We then select $o$ S-genes having at most
-maxInDegree ingoing edge and connected $S_{k}$ to them. 
+For each S-gene \eqn{S_{k}} we randomly choose the number \eqn{o} of outgoing
+edges between 0 and maxOutDegree. This is either done uniform randomly or, if scale free networks are created, according to a power law distribution specified by gamma. We then select \eqn{o} S-genes having at most
+maxInDegree ingoing edge and connected \eqn{S_{k}} to them. 
 
 The function \code{sampleData} samples data from a given network topology as follows: We first attach E-genes to S-genes according to the probabilities prob (default: uniform). We then simulate knock-downs of the individual S-genes. For those E-genes, where no effects are expected, values are sampled from a null distribution, otherwise from an alternative distribution. In the simplest case we only sample binary data, where 1 indicates an effect an 0 no effect. Alternatively, we can sample log "p-value" densities according to a beta-uniform mixture model, where the null distribution is uniform and the alternative a mixture of two beta distributions. A third possibility is to sample log odds ratios, where alternative and null distribution are both normal.
 }
@@ -48,7 +52,7 @@ The function \code{sampleData} samples data from a given network topology as fol
 For sampleRndNetwork an adjacency matrix, for sampleData a data matrix, for sampleData.BN a data matrix and a linking of effects to signals.
 }
 
-\author{Holger Froehlich <URL: http:/www.dkfz.de/mga2/people/froehlich>, Cordula Zeller}
+\author{Holger Froehlich \url{http:/www.dkfz.de/mga2/people/froehlich}, Cordula Zeller}
 
 
 \seealso{\code{\link{getDensityMatrix}}}

@@ -8,7 +8,7 @@
 \docType{data}
 \title{RNAi data on Drosophila innate immune response}
 \description{
-Data from a study on innate immune response in {\em Drosophila} (Boutros
+Data from a study on innate immune response in \emph{Drosophila} (Boutros
 et al, 2002). Selectively removing signaling components by RNAi blocked induction of all, or only parts, of the
 transcriptional response to LPS. The nested structure of perturbation effects allows to reconstruct a
 branching in the Imd pathway.
