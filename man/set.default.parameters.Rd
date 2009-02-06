@@ -13,7 +13,7 @@ set.default.parameters(Sgenes, ...)
 }
 \details{
 Since version 2.5.4 functions in the nem package do not have any more a large amount of individual parameters. Instead there is just one hyperparameter, which is passed to all functions. Parameter values with the hyperparameter can be set with this function.
-\begin{ldescription}
+\describe{
  \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLBayes} or \code{CONTmLLMAP} or \code{gnem}. \code{CONTmLLDens} and \code{CONTmLLRatio} are identical to \code{CONTmLLBayes} and \code{CONTmLLMAP} and are still supported for compatibility reasons. \code{mLL} and \code{FULLmLL} are used for binary data (see \code{BoutrosRNAiDiscrete}) and \code{CONTmLL} for a matrix of effect probabilities. \code{CONTmLLBayes} and \code{CONTmLLMAP} are used, if log-odds ratios, p-value densities or any other model specifies effect likelihoods. \code{CONTmLLBayes} refers to an inference scheme, were the linking positions of effect reporters to network nodes are integrated out, and \code{CONTmLLMAP} to an inference scheme, were a MAP estimate for the linking positions is calculated. \code{gnem} indicates Generalized Nested Effects Models (GNEMs).}
   \item{para}{vector of length two: false positive rate and false negative rate for binary data. Used by \code{mLL}} 
   \item{hyperpara}{vector of length four: used by \code{FULLmLL()} for binary data}
@@ -36,7 +36,8 @@ Since version 2.5.4 functions in the nem package do not have any more a large am
   \item{map}{For \code{gnem}: Mapping of interventions to network nodes. The format is a named list of strings with names being the interventions and entries being the network nodes. Default: Entries and names are the network nodes. }
   \item{outputdir}{Directory where to put diagnostic plots. Default: folder "QualityControl" in current working directory}
   \item{debug}{Print out or plot diagnostic information. Default: FALSE}
-\end{ldescription}
+
+ }
 }
 \value{
 A list containing all parameters described above.
