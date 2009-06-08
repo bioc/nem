@@ -19,7 +19,7 @@ mLL <- function(Phi,D1,D0=NULL,control, verbose=FALSE) {
 	s = sum(LLperGene)			
 	map = apply(Theta,1,which)	
   }
-  else if(control$type == "gnem"){	
+  else if(control$type == "depn"){	
 	res = score.network(D1, Phi, control)
 	s = res$loglik
 	LLperGene = res$LLperSample
@@ -28,7 +28,7 @@ mLL <- function(Phi,D1,D0=NULL,control, verbose=FALSE) {
 	map = apply(Theta,1,which)
 	para = res$net$parameters
   }
-  if(!(control$type %in% c("CONTmLLMAP","CONTmLLRatio", "gnem"))){	
+  if(!(control$type %in% c("CONTmLLMAP","CONTmLLRatio", "depn"))){	
 	if(!is.null(control$Pe))
 		LP <- L*control$Pe
 	else

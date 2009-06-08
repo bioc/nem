@@ -37,7 +37,7 @@ plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL, draw.lines=FALSE, palette
 	}
 	else
 		rangeall = zlim
-	color.legend(0.4,0.1,1,1,signif(seq(rangeall[1],rangeall[2],length.out=5),digits=1),rect.col=allcolors[length(allcolors):1],gradient="y", cex=0.75)
+	color.legend(0.4,0.1,1,1,signif(seq(rangeall[1],rangeall[2],length.out=5),digits=1),rect.col=allcolors,gradient="y", cex=0.75)
 
 	erase.screen(1)
 	screen(1)

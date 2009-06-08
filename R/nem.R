@@ -18,9 +18,9 @@ if(inference == "nem.greedyMAP")
   
 if (!(inference %in% c("pairwise", "triples", "search","ModuleNetwork","nem.greedy","nem.greedyMAP","BN.greedy","BN.exhaustive"))) 
     stop("\nnem> argument 'inference' is not valid\n")
-if (!(control$type %in% c("mLL", "FULLmLL", "CONTmLL","CONTmLLBayes","CONTmLLMAP", "CONTmLLDens", "CONTmLLRatio","gnem"))) 
+if (!(control$type %in% c("mLL", "FULLmLL", "CONTmLL","CONTmLLBayes","CONTmLLMAP", "CONTmLLDens", "CONTmLLRatio","depn"))) 
     stop("\nnem> argument 'type' is not valid")
-if (is.null(control$para) & is.null(control$hyperpara) & !(control$type %in% c("CONTmLL", "CONTmLLBayes", "CONTmLLMAP", "CONTmLLDens", "CONTmLLRatio","gnem")))
+if (is.null(control$para) & is.null(control$hyperpara) & !(control$type %in% c("CONTmLL", "CONTmLLBayes", "CONTmLLMAP", "CONTmLLDens", "CONTmLLRatio","depn")))
     stop("\nnem> provide either 'para' or 'hyperpara'\n")
 if (control$type == "mLL" & is.null(control$para)) 
     stop("\nnem> provide argument 'para'\n")
@@ -42,7 +42,7 @@ if(control$lambda < 0) control$lambda <- abs(control$lambda)
 
 Sgenes <- unique(colnames(D))
 if(control$selEGenes){  
-    if(inference %in% c("BN.greedy","BN.exhaustive","gnem"))
+    if(inference %in% c("BN.greedy","BN.exhaustive","depn"))
         stop("No automatic feature selection implemented for this inference method so far!\n")
     return(nem.featureselection(D, inference, models, control, verbose))
 }

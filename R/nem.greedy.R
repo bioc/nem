@@ -60,7 +60,7 @@ nem.greedy <- function(D,initial=NULL,control, verbose=TRUE){
         models <- list()
 #       propose new edges       
         models = get.insertions(Phi, control$trans.close)
-        if(control$type %in% c("gnem", "CONTmLLMAP", "CONTmLLRatio") & !control$trans.close){ # these graphs are NOT transitively closed
+        if(control$type %in% c("CONTmLLMAP", "CONTmLLRatio") & !control$trans.close){ # these graphs are NOT transitively closed necessarily
                models = c(models, get.deletions(Phi), get.reversions(Phi))               
         }
         models <- unique(models)

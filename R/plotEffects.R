@@ -151,7 +151,7 @@ if(legend){
 	screen(2)	
 	par(mar=c(0,0,0,1))
 	if(palette == "BlueRed")
-		color.legend(0.5,0.1,1,1,signif(seq(rangeall[1],rangeall[2],length.out=10),digits=1),rect.col=allcolors[length(allcolors):1],gradient="y", cex=0.75)
+		color.legend(0.5,0.1,1,1,signif(seq(rangeall[1],rangeall[2],length.out=10),digits=1),rect.col=allcolors,gradient="y", cex=0.75)
 	else if(palette == "Grey")
 		color.legend(0.5,0.1,1,1,signif(seq(rangeall[1],rangeall[2],length.out=10),digits=1),rect.col=allcolors,gradient="y", cex=0.75)
 	close.screen(c(1,2),all.screens=TRUE)

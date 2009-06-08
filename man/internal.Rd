@@ -73,8 +73,8 @@
 \arguments{
 	various
 }
-\details{
-}
+%\details{
+%}
 \value{
  	various
 }

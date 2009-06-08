@@ -14,7 +14,7 @@ set.default.parameters(Sgenes, ...)
 \details{
 Since version 2.5.4 functions in the nem package do not have any more a large amount of individual parameters. Instead there is just one hyperparameter, which is passed to all functions. Parameter values with the hyperparameter can be set with this function.
 \describe{
- \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLBayes} or \code{CONTmLLMAP} or \code{gnem}. \code{CONTmLLDens} and \code{CONTmLLRatio} are identical to \code{CONTmLLBayes} and \code{CONTmLLMAP} and are still supported for compatibility reasons. \code{mLL} and \code{FULLmLL} are used for binary data (see \code{BoutrosRNAiDiscrete}) and \code{CONTmLL} for a matrix of effect probabilities. \code{CONTmLLBayes} and \code{CONTmLLMAP} are used, if log-odds ratios, p-value densities or any other model specifies effect likelihoods. \code{CONTmLLBayes} refers to an inference scheme, were the linking positions of effect reporters to network nodes are integrated out, and \code{CONTmLLMAP} to an inference scheme, were a MAP estimate for the linking positions is calculated. \code{gnem} indicates Generalized Nested Effects Models (GNEMs).}
+ \item{type}{\code{mLL} or \code{FULLmLL} or \code{CONTmLL} or \code{CONTmLLBayes} or \code{CONTmLLMAP} or \code{gnem}. \code{CONTmLLDens} and \code{CONTmLLRatio} are identical to \code{CONTmLLBayes} and \code{CONTmLLMAP} and are still supported for compatibility reasons. \code{mLL} and \code{FULLmLL} are used for binary data (see \code{BoutrosRNAiDiscrete}) and \code{CONTmLL} for a matrix of effect probabilities. \code{CONTmLLBayes} and \code{CONTmLLMAP} are used, if log-odds ratios, p-value densities or any other model specifies effect likelihoods. \code{CONTmLLBayes} refers to an inference scheme, were the linking positions of effect reporters to network nodes are integrated out, and \code{CONTmLLMAP} to an inference scheme, were a MAP estimate for the linking positions is calculated. \code{depn} indicates Deterministic Effects Propagation Networks (DEPNs).}
   \item{para}{vector of length two: false positive rate and false negative rate for binary data. Used by \code{mLL}} 
   \item{hyperpara}{vector of length four: used by \code{FULLmLL()} for binary data}
   \item{Pe}{prior of effect reporter positions in the phenotypic hierarchy (same dimension as D). Not used type \code{gnem}. Default: NULL}
@@ -45,6 +45,6 @@ A list containing all parameters described above.
 \examples{
 control = set.default.parameters(LETTERS[1:5], type="CONTmLLBayes", selEGenes=TRUE) # set inference type and whether to use automatic E-gene selection for a network with nodes "A"-"E".
 }
-\author{Holger Froehlich <URL: http:/www.dkfz.de/mga2/people/froehlich>}
+\author{Holger Froehlich \url{http:/www.dkfz.de/mga2/people/froehlich}}
 \keyword{graphs}
 \keyword{models}

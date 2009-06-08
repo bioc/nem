@@ -16,7 +16,8 @@ sampleData(Phi, m, prob=NULL, uninformative=0, type="binary", replicates=4, type
 \item{scaleFree}{should the network topology be scale free?}
 \item{gamma}{for scale free networks: out-degrees of nodes are sampled from
   \eqn{\frac{1}{Z} * (0:maxOutDegree)^{-\gamma}}, where Z is a normalization
-  factor} 
+  factor}
+ 
 \item{maxOutDegree}{maximal out-degree of nodes}
 \item{maxInDegree}{maximal in-degree of nodes prior to transitive closure}
 \item{trans.close}{Should the transitive closure of the graph be returned? Default: TRUE}
@@ -34,7 +35,8 @@ sampleData(Phi, m, prob=NULL, uninformative=0, type="binary", replicates=4, type
 \item{beta}{parameter for \eqn{Beta(1,\beta)} distribution: one parameter per S-gene}
 \item{lambda}{mixing coefficients for beta-uniform mixture model of the form:
   \eqn{\lambda_1 + \lambda_2*Beta(\alpha,1) + \lambda_3*Beta(1,\beta)}. There
-  is a vector of 3 mixing coefficients per model and one model per S-gene.} 
+  is a vector of 3 mixing coefficients per model and one model per S-gene.}
+ 
 \item{meansH1}{normal distribution means of log odds ratios under the hypothesis of expecting an effect: one mean per S-gene}
 \item{meansH0}{normal distribution means of log odds ratios under the null hypothesis: one mean per S-gene}
 \item{sdsH1}{normal distribution standard deviations of log odds values under the hypothesis of expecting an effect: one sd per S-gene}

@@ -23,7 +23,7 @@ nem.bootstrap(D, thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,contr
   \item{...}{other arguments to pass}
 }
 \details{
-  Calls \code{\link{nem}} or \code{\link{nemModelSelection}} internally, depending on whether or not lambda is a vector and Pm != NULL.
+  Calls \code{\link{nem}} or \code{\link{nemModelSelection}} internally, depending on whether or not lambda is a vector and Pm != NULL. For DEPNs a stratified bootstrap is carried out, where strate are defined on each replicate group for each time point.
 }
 \value{
 	nem object with edge weights being the bootstrap probabilities

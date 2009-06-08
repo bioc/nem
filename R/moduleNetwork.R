@@ -164,8 +164,8 @@ connectModules <- function(D, Phi, modules, control, verbose=TRUE){
                 finished <- TRUE    
         }
     }
-    ep <- score(list(Phi),D, control, verbose=FALSE,graphClass="matrix")    
-        res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],control=control,selected=ep$selected, LLperGene=ep$LLperGene[[1]], para=ep$para[[1]])  # output: data likelihood under given model!    
+    ep <- score(list(Phi),D, control, verbose=FALSE,graphClass="graphNEL")
+    res <- list(graph=ep$graph,mLL=ep$mLL[[1]],pos=ep$pos[[1]],mappos=ep$mappos[[1]],control=control,selected=ep$selected, LLperGene=ep$LLperGene[[1]], para=ep$para[[1]])  # output: data likelihood under given model!    
     class(res) <- "ModuleNetwork"
     if(verbose)
         cat("log (posterior) (marginal) likelihood of model = ",res$mLL,"\n")

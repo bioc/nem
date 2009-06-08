@@ -26,7 +26,7 @@ Haiyuan Yu and Mark Gerstein: Genomic analysis of the hierarchical structure of 
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
 
 
-\seealso{}
+%\seealso{}
 \examples{
  ## bla
 }

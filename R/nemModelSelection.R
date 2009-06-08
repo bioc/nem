@@ -8,7 +8,7 @@ nemModelSelection <- function(lambdas,D,inference="nem.greedy",models=NULL,contr
             controltmp = control
             controltmp$Pm = NULL
             controltmp$lambda=0 
-            if(control$type != "gnem")
+            if(control$type != "depn")
                 resmLL <- score(list(as(res$graph,"matrix")),D[res$selected,,drop=FALSE],controltmp,verbose=FALSE)$mLL # get true mLL
             else
                 resmLL <- score(list(as(res$graph,"matrix")),D,controltmp,verbose=FALSE)$mLL # get true mLL

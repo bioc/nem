@@ -176,15 +176,19 @@ score.network = function(datall, I, control){
         loglik = -Inf
 #        cat("Missing value imputation via EM algorithm:\n")
         dat.new = datall
+		iter = 0
         while(!converged){
             net = learn(dat.new, net, control)  #M-step     
-            res = data.likelihood(datall, net) # E-step
-            logliktmp = res$likelihood                      
+            res = data.likelihood(datall, net) # E-step            
+			if(is.na(res$likelihood))
+				res$likelihood = -Inf
+			logliktmp = res$likelihood
             dat.new = res$data          
-            if(abs(logliktmp/loglik - 1) < 1e-4)
+            if((logliktmp == loglik) || abs(logliktmp/loglik - 1) < 1e-4 || iter == 100)
                 converged = TRUE
             loglik = logliktmp
  #           cat("log likelihood = ", loglik, "\n")
+			iter = iter + 1
         }
   #      cat("converged!\n")             
     }

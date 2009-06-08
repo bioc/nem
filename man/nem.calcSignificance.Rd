@@ -16,7 +16,7 @@
   \item{seed}{random seed}    
 }
 \details{
-Given data, N random network hypotheses from a null distribution are drawn as follows:  For each S-gene $S_k$ we randomly choose a number o of outgoing edges between 0 and 3. We then select o S-genes having at most 1 ingoing edge, connected  $S_k$ to them and transitively closed the graph. 
+Given data, N random network hypotheses from a null distribution are drawn as follows:  For each S-gene \eqn{S_{k}} we randomly choose a number o of outgoing edges between 0 and 3. We then select o S-genes having at most 1 ingoing edge, connected  \eqn{S_{k}} to them and transitively closed the graph. 
 For all random network hypotheses it is counted, how often their likelihood is bigger than that of the given network. This yields an exact p-value.
 
 Another way of assessing the statistical significance of the network hypothesis is to draw random permutations of the node labels. Note that in this case the node degree distribution is the same as in the given network. Again, we can obtain an exact p-value by counting, how often the likelihood of the permuted network is bigger than that of the given network.

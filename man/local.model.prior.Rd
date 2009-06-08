@@ -30,9 +30,9 @@ local.model.prior(size,n,bias)
     a distribution over four states: a vector of four positive real numbers summing to one
 }
 
-\references{}
+%\references{}
 \author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
-\note{}
+%\note{}
 
 \seealso{\code{\link{pairwise.posterior}}, \code{\link{nem}}}
 \examples{

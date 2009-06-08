@@ -591,22 +591,21 @@ plot.nem(resultBN, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
-\subsection{Generalized Nested Effects Models}
+\subsection{Deterministic Effects Propagation Networks}
 
-Generalized Nested Effects Models (GNEMs) go in another direction than NEMs and they are designed for a different scenario: Our basic assumption is that we measure an unknown signaling network of proteins by performing multiple interventions. These perturbations may affect single proteins at a time or may also be combinatorial, i.e. they affect several proteins at one time. For each protein in the network we monitor the effect of all interventions, typically via Reverse Phase Protein Arrays. Note that each specific intervention not only influences direct targets, but may also cause effects on downstream proteins. We explicitly assume that in one experiment all proteins are unperturbed (i.e. the cells are transfected only with transfection reagent) . 
+Deterministic Effects Propagation Networks (DEPNs) \cite{Frohlich2009DEPNs} go in another direction than NEMs and they are designed for a different scenario: The basic assumption is that we measure an unknown signaling network of proteins by performing multiple interventions. These perturbations may affect single proteins at a time or may also be combinatorial, i.e. they affect several proteins at one time. For each protein in the network we monitor the effect of all interventions, typically via Reverse Phase Protein Arrays. Note that each specific intervention not only influences direct targets, but may also cause effects on downstream proteins. We explicitly assume that in one experiment all proteins are unperturbed (e.g. the cells are transfected only with transfection reagent) . 
 
-GNEMs infer the most likely protein signaling network given measurements from multiple interventions along a time course. In principle, the model works also with only one or a few time points, although accuracy gets higher with more time points. The approach also allows for an easy integration of prior knowledge either via known signaling interactions or via Boolean logic. Moreover, GNEMs can deal with latent network nodes (proteins without measurements) and with missing data. Briefly, the idea is that we have an unknown network graph, where each node can have two states: perturbed or unperturbed. Furthermore, attached to each node we have experimental measurements, which are assumed to come from a Gaussian distribution. The exact form of this distribution depends on the perturbation state of the node (i.e. whether the protein is perturbed or not) and on the time point of measurement. 
+DEPNs infer the most likely protein signaling network given measurements from multiple interventions along a time course. In principle, the model works also with only one or a few time points, although accuracy gets higher with more time points. Moreover, GNEMs can deal with latent network nodes (proteins without measurements) and with missing data. Briefly, the idea is that we have an unknown network graph, where each node can have two states: perturbed or unperturbed. Furthermore, attached to each node we have experimental measurements, which are assumed to come from a Gaussian distribution. The exact form of this distribution depends on the perturbation state of the node (i.e. whether the protein is perturbed or not) and on the time point of measurement. 
 
 Given a network hypothesis we can calculate the expected direct and indirect effects of a perturbation experiment.
 We should repeat at this point that we assume to have one control experiment, where all nodes are known to be unperturbed. Hence, we observe measurements for each node in the network in the perturbed and the unperturbed state for each time point. With this information we can estimate the conditional Gaussian distributions attached to each node and finally the probability of observing the data under the given network hypothesis.
 
-If the number of nodes in the network is considerably small (e.g. < 5), we can enumerate all possible network hypothesis and take the one with the highest likelihood. However, this exhaustive search will be impossible as soon as the network gets larger. In this case we can employ any of the learning strategies for NEMs described above.
 
-GNEMs are accessible within the \texttt{nem} package since version 1.5.4:
+DEPNs are accessible within the \texttt{nem} package since version 1.5.4:
 <<eval=FALSE>>=
-control = set.default.parameters(setdiff(colnames(mydata),"time"), map=mymap, trans.close=FALSE, type="gnem",debug=FALSE, Pm=diag(10)) # set mapping of interventions to perturbed nodes; do not require transitive closed graphs; employ backward elimination for greedy hillclimbing or module networks; require sparsity of the network
-
-net = nem(dat, control=control) # greedy hillclimber with final backward elimination step
+data(SahinRNAi2008)
+control = set.default.parameters(setdiff(colnames(dat.normalized),"time"), map=map.int2node, type="gnem",debug=FALSE) # set mapping of interventions to perturbed nodes
+net = nem(dat.normalized, control=control) # greedy hillclimber to find most probable network structure
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage

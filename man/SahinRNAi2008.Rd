@@ -2,6 +2,7 @@
 \alias{SahinRNAi2008}
 \alias{dat.normalized}
 \alias{dat.unnormalized}
+\alias{map.int2node}
 \docType{data}
 \title{Combinatorial Protein Knockdowns in the ERBB Signaling Pathway}
 \description{
@@ -11,6 +12,7 @@ Sixteen RNAi knockdowns (including 3 double knockdowns) of proteins in the ERBB 
 \format{
   dat.unnormalized: 408 x 17 matrix (rows = RPPA measurements for (16 KOs + MOCK) x 4 technical x 3 biological replicates, columns = 10 antibodies + 6 proteins without measurements + time)
   dat.normalized: 408 x 17 matrix (measurements from technical and biological replicates are quantile normalized for each RNAi experiment)
+  map.int2node: list with names being interventions (=names of dat.normalized) and entries being node names (=column names of dat.normalized)
 }
 \details{
 The cells were lysed on ice by scraping the cells in M-PER lysis buffer
