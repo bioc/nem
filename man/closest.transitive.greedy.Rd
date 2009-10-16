@@ -23,6 +23,6 @@ closest.transitive.greedy(Phi, verbose=TRUE)
 }
 \author{Holger Froehlich}
 
-\seealso{\code{\link{prune.graph}, \code{\link{transitive.closure}}, \code{\link{transitive.reduction}}}}
+\seealso{\code{\link{prune.graph}}, \code{\link{transitive.closure}}, \code{\link{transitive.reduction}}}
 
 \keyword{models}
