@@ -32,7 +32,7 @@ using a median polish fit of an additive model (Irizarry et al, 2003).
 \code{BoutrosRNAiDiscrete}: contains only the 68 genes more than two-fold up-regulated between negative and positive controls.
 The continuous expression values are discretized to \code{1} (effect: closer to negative controls) and \code{0} (no effect: closer to positive controls).
 
-\code{BoutrosRNAiDens}: log $p$-value density matrix for the 68 genes with more than two-fold up-regulated between negative and positive controls.
+\code{BoutrosRNAiDens}: log \eqn{p}-value density matrix for the 68 genes with more than two-fold up-regulated between negative and positive controls.
 
 \code{BoutrosRNAiLods}: B-value matrix for the 68 genes with more than two-fold up-regulated between negative and positive controls.
 

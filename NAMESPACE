@@ -26,4 +26,4 @@ export(BFSlevel, closest.transitive.greedy, sampleRndNetwork, sampleData,
        transitive.reduction, transitive.projections, enumerate.models,
        nem.cont.preprocess, print.nem, print.nem.greedy, print.ModuleNetwork,
        print.nem.greedyMAP, print.pairwise, print.triples, print.nem.jackknife,
-       print.nem.bootstrap, print.nem.consensus, print.nem.BN, print.score)
+       print.nem.bootstrap, print.nem.consensus, print.nem.BN, print.score, quicknem)

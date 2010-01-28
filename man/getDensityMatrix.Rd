@@ -18,7 +18,7 @@
 \item{tol}{convergence tolerance: If the absolute likelihood ratio -1 becomes smaller than this value, then the EM algorithm is supposed to be converged.}
 }
 \details{
-	The BUM density model consists of 3 components: $f(x) = lambda_1 + lambda_2*dbeta(x,alpha,1) + lambda_3*dbeta(x,1,beta)$. The mixing coefficients and the parameters alpha and beta are fitted together via an EM algorithm.
+	The BUM density model consists of 3 components: \eqn{f(x) = lambda_1 + lambda_2*dbeta(x,alpha,1) + lambda_3*dbeta(x,1,beta)}. The mixing coefficients and the parameters alpha and beta are fitted together via an EM algorithm.
 }
 \value{
  	log-density matrix of same dimensions as Porig: The log-densities can be interpreted as log signal-to-noise ratios. A value > 0 means higher signal than noise, and a value < 0 a higher noise than signal.

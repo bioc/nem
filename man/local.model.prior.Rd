@@ -18,7 +18,7 @@ local.model.prior(size,n,bias)
 }
 \details{
  A graph on \code{n} nodes has \code{N=n*(n-1)/2} possible directed edges (one- or bi-directional). 
- If each edge occurs with probability $p$, we expect to see $Np$ edges in the graph.
+ If each edge occurs with probability \eqn{p}, we expect to see \eqn{Np} edges in the graph.
  The function \code{local.model.prior} takes the number of genes (\code{n}) and the 
  expected number of edges (\code{size}) as an input and computes a prior distribution 
  for edge occurrence: no edge with probability \code{size/N}, and the probability for 
