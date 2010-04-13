@@ -20,13 +20,16 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 			edgeattr=list()			
 		else{					
 			if(transitiveReduction)
-				M = transitive.reduction(M)		
-			if(length(edgeDataDefaults(gR)) == 0){
+				M = transitive.reduction(M)
+			eDDn <- names(edgeDataDefaults(gR))
+			if(!"weight" %in% eDDn)
+				edgeDataDefaults(gR, "weight") <- 1
+			if(!"label" %in% eDDn)
 				edgeDataDefaults(gR, "label") <- 1
-				edgeDataDefaults(gR, "weight") <- 1				
-			}
-			edgeDataDefaults(gR, "arrowhead") = "normal"
-			edgeDataDefaults(gR, "style") = "bold" 
+			if(!"arrowhead" %in% eDDn)
+				edgeDataDefaults(gR, "arrowhead") = "normal"
+			if(!"style" %in% eDDn)
+				edgeDataDefaults(gR, "style") = "bold" 
 			nodes <- colnames(M)
 			nodenames = vector("character", length(M[abs(M) > 0]))
 			probs = double(length(nodenames))	    
