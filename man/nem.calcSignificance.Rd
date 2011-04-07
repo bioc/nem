@@ -6,7 +6,7 @@
  Assess statistical significance of a network hypothesis by comparing it to a null hypothesis. 
 }
 \usage{
-	nem.calcSignificance(D, x, N=1000, seed=1)
+	nem.calcSignificance(D, x, N=1000, seed=1, mc.cores=8)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -14,6 +14,7 @@
   \item{x}{nem object}  
   \item{N}{number of random networks to sample}
   \item{seed}{random seed}    
+  \item{mc.cores}{number of cores to be used on a multicore processor}
 }
 \details{
 Given data, N random network hypotheses from a null distribution are drawn as follows:  For each S-gene \eqn{S_{k}} we randomly choose a number o of outgoing edges between 0 and 3. We then select o S-genes having at most 1 ingoing edge, connected  \eqn{S_{k}} to them and transitively closed the graph. 

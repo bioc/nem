@@ -36,7 +36,7 @@ Since version 2.5.4 functions in the nem package do not have any more a large am
   \item{map}{For \code{gnem}: Mapping of interventions to network nodes. The format is a named list of strings with names being the interventions and entries being the network nodes. Default: Entries and names are the network nodes. }
   \item{outputdir}{Directory where to put diagnostic plots. Default: folder "QualityControl" in current working directory}
   \item{debug}{Print out or plot diagnostic information. Default: FALSE}
-
+  \item{mc.cores}{number of cores to be used on a multicore processor. Default: 8}
  }
 }
 \value{

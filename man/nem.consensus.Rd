@@ -5,7 +5,7 @@
 \title{Statistically stabile nested effects models}
 \description{Performs bootstrapping (resampling with replacement) on E-genes and jackknife on S-genes to assess the statistical stability of networks. Only edges appearing with a higher frequency than a predescribed threshold in both procedures are regarded as statistical stable and appear in the so-called consensus network.}
 \usage{
-nem.consensus(D,thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))),verbose=TRUE)
+nem.consensus(D,thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))), verbose=TRUE)
 
 \method{print}{nem.consensus}(x, ...)
 }
