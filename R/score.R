@@ -42,21 +42,40 @@ score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
 	control$Pm = diag(length(Sgenes))
   }
    
-    
+  registerDoMC(control$mc.cores)
   if (control$type=="FULLmLL"){ # FULL log marginal likelihood of all models
     if (verbose==TRUE) cat("Computing FULL (marginal) likelihood for",length(models),"models\n")
-   
-    results <- sapply(models,FULLmLL,D1,D0,control, verbose)        
+   	if(control$lambda != 0)
+    	results <- sapply(models,FULLmLL,D1,D0,control, verbose)
+	else		
+		results = foreach(m = models) %dopar%
+			FULLmLL(m, D1,D0,control, verbose)		
   }
   else{   # log marginal likelihood of all models		
-	if (verbose==TRUE) cat("Computing (marginal) likelihood for",length(models),"models\n")      		           
-	results <- sapply(models,mLL,D1,D0,control, verbose)     	   			
-  }     
-  s       <- unlist(results["mLL",])
-  ep      <- results["pos",]
-  map     <- results["mappos",] 	
-  LLperGene = results["LLperGene",]    
-  para = results["para",]
+	if (verbose==TRUE) cat("Computing (marginal) likelihood for",length(models),"models\n")
+	if(control$lambda != 0)
+		results <- sapply(models,mLL,D1,D0,control, verbose)     	
+	else		
+		results = foreach(m = models) %dopar%
+			mLL(m, D1,D0,control, verbose)		
+  }
+  if(control$lambda != 0){	  
+	  s       <- unlist(results["mLL",])
+	  ep      <- results["pos",]
+	  map     <- results["mappos",] 	
+	  LLperGene = results["LLperGene",]
+	  para = results["para",]
+	  selected = results["mappos",which.max(s)][[1]]
+  }
+  else{
+	  s = sapply(results, function(r) r$mLL)
+	  ep   <- lapply(results, function(r) r$pos)
+	  map = lapply(results, function(r) r$mappos)	
+	  LLperGene = lapply(results, function(r) r$LLperGene)
+	  para = lapply(results, function(r) r$para)	
+	  selected = map[[which.max(s)]] 
+  }  
+  selected = unique(unlist(selected[Sgenes]))
 #   if(!is.null(Pm)){  	
 #   	log_pD_cond_Phi <- s  	  	  		
 #   	if(is.null(control$lambda) || (control$lambda == 0)){  			
@@ -88,9 +107,7 @@ score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
   PHI <- matrix(0,ncol=nrS,nrow=nrS)
   dimnames(PHI) <- list(Sgenes,Sgenes)  
   for(i in 1:length(models))
-	PHI <- PHI + models[[i]]*ppost[i]   
-  selected = results["mappos",which.max(s)][[1]]  
-  selected = unique(unlist(selected[Sgenes]))  
+	PHI <- PHI + models[[i]]*ppost[i]      
   # output  
   res <- list(graph=gR, mLL=s, ppost=ppost, avg=PHI, pos=ep, mappos=map, control=control, selected=selected, LLperGene=LLperGene, para=para)
   class(res) <- "score"   

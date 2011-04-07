@@ -1,4 +1,4 @@
-nem.calcSignificance <- function(D, x, N=1000, seed=1){	
+nem.calcSignificance <- function(D, x, N=1000, seed=1, mc.cores=8){	
 	modify.rand = function(Phi0){	
 		if(x$control$trans.close){
 			Phired = transitive.reduction(Phi0)
@@ -51,23 +51,28 @@ nem.calcSignificance <- function(D, x, N=1000, seed=1){
 	BFperm = double(N)	
 	BFrand = double(N)	
 	BFmod = double(N)
-	for(i in 1:N){
-		if(i%%10 == 0)
-			cat(".")
+	test = foreach(i=1:N)%dopar% {		
+		cat(".")
 		net = sampleRndNetwork(Sgenes)		
 		loglik <- nem(D,models=list(net),inference="search", x$control, verbose=FALSE)$mLL
-		BFrand[i] = likelihood - loglik	
+		BFrand = likelihood - loglik	
 
 		rnd = sample(1:ncol(Phi), replace=FALSE)
 		net = Phi[rnd,rnd]		
 		dimnames(net) = list(Sgenes, Sgenes)		
 		loglik <- nem(D,models=list(net),inference="search",x$control, verbose=FALSE)$mLL
-		BFperm[i] = likelihood - loglik	
+		BFperm = likelihood - loglik	
 
 		net = modify.rand(Phi)		
 		loglik <- nem(D,models=list(net),inference="search",x$control, verbose=FALSE)$mLL
-		BFmod[i] = likelihood - loglik
-	}		
+		BFmod = likelihood - loglik
+		
+		list(BFrand=BFrand, BFperm=BFperm, BFmod=BFmod)
+		
+	}
+	BFrand = unlist(test$BFrand)
+	BFperm = unlist(test$BFperm)
+	BFmod = unlist(test$BFmod)
 	p.value.rnd = length(which(BFrand <= 0)) / N
 	p.value.perm = length(which(BFperm <= 0)) / N
 	p.value.mod = length(which(BFmod <= 0)) / N

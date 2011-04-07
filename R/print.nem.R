@@ -12,7 +12,7 @@ print.nem <- function(x, ...) {
   	cat("Error probabilities alpha and beta:", x$control$para,"\n")
   if(x$control$type == "FULLmLL")
   	cat("Hyperparameters for error probability distributions:", x$control$hyperpara, "\n")
-  cat("network structure regularization parameter $lambda (default: 0):",x$control$lam ,"\n")
+  cat("network structure regularization parameter $lambda (default: 0):",x$control$lambda ,"\n")
   if(x$control$type == "CONTmLLMAP")
   	cat("Prior weight $delta for assigning E-genes to virtual S-gene 'null' (default: 1):",x$control$delta ,"\n")
   cat(length(x$selected), " selected E-genes:\n")

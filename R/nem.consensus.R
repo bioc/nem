@@ -1,6 +1,6 @@
-nem.consensus <- function(D,thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))),verbose=TRUE){
-	overlapBoot = as(nem.bootstrap(D,thresh, nboot,inference,models,control,verbose)$graph,"matrix")
-	overlapJack = as(nem.jackknife(D,thresh, inference,models,control,verbose)$graph,"matrix")
+nem.consensus <- function(D,thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))), verbose=TRUE){
+	overlapBoot = as(nem.bootstrap(D,thresh, nboot,inference,models,control, verbose)$graph,"matrix")
+	overlapJack = as(nem.jackknife(D,thresh, inference,models,control, verbose)$graph,"matrix")
 	consens = ((overlapBoot > thresh) & (overlapJack > thresh))*1
 	res = nem(D,models=list(consens),inference="search",control, verbose=verbose)
 	res$pos = res$pos[[1]]

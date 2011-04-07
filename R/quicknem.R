@@ -1,4 +1,4 @@
-quicknem <- function(D,type="CONTmLLDens",inference="nem.greedy",controls.name=NULL,contrasts=NULL,normalize=FALSE,cutoff=0.05,DIR="bum",plot=TRUE,bootstrap=0,...) {
+quicknem <- function(D,type="CONTmLLDens",inference="nem.greedy",controls.name=NULL,contrasts=NULL,normalize=FALSE,cutoff=0.05,DIR="bum",plot=TRUE,bootstrap=0, ...) {	
 	# preprocess data
 	if(class(D)=="ExpressionSet") {
 		print("Extracting data from expression set...")

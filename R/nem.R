@@ -1,7 +1,7 @@
 set.default.parameters = function(Sgenes, ...){         
     map = as.list(Sgenes)
     names(map) = Sgenes 
-    control = list(Sgenes=Sgenes,type="mLL",para=c(0.13,0.05),hyperpara=c(1,9,9,1),Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(Sgenes),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE, trans.close=TRUE, backward.elimination=FALSE, mode="continous_Bayesian", lambda.intervention=4, lambda.no_intervention=4,  df.intervention=4.4, df.no_intervention=4.4, nu.intervention=0.6, nu.no_intervention=0.95, scale.intervention=0.023, scale.no_intervention=0.023, map=map, outputdir="QualityControl", debug=FALSE)
+    control = list(Sgenes=Sgenes,type="mLL",para=c(0.13,0.05),hyperpara=c(1,9,9,1),Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(Sgenes),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE, trans.close=TRUE, backward.elimination=FALSE, mode="continous_Bayesian", lambda.intervention=4, lambda.no_intervention=4,  df.intervention=4.4, df.no_intervention=4.4, nu.intervention=0.6, nu.no_intervention=0.95, scale.intervention=0.023, scale.no_intervention=0.023, map=map, outputdir="QualityControl", debug=FALSE, mc.cores=8)
     args = list(...)
     na = names(args)
     for(a in na){
