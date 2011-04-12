@@ -9,7 +9,8 @@ Reference: Markowetz F, Bloch J, Spang R: Non-transcriptional pathway features r
            Froehlich H, Beissbarth T, Tresch A, Kostka D, Jacob J, Spang R, Markowetz F: Analyzing gene perturbation screens with nested effects models in R and bioconductor, Bioinformatics, 2008, 24:2549-50.
            Froehlich H, Tresch A, Beissbarth T: Nested effects models for learning signaling networks from perturbation data, Biometrical Journal, 2009, 2:304-323.
 Maintainer: Holger Froehlich <frohlich@bit.uni-bonn.de>
-Depends: R (>= 2.0), e1071 (>= 1.5), graph (>= 1.24), Rgraphviz (>= 1.22), plotrix, limma, time (>= 1.0), cluster (>= 1.11), multicore, doMC
+Depends: R (>= 2.0), e1071 (>= 1.5), graph (>= 1.24), Rgraphviz (>= 1.22), plotrix, limma, time (>= 1.0), cluster (>= 1.11), statmod
+Enhances: doMC
 Imports: boot, e1071, graph, graphics, grDevices, methods, RBGL (>= 1.8.1), RColorBrewer, Rgraphviz, stats, utils
 Suggests: Biobase (>= 1.10)
 LazyLoad: Yes

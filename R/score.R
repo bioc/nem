@@ -41,23 +41,33 @@ score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
 	cat(">>> Regularization parameter non-zero: Generating sparsity prior automatically! <<<\n")
 	control$Pm = diag(length(Sgenes))
   }
-   
-  registerDoMC(control$mc.cores)
+     
   if (control$type=="FULLmLL"){ # FULL log marginal likelihood of all models
     if (verbose==TRUE) cat("Computing FULL (marginal) likelihood for",length(models),"models\n")
    	if(control$lambda != 0)
     	results <- sapply(models,FULLmLL,D1,D0,control, verbose)
-	else		
-		results = foreach(m = models) %dopar%
-			FULLmLL(m, D1,D0,control, verbose)		
+	else{
+		if ("doMC" %in% loadedNamespaces()){
+			registerDoMC(control$mc.cores)
+			results = foreach(m = models) %dopar%
+				FULLmLL(m, D1,D0,control, verbose)
+		}
+		else{
+			results <- sapply(models,FULLmLL,D1,D0,control, verbose) 
+		}
+	}
   }
   else{   # log marginal likelihood of all models		
 	if (verbose==TRUE) cat("Computing (marginal) likelihood for",length(models),"models\n")
 	if(control$lambda != 0)
 		results <- sapply(models,mLL,D1,D0,control, verbose)     	
-	else		
-		results = foreach(m = models) %dopar%
-			mLL(m, D1,D0,control, verbose)		
+	else{
+		if ("doMC" %in% loadedNamespaces())
+			results = foreach(m = models) %dopar%
+				mLL(m, D1,D0,control, verbose)
+		else
+			results <- sapply(models,mLL,D1,D0,control, verbose)
+	}
   }
   if(control$lambda != 0){	  
 	  s       <- unlist(results["mLL",])

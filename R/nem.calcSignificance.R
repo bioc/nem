@@ -51,31 +51,53 @@ nem.calcSignificance <- function(D, x, N=1000, seed=1, mc.cores=8){
 	BFperm = double(N)	
 	BFrand = double(N)	
 	BFmod = double(N)
-	test = foreach(i=1:N)%dopar% {		
-		cat(".")
-		net = sampleRndNetwork(Sgenes)		
-		loglik <- nem(D,models=list(net),inference="search", x$control, verbose=FALSE)$mLL
-		BFrand = likelihood - loglik	
-
-		rnd = sample(1:ncol(Phi), replace=FALSE)
-		net = Phi[rnd,rnd]		
-		dimnames(net) = list(Sgenes, Sgenes)		
-		loglik <- nem(D,models=list(net),inference="search",x$control, verbose=FALSE)$mLL
-		BFperm = likelihood - loglik	
-
-		net = modify.rand(Phi)		
-		loglik <- nem(D,models=list(net),inference="search",x$control, verbose=FALSE)$mLL
-		BFmod = likelihood - loglik
-		
-		list(BFrand=BFrand, BFperm=BFperm, BFmod=BFmod)
-		
+	if ("doMC" %in% loadedNamespaces()){
+		registerDoMC(mc.cores)
+		test = foreach(i=1:N)%dopar% {		
+			cat(".")
+			net = sampleRndNetwork(Sgenes)		
+			loglik <- nem(D,models=list(net),inference="search", x$control, verbose=FALSE)$mLL
+			BFrand = likelihood - loglik	
+	
+			rnd = sample(1:ncol(Phi), replace=FALSE)
+			net = Phi[rnd,rnd]		
+			dimnames(net) = list(Sgenes, Sgenes)		
+			loglik <- nem(D,models=list(net),inference="search",x$control, verbose=FALSE)$mLL
+			BFperm = likelihood - loglik	
+	
+			net = modify.rand(Phi)		
+			loglik <- nem(D,models=list(net),inference="search",x$control, verbose=FALSE)$mLL
+			BFmod = likelihood - loglik
+			
+			list(BFrand=BFrand, BFperm=BFperm, BFmod=BFmod)
+			
+		}
+		BFrand = unlist(test$BFrand)
+		BFperm = unlist(test$BFperm)
+		BFmod = unlist(test$BFmod)
 	}
-	BFrand = unlist(test$BFrand)
-	BFperm = unlist(test$BFperm)
-	BFmod = unlist(test$BFmod)
-	p.value.rnd = length(which(BFrand <= 0)) / N
-	p.value.perm = length(which(BFperm <= 0)) / N
-	p.value.mod = length(which(BFmod <= 0)) / N
+	else{
+		for(i in 1:N){
+			if(i%%10 == 0)
+				cat(".")
+			net = sampleRndNetwork(Sgenes)		
+			loglik <- nem(D,models=list(net),inference="search", x$control, verbose=FALSE)$mLL
+			BFrand[i] = likelihood - loglik	
+			
+			rnd = sample(1:ncol(Phi), replace=FALSE)
+			net = Phi[rnd,rnd]		
+			dimnames(net) = list(Sgenes, Sgenes)		
+			loglik <- nem(D,models=list(net),inference="search",x$control, verbose=FALSE)$mLL
+			BFperm[i] = likelihood - loglik	
+			
+			net = modify.rand(Phi)		
+			loglik <- nem(D,models=list(net),inference="search",x$control, verbose=FALSE)$mLL
+			BFmod[i] = likelihood - loglik
+		}		
+	}
+	p.value.rnd = permp(sum(BFrand <= 0), N, twosided=FALSE, total.nperm=N) 
+	p.value.perm = permp(sum(BFperm <= 0), N, twosided=FALSE, total.nperm=N)
+	p.value.mod = permp(sum(BFmod <= 0), N, twosided=FALSE, total.nperm=N) 	
 	cat("\ndone.\n")
 	
 	list(p.value.rnd=p.value.rnd, p.value.perm=p.value.perm, p.value.mod=p.value.mod)

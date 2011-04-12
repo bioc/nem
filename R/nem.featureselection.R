@@ -1,6 +1,5 @@
 nem.featureselection <- function(D,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))),verbose=TRUE, tol=1e-4){
-	
-	registerDoMC(control$mc.cores)
+		
 	control$selEGenes=FALSE	
 	if(control$type %in% c("CONTmLLRatio","CONTmLLMAP")){
 		Sgenes = setdiff(unique(colnames(D)), "time")
@@ -10,12 +9,24 @@ nem.featureselection <- function(D,inference="nem.greedy",models=NULL,control=se
 			colnames(control$Pe) <- Sgenes  		
   		}    		
 		deltaseq = 0:10
-		results = foreach(d = deltaseq) %dopar% {					
-			net = nem(D, inference, models,control,verbose=verbose)	
-			if(verbose){
-				cat(length(net$selected), " selected E-genes (delta = ", d, ", BIC = ", -2*net$mLL + log(nrow(D))*length(net$selected), "):", sort(net$selected)[1:min(20, length(net$selected))]," ...\n")				
-			}			
-			net
+		if ("doMC" %in% loadedNamespaces()){
+			registerDoMC(control$mc.cores)
+			results = foreach(d = deltaseq) %dopar% {					
+				net = nem(D, inference, models,control,verbose=verbose)	
+				if(verbose){
+					cat(length(net$selected), " selected E-genes (delta = ", d, ", BIC = ", -2*net$mLL + log(nrow(D))*length(net$selected), "):", sort(net$selected)[1:min(20, length(net$selected))]," ...\n")				
+				}			
+				net
+			}
+		}
+		else{
+			results = sapply(deltaseq, function(d){					
+						net = nem(D, inference, models,control,verbose=verbose)	
+						if(verbose){
+							cat(length(net$selected), " selected E-genes (delta = ", d, ", BIC = ", -2*net$mLL + log(nrow(D))*length(net$selected), "):", sort(net$selected)[1:min(20, length(net$selected))]," ...\n")				
+						}			
+						net
+					})	
 		}		
  		s = -2*unlist(results["mLL",]) + log(nrow(D))*sapply(results["selected",], length) # BIC model selection
 # 		s = -unlist(results["mLL",])/sapply(results["selected",], length) # Achim's original approach		
