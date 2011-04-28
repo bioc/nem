@@ -69,7 +69,7 @@ score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
 			results <- sapply(models,mLL,D1,D0,control, verbose)
 	}
   }
-  if(control$lambda != 0){	  
+  if(control$lambda != 0 | !("doMC" %in% loadedNamespaces())){	  
 	  s       <- unlist(results["mLL",])
 	  ep      <- results["pos",]
 	  map     <- results["mappos",] 	
