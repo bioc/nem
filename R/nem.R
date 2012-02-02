@@ -1,7 +1,15 @@
 set.default.parameters = function(Sgenes, ...){         
     map = as.list(Sgenes)
     names(map) = Sgenes 
-    control = list(Sgenes=Sgenes,type="mLL",para=c(0.13,0.05),hyperpara=c(1,9,9,1),Pe=NULL,Pm=NULL,Pmlocal=NULL,local.prior.size=length(Sgenes),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE, trans.close=TRUE, backward.elimination=FALSE, mode="continous_Bayesian", lambda.intervention=4, lambda.no_intervention=4,  df.intervention=4.4, df.no_intervention=4.4, nu.intervention=0.6, nu.no_intervention=0.95, scale.intervention=0.023, scale.no_intervention=0.023, map=map, outputdir="QualityControl", debug=FALSE, mc.cores=8)
+    control = list(Sgenes=Sgenes,type="mLL",para=c(0.13,0.05),hyperpara=c(1,9,9,1),Pe=NULL,Pm=NULL,Pmlocal=NULL, Pm.frac_edges=0.2,
+			local.prior.size=length(Sgenes),local.prior.bias=1,triples.thrsh=0.5,lambda=0,delta=1,selEGenes=FALSE, selEGenes.method="regularization",
+			trans.close=TRUE, backward.elimination=FALSE, mode="continous_Bayesian", lambda.intervention=4, lambda.no_intervention=4,  df.intervention=4.4, 
+			df.no_intervention=4.4, nu.intervention=0.6, nu.no_intervention=0.95, scale.intervention=0.023, scale.no_intervention=0.023, map=map, outputdir="QualityControl", 
+			debug=FALSE, mc.cores=8,
+			mcmc.nsamples=1e6, mcmc.nburnin=1e6, mcmc.seed=1234, mcmc.hyperprior=10,
+			eminem.maxsteps=1000, eminem.sdVal=1, eminem.changeHfreq=NULL,
+			prob.cutoff=0.5
+			)
     args = list(...)
     na = names(args)
     for(a in na){
@@ -14,9 +22,9 @@ nem <- function(D,inference="nem.greedy",models=NULL,control=set.default.paramet
 #------------------------------
 # Sanity checks              
 if(inference == "nem.greedyMAP")
-    type = "CONTmLLMAP"
+    control$type = "CONTmLLMAP"
   
-if (!(inference %in% c("pairwise", "triples", "search","ModuleNetwork","nem.greedy","nem.greedyMAP","BN.greedy","BN.exhaustive"))) 
+if (!(inference %in% c("pairwise", "triples", "search","ModuleNetwork","nem.greedy","nem.greedyMAP","BN.greedy","BN.exhaustive","mc.eminem","dynoNEM"))) 
     stop("\nnem> argument 'inference' is not valid\n")
 if (!(control$type %in% c("mLL", "FULLmLL", "CONTmLL","CONTmLLBayes","CONTmLLMAP", "CONTmLLDens", "CONTmLLRatio","depn"))) 
     stop("\nnem> argument 'type' is not valid")
@@ -85,6 +93,71 @@ else if(inference == "nem.greedy"){
 
 else if(inference == "nem.greedyMAP"){
     result <- nem.greedyMAP(D,control, verbose=verbose) 
+}
+# MC.EMINEM
+else if(inference == "mc.eminem"){
+	cat("mc.eminem algorithm\n\n")
+	if(!control$type %in% c("CONTmLLBayes","CONTmLLMAP", "CONTmLLDens", "CONTmLLRatio"))
+		stop("Likelihood type has to be one of 'CONTmLLBayes', 'CONTmLLMAP', 'CONTmLLDens', 'CONTmLLRatio'")
+	if(!is.null(control$Pe))
+		Pe = t(control$Pe)
+	else
+		Pe = NULL	
+	result = runMCMC(D, nrRuns=control$mcmc.nsamples, theta_init=models[[1]], prior.theta=control$Pm, prior.hidden=Pe, maxsteps_eminem=control$eminem.maxsteps, sd_val=control$eminem.sdVal, probVal=control$Pm.frac_edges, ep=control$lambda)	
+	result$avg = getFinalTheta(result$theta_list, burnin=control$mcmc.nburnin)
+	dimnames(result$avg) = list(control$Sgenes, control$Sgenes)
+	Phi = (result$avg > control$prob.cutoff)*1
+	result = score(list(Phi), D, control=control, verbose=verbose)		
+	result$mappos = result$mappos[[1]]
+	class(result) = "mc.eminem"
+}
+# dynoNEM with MCMC
+else if(inference == "dynoNEM"){
+	cat("DynoNEM algorithm for time series data\n\n")
+	if(length(dim(D)) < 2)
+		stop("Data has to be an array of dimension T x #E-genes x #S-genes for the continous and T x #E-genes x (#S-genes * #replicates) for the discrete case")
+	if(control$type %in% c("mLL", "FULLmLL")){
+		nreps = sapply(control$Sgenes, function(s) sum(dimnames(D)[[3]] == s))
+		if(var(nreps) != 0)
+			stop("dynoNEM currently only supports the same number of replicates per S-gene")
+		nrep = nreps[1]
+		if(nrep > 1){
+			Dnew = array(dim=c(dim(D)[1], dim(D)[2], length(control$Sgenes)))
+			dimnames(Dnew) = list(as.character(1:dim(D)[1]), dimnames(D)[[2]], control$Sgenes)
+			for(s in control$Sgenes){
+				for(t in 1:dim(D)[1]){
+					Dnew[t,,] = rowSums(D[t,, colnames(D[t,,]) == s])
+				}			
+			}
+		}
+		else
+			Dnew = D
+	}
+	else{
+		nrep=1
+		Dnew = D
+	}
+	if(dim(Dnew)[3] != length(control$Sgenes))
+		stop("Dimensions of 'D' disagree with provided list of S-genes. 'D' has to be an array of dimension T x #E-genes x #S-genes (after summarization of replicates)")
+	result = dynoNEM_MCMC(Dnew, SAMPLE=control$mcmc.nsamples, BURNIN=control$mcmc.nburnin, initial=models[[1]], priorNet=control$Pm, priorE=control$Pe, delta=control$delta, inv.nu=control$lambda, theta=control$mcmc.hyperprior, type=control$type, nrep=nrep, alpha=control$para[1], beta=control$para[2], seed=control$mcmc.seed)
+	names(result)[names(result) == "all.likelihoods"] = "mLL"
+	take = which(result$mLL != Inf)
+	if(length(take) > 0){
+		plot(take, result$mLL[take], type="l", main=paste("log-likelihood along MCMC sampling"), xlab="step", ylab="log likelihood")
+		abline(v=control$mcmc.nburnin, lty=3)		
+	}	
+	result$avg = result$network
+	result$avg[result$avg - 2*result$SDconf < 0] = 0
+	result$graph = as(result$avg, "graphNEL")
+	result$ppost = exp(result$mLL)
+	pos = dynoNEM.posteriorEGenePos(result$network, Dnew, priorE=control$Pe, delta=control$delta, type=control$type, nrep=nrep, alpha=control$para[1], beta=control$para[2])
+	result$ep = pos$pos.probability
+	Theta = apply(result$ep,1,function(e) e ==max(e))
+	result$mappos = apply(Theta,1,which)
+	result$control = control	
+	result$selected = unique(unlist(result$mappos[control$Sgenes]))	
+	result$para = control$para
+	class(result) = "dynoNEM"
 }
 
 #------------------------------

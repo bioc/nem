@@ -1,4 +1,7 @@
 nem.jackknife <- function(D, thresh=0.5, inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))), verbose=TRUE){
+	if(inference == "dynoNEM")
+		stop("nem.jackknife is not applicable for dynoNEMs")
+	
 	inferNetwork <- function(sgenesk){	
 		if(verbose)
 			cat("S-genes used: ", sgenesk,"\n")

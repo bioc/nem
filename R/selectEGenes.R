@@ -59,5 +59,5 @@ getRelevantEGenes <- function(Phi, D, control, nEgenes=min(10*nrow(Phi), nrow(D)
 		control$Pe = control$Pe[sel,]
 		sc = score(list(Phi), D[sel,], control, verbose=FALSE, graphClass="matrix")		
 # 	}					
-	list(selected=sc$selected, mLL=sc$mLL[[1]], pos=sc$pos[[1]], mappos=sc$mappos[[1]], LLperGene=sc$LLperGene[[1]])
+	list(selected=sel, mLL=sc$mLL[[1]], pos=sc$pos[[1]], mappos=sc$mappos[[1]], LLperGene=sc$LLperGene[[1]])
 }

@@ -17,6 +17,9 @@ branching in the Imd pathway.
 \format{
   BoutrosRNAiExpression: data matrix: 14010 x 16
   BoutrosRNAiDiscrete:   binary matrix:  68 x 16
+  BoutrosRNAiDens:		data matrix: 68 x 4
+  BoutrosRNAiLods: 	    data matrix: 68 x 4
+  BoutrosRNAiLogFC:		data matrix: 68 x 4
 }
 \details{
 The dataset consists of 16 Affymetrix-microarrays: 4 replicates of control

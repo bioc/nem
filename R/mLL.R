@@ -1,17 +1,23 @@
 # log marginal likelihood of model
 mLL <- function(Phi,D1,D0=NULL,control, verbose=FALSE) {       
    if (!all(diag(Phi)==1)) 
-  	diag(Phi) <- 1 	        
+  	diag(Phi) <- 1 	    
+  if(control$selEGenes.method == "regularization"){
+		Phi2 = cbind(Phi, double(ncol(Phi)))
+		colnames(Phi2)[ncol(Phi2)] = "null"
+  }    
+  else
+	Phi2 = Phi
   para=NULL
-  if(control$type == "mLL")
-  	L  <- control$para[1]^(D1 %*% (1-Phi)) * (1-control$para[1])^(D0 %*% (1-Phi)) * (1-control$para[2])^(D1 %*% Phi) * control$para[2]^(D0 %*% Phi)  	    
-  else if(control$type %in% c("CONTmLLBayes", "CONTmLLDens"))	
-	L <- exp(D1%*%Phi)
+  if(control$type == "mLL"){	
+  	L  <- control$para[1]^(D1 %*% (1-Phi2)) * (1-control$para[1])^(D0 %*% (1-Phi2)) * (1-control$para[2])^(D1 %*% Phi2) * control$para[2]^(D0 %*% Phi2)  	    
+  }
+  else if(control$type %in% c("CONTmLLBayes", "CONTmLLDens")){	
+	L <- exp(D1%*%Phi2)
+  }
   else if(control$type == "CONTmLL")
 	L <- exp(log(D1)%*%Phi + log((1-D1))%*%(1-Phi)) 
   else if(control$type %in% c("CONTmLLMAP", "CONTmLLRatio")){			
-	Phi2 = cbind(Phi, double(ncol(Phi)))
-	colnames(Phi2)[ncol(Phi2)] = "null"
 	ep = D1%*%Phi2 + log(control$Pe)	
 	Theta = apply(ep,1,function(e) e ==max(e))
 	L = t((Phi2%*%(Theta*1)>0)*1)*D1

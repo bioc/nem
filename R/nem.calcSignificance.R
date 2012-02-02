@@ -40,7 +40,9 @@ nem.calcSignificance <- function(D, x, N=1000, seed=1, mc.cores=8){
 		}
 		return(Phinew)
 	}	
-
+	if(inference == "dynoNEM")
+		stop("nem.calcSignificance is not applicable for dynoNEMs")
+	
 	cat("Testing significance of NEM model\n")
 	likelihood = x$mLL
 	Phi = as(x$graph, "matrix")

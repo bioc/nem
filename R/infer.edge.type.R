@@ -1,5 +1,5 @@
 infer.edge.type = function(x, logFC, alpha=0.05, adj.method="BY"){	
-	if(length(x$mLL) > 1){
+	if(length(x$mLL) > 1 & class(x) != "dynoNEM"){
         	winner <- which.max(x$mLL)
 		pos <- x$mappos[[winner]]
 	}

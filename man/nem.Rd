@@ -8,6 +8,8 @@
 \alias{print.ModuleNetwork}
 \alias{print.score}
 \alias{print.nem.BN}
+\alias{print.mc.eminem}
+\alias{print.dynoNEM}
 
 \title{Nested Effects Models - main function}
 \description{The main function to perform model learning from data}
@@ -19,7 +21,7 @@ nem(D,inference="nem.greedy",models=NULL,control=set.default.parameters(setdiff(
 
 \arguments{
   \item{D}{data matrix with experiments in the columns (binary or continious)}
-  \item{inference}{\code{search} to use exhaustive enumeration, \code{triples} for triple-based inference, \code{pairwise} for the pairwise heuristic, \code{ModuleNetwork} for the module based inference, \code{nem.greedy} for greedy hillclimbing, \code{nem.greedyMAP} for alternating MAP optimization using log odds or log p-value densities}
+  \item{inference}{\code{search} to use exhaustive enumeration, \code{triples} for triple-based inference, \code{pairwise} for the pairwise heuristic, \code{ModuleNetwork} for the module based inference, \code{nem.greedy} for greedy hillclimbing, \code{nem.greedyMAP} for alternating MAP optimization using log odds or log p-value densities, \code{mc.eminem} for EM based inference using log odds or log p-value densities, \code{BN.greedy}, \code{BN.exhaustive} for a conventional Bayesian Network treatment using binomial or normal distribution assumptions, \code{dynoNEM} for MCMC based inference from time series data, \code{mc.eminem} for EM based inference}
   \item{models}{a list of adjacency matrices for model search. If NULL, an  exhaustive enumeration of all possible models is performed.}
   \item{control}{list of parameters: see \code{set.default.parameters}}
   \item{verbose}{do you want to see progression statements? Default: TRUE}
@@ -42,8 +44,31 @@ nem(D,inference="nem.greedy",models=NULL,control=set.default.parameters(setdiff(
   \item{LLperGene}{likelihood per selected E-gene}
   \item{control}{hyperparameter as in function call}
 }
+\references{
 
-\author{Holger Froehlich <URL: http:/www.dkfz.de/mga2/people/froehlich>, Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+Markowetz, F.; Bloch, J. & Spang, R., Non-transcriptional Pathway Features Reconstructed from Secondary Effects of RNA interference. Bioinformatics, 2005, 21, 4026 - 4032\\
+
+Markowetz, F.; Kostka, D.; Troyanskaya, O. & Spang, R., Nested Effects Models for High-dimensional Phenotyping Screens. Bioinformatics, 2007, 23, i305 - i312\\
+
+Fr\"ohlich, H.; Fellmann, M.; S\"ultmann, H.; Poustka, A. & Beissbarth, T. Large Scale Statistical Inference of Signaling Pathways from RNAi and Microarray Data. BMC Bioinformatics, 2007, 8, 386\\
+
+Fr\"ohlich, H.; Fellmann, M.; S\"ultmann, H.; Poustka, A. & Beissbarth, T. Estimating Large Scale Signaling Networks through Nested Effect Models with Intervention Effects from Microarray Data. Bioinformatics, 2008, 24, 2650-2656\\ 
+
+Tresch, A. & Markowetz, F., Structure Learning in Nested Effects Models Statistical Applications in Genetics and Molecular Biology, 2008, 7\\
+
+Zeller, C.; Fr\"ohlich, H. & Tresch, A., A Bayesian Network View on Nested Effects Models EURASIP Journal on Bioinformatics and Systems Biology, 2009, 195272\\
+
+Fr\"ohlich, H.; Tresch, A. & Beissbarth, T., Nested Effects Models for Learning Signaling Networks from Perturbation Data. Biometrical Journal, 2009, 2, 304 - 323\\
+
+Fr\"ohlich, H.; Sahin, \"O.; Arlt, D.; Bender, C. & Beissbarth, T. Deterministic Effects Propagation Networks for Reconstructing Protein Signaling Networks from Multiple Interventions. BMC Bioinformatics, 2009, 10, 322\\
+
+Fr\"ohlich, H.; Praveen, P. & Tresch, A., Fast and Efficient Dynamic Nested Effects Models. Bioinformatics, 2011, 27, 238-244\\
+
+Niederberger, T.; Etzold, S.; Lidschreiber, M; Maier, K.; Martin, D.; Fr\"ohlich, H.; Cramer, P.; Tresch, A., MC Eminem Maps the Interaction Landscape of the Mediator, PLoS Comp. Biol., 2012, submitted.
+
+}
+
+\author{Holger Froehlich <URL: http://abi.bit.uni-bonn.de>, Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
 
 
 \seealso{\code{\link{set.default.parameters}}, \code{\link{nemModelSelection}}, \code{\link{nem.jackknife}}, \code{\link{nem.bootstrap}}, \code{\link{nem.consensus}}, \code{\link{local.model.prior}}, \code{\link{plot.nem}}}

@@ -1,5 +1,7 @@
 nem.bootstrap <- function(D, thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))), verbose=TRUE){
-		
+	if(inference == "dynoNEM")
+		stop("nem.bootstrap is not applicable for dynoNEMs")
+	
 	inferNetwork <- function(idx.orig=1:nrow(D), boot){				
 		controltmp = control				
 		controltmp$Pe = control$Pe[boot,]		

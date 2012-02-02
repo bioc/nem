@@ -7,14 +7,14 @@ print.nem <- function(x, ...) {
   # slots
   cat("$graph:  phenotypic hierarchy (graphNEL object) with",ncol(x$graph),"genes\n")  
   cat("Inference scheme: ",x$control$type,"\n")
-  cat("log posterior (marginal) likelihood $mLL:", x$mLL, "\n")
+  if(length(x$mLL) == 1)
+  	cat("log posterior (marginal) likelihood $mLL:", x$mLL, "\n")  
   if(x$control$type == "mLL")
   	cat("Error probabilities alpha and beta:", x$control$para,"\n")
   if(x$control$type == "FULLmLL")
   	cat("Hyperparameters for error probability distributions:", x$control$hyperpara, "\n")
-  cat("network structure regularization parameter $lambda (default: 0):",x$control$lambda ,"\n")
-  if(x$control$type == "CONTmLLMAP")
-  	cat("Prior weight $delta for assigning E-genes to virtual S-gene 'null' (default: 1):",x$control$delta ,"\n")
+  cat("network structure regularization parameter $lambda (default: 0):",x$control$lambda ,"\n")  
+  cat("Prior weight $delta for assigning E-genes to virtual S-gene 'null' (default: 1):",x$control$delta ,"\n")
   cat(length(x$selected), " selected E-genes:\n")
   for(i in 1:length(x$mappos)){
 	cat("-->", names(x$mappos)[i], ":", length(x$mappos[[i]]), " attached E-genes\n")
@@ -67,6 +67,14 @@ print.nem.consensus = function(x, ...){
 }
 
 print.nem.BN = function(x, ...){
+	print.nem(x, ...)
+}
+
+print.mc.eminem = function(x, ...){
+	print.nem(x, ...)
+}
+
+print.dynoNEM = function(x, ...){
 	print.nem(x, ...)
 }
 

@@ -1,11 +1,11 @@
 Package: nem
 Title: Nested Effects Models to reconstruct phenotypic hierarchies
-Version: 2.19.0
-Author: Holger Froehlich, Florian Markowetz, Achim Tresch, Christian Bender, Matthias Maneck, Claudio Lottaz, Tim Beissbarth
+Version: 2.30.0
+Author: Holger Froehlich, Florian Markowetz, Achim Tresch, Theresa Niederberger, Christian Bender, Matthias Maneck, Claudio Lottaz, Tim Beissbarth
 Description: The package 'nem' allows to reconstruct features of pathways from the nested structure of perturbation effects. It takes as input (1.) a set of pathway components, which were perturbed, and (2.) high-dimensional phenotypic readout of these perturbations (e.g. gene expression or morphological profiles). The output is a directed graph representing the phenotypic hierarchy.
 Reference: Froehlich H, Beissbarth T, Tresch A, Kostka D, Jacob J, Spang R, Markowetz F: Analyzing gene perturbation screens with nested effects models in R and bioconductor, Bioinformatics, 2008, 24:2549-50.
 Maintainer: Holger Froehlich <frohlich@bit.uni-bonn.de>
-Depends: R (>= 2.0), e1071 (>= 1.5), graph (>= 1.24), Rgraphviz (>= 1.22), plotrix, limma, time (>= 1.0), cluster (>= 1.11), statmod
+Depends: R (>= 2.0), e1071 (>= 1.5), graph (>= 1.24), Rgraphviz (>= 1.22), plotrix, limma, time (>= 1.0), cluster (>= 1.11), statmod, Hmisc
 Enhances: doMC
 Imports: boot, e1071, graph, graphics, grDevices, methods, RBGL (>= 1.8.1), RColorBrewer, Rgraphviz, stats, utils
 Suggests: Biobase (>= 1.10)
@@ -13,3 +13,4 @@ LazyLoad: Yes
 biocViews: Microarray, Bioinformatics, GraphsAndNetworks, Pathways
 URL: http://www.bioconductor.org
 License: GPL (>= 2)
+

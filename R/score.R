@@ -32,7 +32,7 @@ score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
 	control$Pe <- matrix(1/nrS,nrow=nrow(D1),ncol=nrS)
 	colnames(control$Pe) <- Sgenes  		
   }          
-  if(control$type %in% c("CONTmLLRatio", "CONTmLLMAP")){		
+  if(control$selEGenes.method == "regularization"){		
   	control$Pe = cbind(control$Pe, double(nrow(D1)))  			
   	control$Pe[,ncol(control$Pe)] = control$delta/nrS
 	control$Pe = control$Pe/rowSums(control$Pe)		
@@ -72,7 +72,7 @@ score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
   if(control$lambda != 0 | !("doMC" %in% loadedNamespaces())){	  
 	  s       <- unlist(results["mLL",])
 	  ep      <- results["pos",]
-	  map     <- results["mappos",] 	
+	  map     <- results["mappos",] 	  
 	  LLperGene = results["LLperGene",]
 	  para = results["para",]
 	  selected = results["mappos",which.max(s)][[1]]

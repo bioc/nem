@@ -10,6 +10,8 @@
 \alias{plot.nem.jackknife}
 \alias{plot.nem.consensus}
 \alias{plot.nem.BN}
+\alias{plot.mc.eminem}
+\alias{plot.dynoNEM}
 \alias{plotnem}
 
 \title{plot nested effect model}

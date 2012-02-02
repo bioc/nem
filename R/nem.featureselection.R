@@ -1,7 +1,7 @@
 nem.featureselection <- function(D,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))),verbose=TRUE, tol=1e-4){
 		
 	control$selEGenes=FALSE	
-	if(control$type %in% c("CONTmLLRatio","CONTmLLMAP")){
+	if(control$selEGenes.method == "regularization"){
 		Sgenes = setdiff(unique(colnames(D)), "time")
 		nrS = length(Sgenes)
 		 if (is.null(control$Pe)){ 	
@@ -35,6 +35,8 @@ nem.featureselection <- function(D,inference="nem.greedy",models=NULL,control=se
 		class(net) = inference
 	}
 	else{
+		if(inference %in% c("dynoNEM", "mc.eminem"))
+			stop("This feature selection method is not applicable to 'dynoNEM' and 'mc.eminem'")
 		converged = FALSE
 		while(!converged){
 			net = nem(D, inference, models, control,verbose=verbose)

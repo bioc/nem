@@ -38,16 +38,19 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 			k = 1
 			for (i in 1:ncol(M)) {
 				for (j in 1:nrow(M)) {
-					if (M[i, j] != 0) {					
-						probs[k] = signif(ifelse(abs(M[i,j]) > 1, abs(M[i,j])-1, abs(M[i,j])), 2)		
+					if (M[i, j] != 0) {		
+						if(class(x) != "dynoNEM")
+							probs[k] = signif(ifelse(abs(M[i,j]) > 1, abs(M[i,j])-1, abs(M[i,j])), 2)
+						else
+							probs[k] = signif(M[i,j], 2)
 						edgeData(gR, from = nodes[i], to = nodes[j], attr = "style") = "bold"
 						edgeData(gR, from = nodes[i], to = nodes[j], attr = "label") = probs[k]
 						edgeData(gR, from = nodes[i], to = nodes[j], attr = "weight") = M[i,j]
-						if((M[i,j] > 0) & (M[i,j] <= 1)){
+						if((M[i,j] > 0) & (M[i,j] <= 1) || class(x) == "dynoNEM"){
 							edgeData(gR, from = nodes[i], to = nodes[j], attr = "arrowhead") = "normal"
 							arr[k] = "normal"
 						}
-						else if(M[i,j] > 1){
+						else if(M[i,j] > 1 & class(x) != "dynoNEM"){
 							edgeData(gR, from = nodes[i], to = nodes[j], attr = "arrowhead") = "vee"
 							arr[k] = "vee"
 						}
@@ -192,3 +195,10 @@ plot.nem.BN <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, fil
 	plot.nem(x, what, remove.singletons, PDF, filename, thresh, transitiveReduction, plot.probs, SCC, ...)
 }
 
+plot.mc.eminem = function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, ...) {
+	plot.nem(x, what, remove.singletons, PDF, filename, thresh, transitiveReduction, plot.probs, SCC, ...)
+}
+
+plot.dynoNEM = function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, ...) {
+	plot.nem(x, what, remove.singletons, PDF, filename, thresh, transitiveReduction, plot.probs=TRUE, SCC=FALSE, ...)
+}

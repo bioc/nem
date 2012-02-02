@@ -43,7 +43,7 @@ rm(list=ls())
 @
 
 \title{--- Nested Effects Models --- \\ An example in \emph{Drosophila} immune response}
-\author{Holger Fr\"ohlich\footnote{German Cancer Research Center, Im Neuenheimer Feld 580, 69120 Heidelberg, Germany. eMail: h.froehlich@dkfz-heidelberg.de} \and Florian Markowetz\footnote{Lewis-Sigler Institute for Integrative Genomics, Pinceton, NJ 08544, USA. eMail: florian@genomics.princeton.edu; URL: http://genomics.princeton.edu/$\sim$florian}}
+\author{Holger Fr\"ohlich\footnote{University of Bonn, Bonn-Aachen International Center for Information Technology, frohlich@bit.uni-bonn.de} \and Florian Markowetz\footnote{Cancer Research UK, Florian.Markowetz@cancer.org.uk}}
 \date{\today}
 \maketitle
 
@@ -53,7 +53,7 @@ cannot be directly deduced from expression profiling experiments. The situation
 changes, when external interventions like RNA interference or gene knock-outs
 come into play. 
 
-In \cite{Markowetz2005Inference, Markowetz2007, Frohlich2007RNAiBMC, Frohlich2008NEMsBioinformatics, Tresch2008NEMs} algorithms were introduced to infer non-transcriptional pathway features based on differential
+In \cite{Markowetz2005Inference, Markowetz2007, Frohlich2007RNAiBMC, Frohlich2008NEMsBioinformatics, Tresch2008NEMs, Frohlich2009NEMComplete} algorithms were introduced to infer non-transcriptional pathway features based on differential
 gene expression in silencing assays. 
 These methods are implemented in the Bioconductor package \texttt{nem}.
 Here we demonstrate its practical use in
@@ -401,7 +401,7 @@ plot.nem(resultGreedy, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 
 Rather than looking for a complete network hypothesis at once the
 idea of the module network is to build up a graph from smaller subgraphs,
-called \emph{modules} in the following \cite{Frohlich2007RNAiBMC, Frohlich2007RNAiBMC}. The module network is thus
+called \emph{modules} in the following \cite{Frohlich2007RNAiBMC, Frohlich2008NEMsBioinformatics}. The module network is thus
 a divide and conquer approach: We first perform a hierarchical clustering
 of the preprocessed expression profiles of all S-genes, e.g. via average linkage. The
 idea is that S-genes with a similar E-gene response profile should be close in the signaling
@@ -539,27 +539,29 @@ nem(preprocessed$prob.influenced,type="CONTmLL",inference="search")
 \clearpage
 \subsection{Selection of E-Genes}
 
-There exists two mechanisms to select E-genes implemented in \texttt{nem}, which can be used complementary to each other: 
+There exists two mechanisms to select E-genes implemented in \texttt{nem}, which can be used complementary to each other \cite{Frohlich2009NEMComplete}: 
 \begin{itemize}
 \item A-priori filtering of E-genes, which show a pattern of differential expression, which can be expected to be non-random
 \item Automated subset selection of most relevant E-genes within the network estimation procedure. 
 \end{itemize}
-In case of inference scheme (\texttt{"CONTmLLMAP"}) automated subset selection of most relevant E-genes works as follows: A virtual "null" S-gene is used, to which E-genes are assigned, that are irrelevant. The prior probability of assigning an E-gene to the "null" S-genes is $\frac{\delta}{n}$, where $\delta>0$ and $n$ is the number of S-genes. The parameter $\delta$ is tuned via the BIC model selection criterion.
+Automated subset selection of most relevant E-genes works as follows: A virtual "null" S-gene is used, to which E-genes are assigned, that are irrelevant. The prior probability for assigning an E-gene to the "null" S-genes is $\frac{\delta}{n}$, where $\delta>0$ and $n$ is the number of S-genes + 1. Since version > 2.18.0 E-gene selection is done per default. The parameter $\delta$ can optionally be tuned via the BIC model selection criterion.
 
-In all other cases automated subset selection of relevant E-genes is performed via an alternating optimization scheme: First, the network with the highest likelihood for the given set of E-genes is determined. Then, the E-genes with the highest marginal likelihood under that network hypothesis are calculated. When using (log) $p$-value densities as our data format these are simply all E-genes with a positive contribution to the log marginal likelihood. In all other cases by default the top $10n$ E-genes are selected. With the new set of E-genes a new network is inferred and the whole procedure is repeated until convergence.
+For a given network hypothesis we can also check, which E-Genes had the highest positive contribution to the network hypothesis.
 <<eval=FALSE>>=
 mydat = filterEGenes(Porig, logdensities) # a-priori filtering of E-genes
 
 hyper$selEGenes = TRUE
 hyper$type = "CONTmLLBayes"
-resAuto = nem(mydat,control=hyper) # use filtered data to estimate a network; perform automated subset selection of E-genes 
+resAuto = nem(mydat,control=hyper) # use filtered data to estimate a network; perform automated subset selection of E-genes with tuning of the parameter delta
+
+most.relevant = getRelevantEGenes(as(resAuto$graph, "matrix"), mydat)$selected # returns all E-genes with partial log-likelihood > 0.
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \subsection{Statistical Stability and Significance}
 
-An important step after network inference is some kind of validation. In abscence of the true network this step is rather difficult. We have implemented several possible tests, which may also be used in addition to each other:
+An important step after network inference is some kind of validation. In abscence of the true network this step is rather difficult. We have implemented several possible tests, which may also be used in addition to each other \cite{Frohlich2009NEMComplete}: 
 \begin{itemize}
 \item Statistical significance: Possibly the least demand we have for our inferred network is, that it should be significantly superior to a random one. We sample $N$ (default 1000) random networks from a null distribution and compare their marginal posterior likelihood to that of the estimated network. The fraction of how often a random network is better than the inferred one yields an exact p-value. An alternative to draw completely random networks, is to permute the node labels of the inferred network. This yields a degree distribution, which is always the same as in the inferred network.
 \item Bootstrapping: We wish our network to be stable against small changes in our set of E-genes. Therefore, we use bootstrapping: We sample $m$ E-genes with replacement for $N$ times (default 1000) and run the network inference on each bootstrap sample. At the end we count for each edge how often it was inferred in all $N$ bootstrap runs. This yields a probability for each edge. We then may only consider edges with a probability above some threshold (e.g. 50%).
@@ -590,6 +592,19 @@ plot.nem(resultBN, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 }{graph8}{Result of Bayesian network learning}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\subsection{Dynamic Nested Effects Models}
+
+In \cite{Anchang2009} the authors describe a first extension of NEMs to time series perturbation data. That means after each perturbation gene expression is measured at several time points. The model, called D-NEMs was successfully applied to reverse engineer parts of a transcriptional network steering murine stem cell development \cite{Ivanova2006}. A second model for the same purpose was proposed in \cite{Frohlich2011}. Due to the employed likelihood model a highly efficient computation is possible here. It is thus particularly well suited for real world applications and included in to the \texttt{nem} package. Opposed to the original greedy algorithm used in \cite{Frohlich2011}, we here provide a Markov Chain Monte Carlo (MCMC) algorithm for structure learning. It includes a Bayesian way of including prior knowledge by drawing the weight of the structure prior (parameter lambda) itself from an exponential distribution.
+<<eval=FALSE>>=
+data("Ivanova2006RNAiTimeSeries")
+dim(dat)
+control = set.default.parameters(dimnames(dat)[[3]], para=c(0.1,0.1))
+net = nem(dat, inference="dynoNEM", control=control)
+plot.nem(net, SCC=FALSE, plot.probs=TRUE)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \subsection{Deterministic Effects Propagation Networks}
 
@@ -625,7 +640,6 @@ names(col) = nodes(resEdgeInf$graph)
 plot.nem(resEdgeInf, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
 }{graph100}{Inferred edge types: blue = inhibition, red = activation}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage

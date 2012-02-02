@@ -7,12 +7,13 @@
  Simulates a knock-down of a list of network nodes and returns the network nodes and effect reporters, where effects are expected.
 }
 \usage{
-sim.intervention(x, int)
+sim.intervention(x, int, T=1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{nem object}
-  \item{int}{a character vector of nodes in the network}  
+  \item{int}{a character vector of nodes in the network}
+  \item{T}{number of time steps to be simulated (only for dynoNEMs)}  
 }
 \value{
 list with two slots:

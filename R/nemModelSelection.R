@@ -1,4 +1,6 @@
 nemModelSelection <- function(lambdas,D,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))),verbose=TRUE, ...){	
+	if(inference %in% c("mc.eminem", "dynoNEM"))
+		stop("nemModelSelection is not applicable for 'mc.eminem' and 'dynoNEM'")
     infer <- function(lam){                     
         control$lambda=lam          
         res <- nem:::nem(D,inference=inference,models=models,control=control, verbose=verbose) # ACHTUNG: nem spuckt immer den MAP score aus!!!       
