@@ -32,7 +32,7 @@ plotEffects(D,nem,border=TRUE,legend=TRUE,order=NULL,orderSCC=TRUE,palette="Blue
 	This function was formerly named \code{plot.effects}. This naming is not possible any more, since S3 classes were used for the function \code{plot.nem}.
 }
 
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>, Holger Froehlich <URL: http:/www.dkfz.de/mga2/people/froehlich>}
+\author{Florian Markowetz, Holger Froehlich}
 
 \examples{
    data("BoutrosRNAi2002")

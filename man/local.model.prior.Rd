@@ -31,7 +31,7 @@ local.model.prior(size,n,bias)
 }
 
 %\references{}
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Florian Markowetz}
 %\note{}
 
 \seealso{\code{\link{pairwise.posterior}}, \code{\link{nem}}}

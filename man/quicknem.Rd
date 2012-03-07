@@ -42,7 +42,7 @@ quicknem(D,type="CONTmLLDens",inference="nem.greedy",controls.name=NULL,contrast
   \item{bootstrap}{Integer number defining how many bootstrap samples should be drawn. If 0, no bootstrapping will be performed. Else, \code{\link{nem.bootstrap}} will be called internally.} 
 }
 
-\author{Christian Bender, Holger Froehlich <URL: http:/www.dkfz.de/mga2/people/froehlich>, Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Christian Bender, Holger Froehlich, Florian Markowetz}
 
 
 \seealso{\code{\link{nem}}, \code{\link{set.default.parameters}}, \code{\link{nemModelSelection}}, \code{\link{nem.jackknife}}, \code{\link{nem.bootstrap}}, \code{\link{nem.consensus}}, \code{\link{local.model.prior}}, \code{\link{plot.nem}}}

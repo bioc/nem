@@ -26,7 +26,7 @@ nem.cont.preprocess(D,neg.control=NULL,pos.control=NULL,nfold=2, influencefactor
 \item{influencefactor}{factor multiplied onto the probabilities, so that all negative control genes are treated as influenced}
 }
 \references{Markowetz F, Bloch J, Spang R, Non-transcriptional pathway features reconstructed from secondary effects of RNA interference, Bioinformatics, 2005}
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Florian Markowetz}
 \note{preliminary! will be developed to be more generally applicable}
 
 \seealso{\code{\link{BoutrosRNAi2002}}}

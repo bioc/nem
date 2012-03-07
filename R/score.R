@@ -32,7 +32,7 @@ score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
 	control$Pe <- matrix(1/nrS,nrow=nrow(D1),ncol=nrS)
 	colnames(control$Pe) <- Sgenes  		
   }          
-  if(control$selEGenes.method == "regularization"){		
+  if(control$selEGenes.method == "regularization" && ncol(control$Pe) == nrS){		
   	control$Pe = cbind(control$Pe, double(nrow(D1)))  			
   	control$Pe[,ncol(control$Pe)] = control$delta/nrS
 	control$Pe = control$Pe/rowSums(control$Pe)		
@@ -95,14 +95,11 @@ score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
 #   	}
 #   	else
 # 		s = s - control$lambda*sapply(models, function(M) sum(abs(M - control$Pm))) + nrS^2*log(control$lambda*0.5)  
-#   }    
-  ppost = exp(s - max(s))
-  ppost <- ppost/sum(ppost)  	# posterior model probability
-  
+#   }     
   if(verbose){
-	if(length(ppost) > 1){
-		sort_ppost <- sort(ppost,decreasing=TRUE)		
-		cat("(probabilities of best and second best model for ",Sgenes, ":", sort_ppost[1],",",sort_ppost[2],")\n")
+	if(length(s) > 1){		
+		mLL.sorted = sort(s, decreasing=TRUE)
+		cat("((Marginal) posterior likelihood difference of best vs. second best model for ", Sgenes, ":", mLL.sorted[1] - mLL.sorted[2],")\n")
 	}
   }  
    # winning model       
@@ -113,13 +110,8 @@ score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
   	gR <- as(gR,"graphNEL")    
   }
   else
-	gR <- winner
-  PHI <- matrix(0,ncol=nrS,nrow=nrS)
-  dimnames(PHI) <- list(Sgenes,Sgenes)  
-  for(i in 1:length(models))
-	PHI <- PHI + models[[i]]*ppost[i]      
-  # output  
-  res <- list(graph=gR, mLL=s, ppost=ppost, avg=PHI, pos=ep, mappos=map, control=control, selected=selected, LLperGene=LLperGene, para=para)
+	gR <- winner  
+  res <- list(graph=gR, mLL=s, pos=ep, mappos=map, control=control, selected=selected, LLperGene=LLperGene, para=para)
   class(res) <- "score"   
   return(res)  
 }

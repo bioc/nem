@@ -39,7 +39,7 @@ FULLmLL <- function(Phi,D1,D0,control,verbose=FALSE) {
 	}
 	else{
 		if(verbose) cat("--> Using Bayesian model averaging to incorporate prior knowledge\n")
-		s = s + PhiDistr(Phi, control$Pm, a=1, b=0.5)
+		s = s + PhiDistr(Phi, control$Pm)
 	}
   }
 

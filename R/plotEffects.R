@@ -36,7 +36,7 @@ else{
 # M <- as(sccg$graph,"matrix") + diag(length(sccg$scc)) 
 # mappos <- score(D,models=M,type=nem$type,para=nem$para,hyperpara=nem$hyperpara,verbose=FALSE)$mappos[[1]]
 # colnames(D) <- Dcn
-if(length(nem$mLL) > 1){
+if(class(nem) == "score"){
 	mappos = nem$mappos[[which.max(nem$mLL)]]	
 }
 else{
@@ -45,16 +45,16 @@ else{
 		mappos = mappos[[1]]	
 }
 selected = nem$selected
-if(nem$control$type != "CONTmLLMAP"){
-	if(!is.null(rownames(D)))
-		null.genes = setdiff(rownames(D), selected)	
-	else
-		null.genes = setdiff(1:nrow(D), selected)
-	mappos[["null"]] = null.genes	
-}
-else{
+#if(nem$control$type != "CONTmLLMAP"){
+#	if(!is.null(rownames(D)))
+#		null.genes = setdiff(rownames(D), selected)	
+#	else
+#		null.genes = setdiff(1:nrow(D), selected)
+#	mappos[["null"]] = null.genes	
+#}
+#else{
 	null.genes =  unique(unlist(mappos["null"], use.names=FALSE))
-}
+#}
 if(length(null.genes) > 0){
 	sccg$scc[["null"]] = "null"
 	myorder = c("null", myorder)
@@ -149,7 +149,7 @@ if (border) abline(v=cs+.5,col="black",lwd=2)
 if(legend){
 	erase.screen(2)
 	screen(2)	
-	par(mar=c(0,0,0,1))
+	par(mar=c(0,0,0.1,1))
 	if(palette == "BlueRed")
 		color.legend(0.5,0.1,1,1,signif(seq(rangeall[1],rangeall[2],length.out=10),digits=1),rect.col=allcolors,gradient="y", cex=0.75)
 	else if(palette == "Grey")

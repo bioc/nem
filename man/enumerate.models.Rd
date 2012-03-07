@@ -28,7 +28,7 @@ enumerate.models(x,name=NULL,trans.close=TRUE,verbose=TRUE)
 \value{
 a list of models. Each entry is a transitively closed adjacency matrix with unit main diagonal.
 }
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Florian Markowetz}
 \seealso{\code{\link{nem}}}
 \examples{
 enumerate.models(2)

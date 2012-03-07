@@ -23,7 +23,7 @@ transitive.closure(g, mat=FALSE, loops=TRUE)
 returns a graphNEL object or adjacency matrix
 }
 
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Florian Markowetz}
 
 \seealso{\code{\link{transitive.reduction}}}
 \examples{

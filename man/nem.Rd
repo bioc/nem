@@ -36,13 +36,20 @@ nem(D,inference="nem.greedy",models=NULL,control=set.default.parameters(setdiff(
   The function \code{plot.nem} plots the inferred phenotypic hierarchy as a directed graph, the likelihood distribution of the models (only for exhaustive search) or the posterior position of the effected genes.  
 }
 \value{
-  \item{graph}{the inferred directed graph (graphNEL object)}   
-  \item{mLL}{log posterior marginal likelihood of final model} 
+  \item{graph}{inferred directed S-gene graph (graphNEL object)}   
+  \item{mLL}{log posterior marginal likelihood of model(s)} 
   \item{pos}{posterior over effect positions}
   \item{mappos}{MAP estimate of effect positions}   
   \item{selected}{selected E-gene subset}
   \item{LLperGene}{likelihood per selected E-gene}
+  \item{avg}{in case of MCMC: posterior mean S-gene graph (edge weighted adjacency matrix)}
   \item{control}{hyperparameter as in function call}
+  
+  For inference = "mc.eminem" the following additional values are returned:
+  \item{local.maxima}{local maxima of the EM procedure}  
+  \item{graphs.sampled}{sampled graphs}
+  \item{EB}{samples of the empirical Bayes prior}
+  \item{acc_list}{list that indicates whether the corresponding sampled S-gene graph has been accepted (new local maximum (1), same local maximum (0)) or rejected(-1) in the MCMC sampling process - length(acc_list)=mcmc.nsamples + mcmc.nburnin}
 }
 \references{
 
@@ -68,7 +75,7 @@ Niederberger, T.; Etzold, S.; Lidschreiber, M; Maier, K.; Martin, D.; Fr\"ohlich
 
 }
 
-\author{Holger Froehlich <URL: http://abi.bit.uni-bonn.de>, Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Holger Froehlich, Florian Markowetz}
 
 
 \seealso{\code{\link{set.default.parameters}}, \code{\link{nemModelSelection}}, \code{\link{nem.jackknife}}, \code{\link{nem.bootstrap}}, \code{\link{nem.consensus}}, \code{\link{local.model.prior}}, \code{\link{plot.nem}}}

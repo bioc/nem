@@ -54,7 +54,7 @@ The function \code{sampleData} samples data from a given network topology as fol
 For sampleRndNetwork an adjacency matrix, for sampleData a data matrix, for sampleData.BN a data matrix and a linking of effects to signals.
 }
 
-\author{Holger Froehlich \url{http:/www.dkfz.de/mga2/people/froehlich}, Cordula Zeller}
+\author{Holger Froehlich, Cordula Zeller}
 
 
 \seealso{\code{\link{getDensityMatrix}}}

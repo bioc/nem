@@ -27,7 +27,7 @@ taken from the programmers corner of some R-News issue by Dennis
  
 }
 
-\author{Dennis Kostka <URL: http://www.molgen.mpg.de/~kostka>}
+\author{Dennis Kostka}
 
 
 

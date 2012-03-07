@@ -41,7 +41,7 @@
   none
 }
 
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>, Holger Froehlich <URL: http://www.dkfz.de/mga2/people/froehlich>}
+\author{Florian Markowetz, Holger Froehlich}
 
 \seealso{\code{\link{nem}}, \code{\link{plotEffects}}, \code{\link{infer.edge.type}}}
 

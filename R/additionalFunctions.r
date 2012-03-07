@@ -44,3 +44,9 @@ getFinalTheta = function(theta_list, burnin){
   return(theta_res)
   
 }
+
+prior.EgeneAttach.EB = function(ratioMat){
+	Pe = t(calculateHiddenPrior(ratioMat))
+	colnames(Pe) = c(colnames(ratioMat), "null")
+	Pe
+}

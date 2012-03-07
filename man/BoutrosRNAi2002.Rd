@@ -15,10 +15,10 @@ branching in the Imd pathway.
 }
 \usage{data(BoutrosRNAi2002)}
 \format{
-  BoutrosRNAiExpression: data matrix: 14010 x 16
-  BoutrosRNAiDiscrete:   binary matrix:  68 x 16
-  BoutrosRNAiDens:		data matrix: 68 x 4
-  BoutrosRNAiLods: 	    data matrix: 68 x 4
+  BoutrosRNAiExpression: data matrix: 14010 x 16\\
+  BoutrosRNAiDiscrete:   binary matrix:  68 x 16\\
+  BoutrosRNAiDens:		data matrix: 68 x 4\\
+  BoutrosRNAiLods: 	    data matrix: 68 x 4\\
   BoutrosRNAiLogFC:		data matrix: 68 x 4
 }
 \details{

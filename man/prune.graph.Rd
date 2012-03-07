@@ -26,7 +26,7 @@ If the number is bigger than a user-defined cutoff, all incoming (outgoing) edge
 \item{missing.out}{number of missing out-edges for each node}
 }
 
-\author{Florian Markowetz <URL: http://genomics.princeton.edu/~florian>}
+\author{Florian Markowetz}
 
 
 \examples{

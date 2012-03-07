@@ -99,16 +99,28 @@ else if(inference == "mc.eminem"){
 	cat("mc.eminem algorithm\n\n")
 	if(!control$type %in% c("CONTmLLBayes","CONTmLLMAP", "CONTmLLDens", "CONTmLLRatio"))
 		stop("Likelihood type has to be one of 'CONTmLLBayes', 'CONTmLLMAP', 'CONTmLLDens', 'CONTmLLRatio'")
-	if(!is.null(control$Pe))
+	if(!is.null(control$Pe)){
+		if(ncol(control$Pe) == length(Sgenes)){				
+			control$Pe = cbind(control$Pe, double(nrow(D)))  			
+			control$Pe[,ncol(control$Pe)] = control$delta/length(Sgenes)
+			control$Pe = control$Pe/rowSums(control$Pe)		
+		}
 		Pe = t(control$Pe)
+	}
 	else
 		Pe = NULL	
-	result = runMCMC(D, nrRuns=control$mcmc.nsamples, theta_init=models[[1]], prior.theta=control$Pm, prior.hidden=Pe, maxsteps_eminem=control$eminem.maxsteps, sd_val=control$eminem.sdVal, probVal=control$Pm.frac_edges, ep=control$lambda)	
-	result$avg = getFinalTheta(result$theta_list, burnin=control$mcmc.nburnin)
-	dimnames(result$avg) = list(control$Sgenes, control$Sgenes)
-	Phi = (result$avg > control$prob.cutoff)*1
+	result1 = runMCMC(D, nrRuns=control$mcmc.nsamples + control$mcmc.nburnin, theta_init=models[[1]], prior.theta=control$Pm, prior.hidden=Pe, maxsteps_eminem=control$eminem.maxsteps, sd_val=control$eminem.sdVal, probVal=control$Pm.frac_edges, ep=control$lambda, changeHfreq=control$eminem.changeHfreq)		
+	result1$avg = getFinalTheta(result1$theta_list, burnin=control$mcmc.nburnin)
+	dimnames(result1$avg) = list(control$Sgenes, control$Sgenes)
+	Phi = (result1$avg > control$prob.cutoff)*1
 	result = score(list(Phi), D, control=control, verbose=verbose)		
 	result$mappos = result$mappos[[1]]
+	result$local.maxima = result1$theta_list
+	result$graphs.sampled = result1$graph2_list
+	result$mLL = result1$pP_list
+	result$EB = result1$hidden_list
+	result$avg = result1$avg
+	result$acc_list = result1$acc_list
 	class(result) = "mc.eminem"
 }
 # dynoNEM with MCMC
@@ -143,11 +155,11 @@ else if(inference == "dynoNEM"){
 	names(result)[names(result) == "all.likelihoods"] = "mLL"
 	take = which(result$mLL != Inf)
 	if(length(take) > 0){
-		plot(take, result$mLL[take], type="l", main=paste("log-likelihood along MCMC sampling"), xlab="step", ylab="log likelihood")
+		plot(take, result$mLL[take], type="l", main=paste("posterior log-likelihood along MCMC sampling"), xlab="step", ylab="log likelihood")
 		abline(v=control$mcmc.nburnin, lty=3)		
 	}	
 	result$avg = result$network
-	result$avg[result$avg - 2*result$SDconf < 0] = 0
+	result$avg[result$avg - 2*result$SDconf < 0] = 0 # filter low confidence edges
 	result$graph = as(result$avg, "graphNEL")
 	result$ppost = exp(result$mLL)
 	pos = dynoNEM.posteriorEGenePos(result$network, Dnew, priorE=control$Pe, delta=control$delta, type=control$type, nrep=nrep, alpha=control$para[1], beta=control$para[2])

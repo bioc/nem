@@ -54,7 +54,7 @@ mLL <- function(Phi,D1,D0=NULL,control, verbose=FALSE) {
 	}
 	else{
 		if(verbose) cat("--> Using Bayesian model averaging to incorporate prior knowledge\n")
-		s = s + PhiDistr(Phi, control$Pm, a=1, b=0.5)
+		s = s + PhiDistr(Phi, control$Pm)
 	}
   }
   list(mLL=s,pos=ep,mappos=map,LLperGene=LLperGene, para=para)
