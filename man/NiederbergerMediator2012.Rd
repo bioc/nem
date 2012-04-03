@@ -3,7 +3,6 @@
 \alias{NiederbergerMediatorLogFC}
 \alias{NiederbergerMediatorPVals}
 \alias{NiederbergerMediator2012}
-\alias{dat}
 \docType{data}
 \title{Expression measurements upon perturbation of Mediator subunits}
 \description{
