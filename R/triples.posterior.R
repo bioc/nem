@@ -22,7 +22,7 @@ triples.posterior <- function(D, control,verbose=TRUE){
 
   ##=== store maximum model in a list
   mll.models   = list()
-  if (verbose) cat(".") #prev <- progressBar()
+  if (verbose) cat(".") 
   for(i in 1:nrow(triples)){
 
 	sel <- which(colnames(D)%in%Sgenes[triples[i,]])
@@ -44,7 +44,7 @@ triples.posterior <- function(D, control,verbose=TRUE){
         mll.models[[i]]$graph = winner
         mll.models[[i]]$posterior = post
         dimnames(mll.models[[i]]$graph) = list(Sgenes[triples[i,]],Sgenes[triples[i,]]) #=== rename node to inds
-        if (verbose) cat(".")#prev <- progressBar(i/nrTest,prev)
+        if (verbose) cat(".")
   }
 
   ##
