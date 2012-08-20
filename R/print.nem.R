@@ -15,14 +15,14 @@ print.nem <- function(x, ...) {
   	cat("Hyperparameters for error probability distributions:", x$control$hyperpara, "\n")
   cat("network structure regularization parameter $lambda (default: 0):",x$control$lambda ,"\n")  
   cat("Prior weight $delta for assigning E-genes to virtual S-gene 'null' (default: 1):",x$control$delta ,"\n")
-  cat(length(x$selected), " selected E-genes:\n")
-  for(i in 1:length(x$mappos)){
-	cat("-->", names(x$mappos)[i], ":", length(x$mappos[[i]]), " attached E-genes\n")
-  }
-  cat("\nNOTE: One E-gene can be attached to multiple S-genes\n")
-  cat("\n")
-     
-  
+  if(!is(x, "score.list")){
+	  cat(length(x$selected), " selected E-genes:\n")
+	  for(i in 1:length(x$mappos)){
+		cat("-->", names(x$mappos)[i], ":", length(x$mappos[[i]]), " attached E-genes\n")
+	  }
+	  cat("\nNOTE: One E-gene can be attached to multiple S-genes\n")
+	  cat("\n")
+  }     
 }
   
 print.nem.greedy = function(x, ...){
@@ -85,6 +85,16 @@ print.score <- function(x, ...) {
 	x$mLL = x$mLL[best]
 	x$mappos = x$mappos[[best]]	
 	print.nem(x, ...)
+	#cat("\n")  
+	#cat("plot this object to see the graph\n")
+}
+
+print.score.list <- function(x, ...) {	
+	cat("scores for ",length(x$mLL)," models\n")	
+	best = which.max(x$mLL)
+	cat("--> best model is number ", best,"\nInformation on this model:\n")			
+	x$mLL = x$mLL[best]
+	print.nem(x, ...)	
 	#cat("\n")  
 	#cat("plot this object to see the graph\n")
 }

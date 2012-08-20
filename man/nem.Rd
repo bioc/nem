@@ -31,7 +31,7 @@ nem(D,inference="nem.greedy",models=NULL,control=set.default.parameters(setdiff(
 }
 \details{  
    If parameter Pm != NULL and parameter lambda == 0, a Bayesian approach to include prior knowledge is used. Alternatively, the regularization parameter lambda can be tuned in a model selection step via the function \code{nemModelSelection} using the BIC criterion. 
-   If automated subset selection of effect reporters is used and parameter type == CONTmLLMAP, the regularization parameter delta is tuned via the AIC model selection criterion. Otherwise, an iterative algorithm is executed, which in an alternating optimization scheme reconstructs a network given the current set of effect reporters and then selects the effect reporters having the highest likelihood under the given network. The procedure is run until convergence.
+   If automated subset selection of effect reporters is used (default), the regularization parameter delta can be tuned via the BIC model selection criterion. Per default it is fixed to 1 / (no. S-genes + 1). 
 
   The function \code{plot.nem} plots the inferred phenotypic hierarchy as a directed graph, the likelihood distribution of the models (only for exhaustive search) or the posterior position of the effected genes.  
 }
@@ -71,7 +71,7 @@ Fr\"ohlich, H.; Sahin, \"O.; Arlt, D.; Bender, C. & Beissbarth, T. Deterministic
 
 Fr\"ohlich, H.; Praveen, P. & Tresch, A., Fast and Efficient Dynamic Nested Effects Models. Bioinformatics, 2011, 27, 238-244\\
 
-Niederberger, T.; Etzold, S.; Lidschreiber, M; Maier, K.; Martin, D.; Fr\"ohlich, H.; Cramer, P.; Tresch, A., MC Eminem Maps the Interaction Landscape of the Mediator, PLoS Comp. Biol., 2012, submitted.
+Niederberger, T.; Etzold, S.; Lidschreiber, M; Maier, K.; Martin, D.; Fr\"ohlich, H.; Cramer, P.; Tresch, A., MC Eminem Maps the Interaction Landscape of the Mediator, PLoS Comp. Biol., 8(6): e1002568, 2012.
 
 }
 

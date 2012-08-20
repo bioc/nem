@@ -28,7 +28,7 @@ further information on data processing and results, please refer to Niederberger
 
 }
 \references{
-Niederberger T., Etzold S., Lidschreiber M., Maier K.C., Martin D.E., Fr\"o hlich H., Cramer P., Tresch A., MC EMiNEM Maps the Interaction Landscape of the Mediator. PLoS Computational Biology, submitted, 2012
+Niederberger T., Etzold S., Lidschreiber M., Maier K.C., Martin D.E., Fr\"o hlich H., Cramer P., Tresch A., MC EMiNEM Maps the Interaction Landscape of the Mediator. PLoS Computational Biology, 8(6): e1002568, 2012-
 }
 \examples{
     data(NiederbergerMediator2012)

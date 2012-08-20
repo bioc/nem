@@ -109,7 +109,7 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 		if (PDF) dev.off()
 		save(gR, file=paste(unlist(strsplit(filename,".pdf")),".rda",sep=""))	
 		toDotR(gR, paste(unlist(strsplit(filename,".pdf")),".dot",sep=""))
-    	}
+    }
 
 	if(what=="mLL"){
 		if(PDF) pdf(file=filename)
@@ -124,7 +124,7 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 		if(PDF) dev.off()
 	}
 	
-	if(what=="pos"){    
+	if(what=="pos"){    		
 		if(length(x$mLL) > 1){
 			winner <- which.max(x$mLL)
 			pos <- x$pos[[winner]]
@@ -200,5 +200,11 @@ plot.mc.eminem = function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, f
 }
 
 plot.dynoNEM = function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, ...) {
+	plot.nem(x, what, remove.singletons, PDF, filename, thresh, transitiveReduction, plot.probs=TRUE, SCC=FALSE, ...)
+}
+
+plot.score.list = function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filename="nemplot.pdf", thresh=0, transitiveReduction=FALSE, plot.probs=FALSE, SCC=TRUE, ...) {
+	x$mappos = x$mappos[[1]]
+	x$pos = x$pos[[1]]
 	plot.nem(x, what, remove.singletons, PDF, filename, thresh, transitiveReduction, plot.probs=TRUE, SCC=FALSE, ...)
 }

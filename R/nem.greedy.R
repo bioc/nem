@@ -43,8 +43,11 @@ get.reversions = function(Phi){
     models       
 }
 
-nem.greedy <- function(D,initial=NULL,control, verbose=TRUE){   
-    Sgenes = setdiff(unique(colnames(D)), "time")
+nem.greedy <- function(D, initial=NULL,control, verbose=TRUE){ 
+	if(is(D, "list"))
+		Sgenes = setdiff(unique(colnames(D[[1]])), "time")
+	else
+    	Sgenes = setdiff(unique(colnames(D)), "time")
     n <- length(Sgenes)     
     cat("Greedy hillclimber for",n,"S-genes (lambda =", control$lambda,")...\n\n")
     if(is.null(initial))

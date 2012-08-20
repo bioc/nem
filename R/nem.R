@@ -18,7 +18,7 @@ set.default.parameters = function(Sgenes, ...){
     control
 }
 
-nem <- function(D,inference="nem.greedy",models=NULL,control=set.default.parameters(setdiff(unique(colnames(D)),"time")), verbose=TRUE){
+nem <- function(D, inference="nem.greedy",models=NULL,control=set.default.parameters(setdiff(unique(colnames(D)),"time")), verbose=TRUE){
 #------------------------------
 # Sanity checks              
 if(inference == "nem.greedyMAP")
@@ -48,7 +48,10 @@ if (!is.null(control$para)) {
 }
 if(control$lambda < 0) control$lambda <- abs(control$lambda)
 
-Sgenes <- unique(colnames(D))
+if(is(D, "list"))
+	Sgenes = setdiff(unique(colnames(D[[1]])), "time")
+else
+	Sgenes = setdiff(unique(colnames(D)), "time")
 if(control$selEGenes){  
     if(inference %in% c("BN.greedy","BN.exhaustive","depn"))
         stop("No automatic feature selection implemented for this inference method so far!\n")
@@ -154,7 +157,7 @@ else if(inference == "dynoNEM"){
 	result = dynoNEM_MCMC(Dnew, SAMPLE=control$mcmc.nsamples, BURNIN=control$mcmc.nburnin, initial=models[[1]], priorNet=control$Pm, priorE=control$Pe, delta=control$delta, inv.nu=control$lambda, theta=control$mcmc.hyperprior, type=control$type, nrep=nrep, alpha=control$para[1], beta=control$para[2], seed=control$mcmc.seed)
 	names(result)[names(result) == "all.likelihoods"] = "mLL"
 	take = which(result$mLL != Inf)
-	if(length(take) > 0){
+	if(length(take) > 0 & control$mcmc.nsamples*control$mcmc.nburnin > 0){
 		plot(take, result$mLL[take], type="l", main=paste("posterior log-likelihood along MCMC sampling"), xlab="step", ylab="log likelihood")
 		abline(v=control$mcmc.nburnin, lty=3)		
 	}	
@@ -175,9 +178,9 @@ else if(inference == "dynoNEM"){
 #------------------------------
 # SEARCH                       
 
-else if (inference == "search"){    
-        if (is.null(models)) models <- enumerate.models(length(Sgenes),Sgenes,trans.close=control$trans.close,verbose=verbose)
-        result <- score(models,D,control,verbose)
+else if (inference == "search"){    				
+        if (is.null(models)) models <- enumerate.models(length(Sgenes),Sgenes,trans.close=control$trans.close,verbose=verbose)		
+        result <- score(models,D,control,verbose)				
 }
 
 # Bayesian network

@@ -1,7 +1,7 @@
 # log marginal likelihood of model
 mLL <- function(Phi,D1,D0=NULL,control, verbose=FALSE) {       
-   if (!all(diag(Phi)==1)) 
-  	diag(Phi) <- 1 	    
+  if (!all(diag(Phi)==1)) 
+  	diag(Phi) <- 1  
   if(control$selEGenes.method == "regularization"){
 		Phi2 = cbind(Phi, double(ncol(Phi)))
 		colnames(Phi2)[ncol(Phi2)] = "null"
@@ -16,7 +16,7 @@ mLL <- function(Phi,D1,D0=NULL,control, verbose=FALSE) {
 	L <- exp(D1%*%Phi2)
   }
   else if(control$type == "CONTmLL")
-	L <- exp(log(D1)%*%Phi + log((1-D1))%*%(1-Phi)) 
+	L <- exp(log(D1)%*%Phi2 + log((1-D1))%*%(1-Phi2)) 
   else if(control$type %in% c("CONTmLLMAP", "CONTmLLRatio")){			
 	ep = D1%*%Phi2 + log(control$Pe)	
 	Theta = apply(ep,1,function(e) e ==max(e))
@@ -36,7 +36,7 @@ mLL <- function(Phi,D1,D0=NULL,control, verbose=FALSE) {
   }
   if(!(control$type %in% c("CONTmLLMAP","CONTmLLRatio", "depn"))){	
 	if(!is.null(control$Pe))
-		LP <- L*control$Pe
+		LP <- L*control$Pe[,1:NCOL(L)]
 	else
 		LP <- L	
 	LLperGene = log(rowSums(LP))

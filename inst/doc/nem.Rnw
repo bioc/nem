@@ -591,11 +591,30 @@ plot.nem(resultBN, nodeAttrs=list(fillcolor=col), SCC=FALSE)
 @
 }{graph8}{Result of Bayesian network learning}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\subsection{MC EMiNEM - Learning NEMs via Expectation Maximization and MCMC}
+In \cite{Niederberger2012} an Expectation Maximization (EM) coupled with a Markov Chain Monte Carlo (MCMC) sampling strategy is proposed. More specifically, a MCMC algorithm (called MCEMiNEM) is used to sample from the distribution of all EM solutions, hence avoiding local optima. MCEMiNEM can be used via:  
+<<>>=
+hyper$mcmc.nburnin = 10 # much to few in practice
+hyper$mcmc.nsamples = 100  
+hyper$type = "CONTmLLDens"
+hyper$Pm = NULL
+resulteminem = nem(BoutrosRNAiLods, inference="mc.eminem", control=hyper)
+@
+\myincfig{.3}{
+<<label=graph8,fig=TRUE,echo=FALSE,results=hide>>=
+col<-c("yellow","yellow","green","blue")
+names(col) = nodes(resultBN$graph)
+plot.nem(resulteminem, nodeAttrs=list(fillcolor=col), SCC=FALSE)
+@
+}{graphMCEMiNEM}{Result of Bayesian network learning}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \subsection{Dynamic Nested Effects Models}
 
-In \cite{Anchang2009} the authors describe a first extension of NEMs to time series perturbation data. That means after each perturbation gene expression is measured at several time points. The model, called D-NEMs was successfully applied to reverse engineer parts of a transcriptional network steering murine stem cell development \cite{Ivanova2006}. A second model for the same purpose was proposed in \cite{Frohlich2011}. Due to the employed likelihood model a highly efficient computation is possible here. It is thus particularly well suited for real world applications and included in to the \texttt{nem} package. Opposed to the original greedy algorithm used in \cite{Froehlich2011}, we here provide a Markov Chain Monte Carlo (MCMC) algorithm for structure learning. It includes a Bayesian way of including prior knowledge by drawing the weight of the structure prior (parameter lambda) itself from an exponential distribution.
+In \cite{Anchang2009} the authors describe a first extension of NEMs to time series perturbation data. That means after each perturbation gene expression is measured at several time points. The model, called D-NEMs was successfully applied to reverse engineer parts of a transcriptional network steering murine stem cell development \cite{Ivanova2006}. A second model for the same purpose was proposed in \cite{Frohlich2011}. Due to the employed likelihood model a highly efficient computation is possible here. It is thus particularly well suited for real world applications and included in to the \texttt{nem} package. In addition to the original greedy algorithm used in \cite{Froehlich2011}, we here provide a Markov Chain Monte Carlo (MCMC) algorithm for structure learning. It includes a Bayesian way of including prior knowledge by drawing the weight of the structure prior (parameter lambda) itself from an exponential distribution.
 <<eval=FALSE>>=
 data("Ivanova2006RNAiTimeSeries")
 dim(dat)
@@ -603,6 +622,8 @@ control = set.default.parameters(dimnames(dat)[[3]], para=c(0.1,0.1))
 net = nem(dat, inference="dynoNEM", control=control)
 plot.nem(net, SCC=FALSE, plot.probs=TRUE)
 @
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
@@ -626,7 +647,7 @@ net = nem(dat.normalized, control=control) # greedy hillclimber to find most pro
 \clearpage
 \subsection{Infering Edge Directions}
 
-It may be interesting to infer edge types (up-regulation, down-regulation) for a given nem model. For an edge a->b we look at the fraction of E-genes attached to b (including b itself), which are up- or down-regulated in a knock-down of a. If significantly more genes are down-regulated than up-regulated, the edge a->b is assumed to be an activation. Likewise, if significantly more genes are up-regulated than down-regulated, a->b is assumed to be an inhibition. If there is no significant difference in up- and down-regulated edges, a->b does not have a specified type.
+It may be interesting to infer edge types (up-regulation, down-regulation) for a given nem model. For an edge a->b we look, whether b goes up or down, if a is perturbed. If it goes up, an inhibition is assumed, otherwise an activation.
 
 <<fig=FALSE>>=
 resEdgeInf = infer.edge.type(result, BoutrosRNAiLogFC)

@@ -62,7 +62,7 @@ double logPrior(int nsgenes, double** net, double** prior, double inv_nu){
         return 0;
 }
 
-// prior for 1/nu
+// prior for 1/nu: logarithm of exponential distribution with parameter theta
 double logPriorLambda(double inv_nu, double theta){
 	return(log(theta) - theta * inv_nu);
 }

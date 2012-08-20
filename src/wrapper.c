@@ -104,6 +104,7 @@ SEXP MCMCrunWrapper(SEXP SAMPLE, SEXP BURNIN, SEXP initial_R, SEXP nsgenes_R, SE
     double alpha = REAL(alpha_R)[0];
     double beta = REAL(beta_R)[0];
     int seed = INTEGER(seed_R)[0];
+    int useMCMC = (sample > 0 & burnin > 0);
   
     double*** D = (double***) R_alloc(T, sizeof(double**));
     double** initial = (double**) R_alloc(nsgenes, sizeof(double*));
@@ -144,39 +145,45 @@ SEXP MCMCrunWrapper(SEXP SAMPLE, SEXP BURNIN, SEXP initial_R, SEXP nsgenes_R, SE
         }
     }
     //
-       
-    // make changes
-    //################
-	MCMCrun( sample, //1
-	          burnin,  //2		 
-		  initial, //5
-		  nsgenes,  //6
-		  negenes,  //7
-		  T, //8
-		  D, //9
-		  networkPrior, // 10
-		  Egene_prior,  //11
-	          priorScale,
-		  theta,
-		  type,  //12
-		  nrep,  //13
-		  alpha,  //14
-		  beta, //15
-		  seed,  //16
-		  allLikelihoods, 
-		  sdMat, 
-		  mat); 
+    if(useMCMC){ // if proper arguments are given, use MCMC
+	    // make changes
+	    //################
+		MCMCrun( sample, //1
+			  burnin,  //2		 
+			  initial, //5
+			  nsgenes,  //6
+			  negenes,  //7
+			  T, //8
+			  D, //9
+			  networkPrior, // 10
+			  Egene_prior,  //11
+			  priorScale,
+			  theta,
+			  type,  //12
+			  nrep,  //13
+			  alpha,  //14
+			  beta, //15
+			  seed,  //16
+			  allLikelihoods, 
+			  sdMat, 
+			  mat); 
 
-    Rprintf("Sampling finished\n");
+	    Rprintf("Sampling finished\n");	    
+    }
+    else{ // otherwise just use greedy hill climber
+	double loglik = learn_network( T, nsgenes,negenes, D, initial, networkPrior, Egene_prior, priorScale, mat, type, nrep, alpha, beta);
+	allLikelihoods = R_alloc(1, sizeof(double));
+	allLikelihoods[0] = loglik;
+    }
     SEXP res_network, res_networkSD, res_loglik, result, wnames;
     PROTECT(res_network = NEW_NUMERIC(nsgenes * nsgenes));
     PROTECT(res_networkSD = NEW_NUMERIC(nsgenes * nsgenes));
     for(s = 0; s < nsgenes; s++){
-        for(k = 0; k < nsgenes; k++){
-            NUMERIC_POINTER(res_network)[k * nsgenes + s] = mat[s][k];
+	for(k = 0; k < nsgenes; k++){
+	    NUMERIC_POINTER(res_network)[k * nsgenes + s] = mat[s][k];
 	    NUMERIC_POINTER(res_networkSD)[k * nsgenes + s]= sdMat[s][k];
-            //Rprintf("%lf #\n",network[s][k]);
-        }
+	    //Rprintf("%lf #\n",network[s][k]);
+	}
     }
     PROTECT(res_loglik = NEW_NUMERIC(burnin + sample + 1));
     for(long counter = 0; counter < burnin + sample + 1; counter++){

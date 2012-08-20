@@ -1,4 +1,4 @@
-score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
+score.aux <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
 
   #if single model as input
   if (class(models)=="matrix") models <- list(models)    
@@ -114,4 +114,50 @@ score <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
   res <- list(graph=gR, mLL=s, pos=ep, mappos=map, control=control, selected=selected, LLperGene=LLperGene, para=para)
   class(res) <- "score"   
   return(res)  
+}
+
+score = function(models, D, control, verbose=TRUE, graphClass="graphNEL") {	
+	if(is(D, "matrix")){
+		return(score.aux(models, D, control, verbose, graphClass))
+	}
+	cat("Cauton: NEM inference with several datasets is experimental so far!\n")
+	if(is(D, "list")){
+		if(!is.null(control$Pe) & !(is(control$Pe, "list") & length(control$Pe) == length(D)))
+			stop("There has to be one E-gene prior for each data set")
+		mLLs = 0
+		pos = list()
+		mappos = list()
+		selected = list()
+		LLperGene = list()
+		scs = list()
+		para = list()
+		for(i in 1:length(D)){
+			control.tmp = control
+			if(i > 1){ # S-gene prior is added just once
+				control.tmp$lambda = 0
+				control.tmp$Pm = NULL
+			}			
+			control.tmp$Pe = control$Pe[[i]]
+			scs[[i]] = score.aux(models, D[[i]], control.tmp, verbose, graphClass)
+			mLLs = mLLs + scs[[i]]$mLL
+			pos[[i]] = scs[[i]]$pos
+			mappos[[i]] = scs[[i]]$mappos
+			LLperGene[[i]] = scs[[i]]$LLperGene
+			selected[[i]] = scs[[i]]$selected
+			para[[i]] = scs[[i]]$para
+		}		
+		winner <- models[[which.max(mLLs)]]  
+		diag(winner) <- 0  
+		if(graphClass == "graphNEL"){
+			gR <- new("graphAM",adjMat=winner,edgemode="directed")  
+			gR <- as(gR,"graphNEL")    
+		}
+		else
+			gR <- winner  		
+		sc.consensus = list(graph=gR, mLL=mLLs, pos=pos, mappos=mappos, control=control, selected=selected, LLperGene=LLperGene, para=para)
+		class(sc.consensus) = "score.list"
+		return(sc.consensus)
+	}
+	else
+		stop("data has to be either a list of matrices or one matrix")
 }
