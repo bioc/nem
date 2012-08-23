@@ -172,6 +172,7 @@ else if(inference == "dynoNEM"){
 	result$control = control	
 	result$selected = unique(unlist(result$mappos[control$Sgenes]))	
 	result$para = control$para
+	result$T = dim(Dnew)[1]
 	class(result) = "dynoNEM"
 }
 
