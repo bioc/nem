@@ -142,6 +142,8 @@ SEXP MCMCrunWrapper(SEXP SAMPLE, SEXP BURNIN, SEXP initial_R, SEXP nsgenes_R, SE
         for(k = 0; k < nsgenes; k++){
             initial[s][k] = REAL(initial_R)[k * nsgenes + s];
             networkPrior[s][k] = REAL(networkPrior_R)[k * nsgenes + s];// To convert one D vector of R to 2D array in C
+	    sdMat[s][k] = 0;
+	    mat[s][k] = 0;
         }
     }
     //
@@ -172,7 +174,7 @@ SEXP MCMCrunWrapper(SEXP SAMPLE, SEXP BURNIN, SEXP initial_R, SEXP nsgenes_R, SE
     }
     else{ // otherwise just use greedy hill climber
 	double loglik = learn_network( T, nsgenes,negenes, D, initial, networkPrior, Egene_prior, priorScale, mat, type, nrep, alpha, beta);
-	allLikelihoods = R_alloc(1, sizeof(double));
+	allLikelihoods = (double*) R_alloc(1, sizeof(double));
 	allLikelihoods[0] = loglik;
     }
     SEXP res_network, res_networkSD, res_loglik, result, wnames;

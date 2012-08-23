@@ -33,5 +33,8 @@ void copyNet(int nsgenes, double** net, double** netCopy);//
 void alterNet(double** net, int nsgenes, int T, double** temp1);
 void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, int T, double*** D, double** networkPrior,  double **Egene_prior, double priorScale, double theta, int type, int nrep, double alpha, double beta, int seed, double* allLikelihoods, double** sdMat, double** matrix_r); // Egene_prior ????
 
+double learn_network(int T, int nsgenes,int negenes, double*** D, double** initial, double** network_prior, double** Egene_prior, double prior_scale, double **net, int type, int nrep, double alpha, double beta);
+void print_network(double** net, int nsgenes);
+
 //double** posteriorEGenePos(double** Psi, int nsgenes, int negenes, int T, double*** D, double** egene_prior, int type, int nrep, double alpha, double beta);
 #endif /* NETLEARN_H_ */

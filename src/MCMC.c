@@ -21,19 +21,6 @@
 #include "netlearn.h"
 
 
-/*
-
-// copy the initial network 
-// modify the copied network
-// check update factor if acceptable 
-// calculate the MI with the older networks considering the timelags 
-// count the number of accepted nework 
-// if the number in greater than BURNIN and Mutual Information is less than acceptable
-// continue modifying the last network
-// calculate edge probability for all the networks in the sample
-
-*/
-
 //########## Function to calculate Hastings ratio /// 1. checked and changes suggested // ***** 2. Neighborhood removed
 
 double updateFactor (double likLogOld, double logPriorOld, double logPriorScaleOld, double likLogNew, double logPriorNew, double logPriorScaleNew){ 
