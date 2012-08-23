@@ -6,13 +6,14 @@
  Assess statistical significance of a network hypothesis by comparing it to a null hypothesis. 
 }
 \usage{
-	nem.calcSignificance(D, x, N=1000, seed=1, mc.cores=8)
+	nem.calcSignificance(D, x, N=1000, which.test=c("permutation", "rand.net", "rand.modify"), seed=1, mc.cores=8)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{D}{data matrix with experiments in the columns (binary or continious)}  
   \item{x}{nem object}  
   \item{N}{number of random networks to sample}
+  \item{which.test}{type of significance test to conduct (see details)}
   \item{seed}{random seed}    
   \item{mc.cores}{number of cores to be used on a multicore processor}
 }
@@ -22,12 +23,10 @@ For all random network hypotheses it is counted, how often their likelihood is b
 
 Another way of assessing the statistical significance of the network hypothesis is to draw random permutations of the node labels. Note that in this case the node degree distribution is the same as in the given network. Again, we can obtain an exact p-value by counting, how often the likelihood of the permuted network is bigger than that of the given network.
 
-Finally, comparison to randomly perturbed networks (insertion or deletion of 1 edge) yields an exact p-value describing the stability of the network.
+Finally, comparison to randomly perturbed networks (insertion, deletion or reversion of 1 edge) yields an exact p-value describing the stability of the network. For dynoNEMs network modification operations are edge weight increase, decrease and swap.
 }
 \value{
-\item{p.value.rnd}{p-value of the network according to the null hypothesis that it is random}
-\item{p.value.perm}{p-value of the network according to the null hypothesis that a network with permuted node labels is at least as good}
-\item{p.value.mod}{p-value of the network according to the null hypothesis a randomly peturbed network is at least as good}
+For "random" network: p-value of the network according to the null hypothesis that it is random. For permuted nework: p-value of the network according to the null hypothesis that a network with permuted node labels is at least as good. For perturbed / modified network: p-value of the network according to the null hypothesis a randomly peturbed network is at least as good.
 }
 
 \author{Holger Froehlich}
