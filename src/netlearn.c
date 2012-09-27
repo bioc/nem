@@ -1,11 +1,11 @@
 #include "netlearn.h"
 /*
 double** getPerturbProb(double** Psi, int T, int nsgenes, int k){
-        double** perturb_prob = (double**) Calloc(nsgenes, double*);
+        double** perturb_prob = (double**) R_alloc(nsgenes, double*);
         int parent_perturb_prob;
         int s, t, p;
         for(s = 0; s < nsgenes; s++){
-                perturb_prob[s] = (double*) Calloc(T, double);
+                perturb_prob[s] = (double*) R_alloc(T, double);
         }
         for(t = 0; t < T; t++){
                 for(s = 0; s < nsgenes; s++){
@@ -32,7 +32,7 @@ double** getPerturbProb(double** Psi, int T, int nsgenes, int k){
 
 
 double network_likelihood(double** Psi, int nsgenes, int negenes, int T, double*** D, double** egene_prior, int type, int nrep, double alpha, double beta){
-        double*** perturb_prob = (double***) Calloc(nsgenes, double**);
+        double*** perturb_prob = (double***) R_alloc(nsgenes, double**);
         int s, k, t, i;
         for(k = 0; k < nsgenes; k++)
                 perturb_prob[k] = (double**) getPerturbProb(Psi, T, nsgenes, k);
@@ -69,25 +69,25 @@ double network_likelihood(double** Psi, int nsgenes, int negenes, int T, double*
         }
         for(k = 0; k < nsgenes; k++){
                 for(s = 0; s < nsgenes; s++)
-                        Free(perturb_prob[k][s]);
-                Free(perturb_prob[k]);
+                        FREE(perturb_prob[k][s]);
+                FREE(perturb_prob[k]);
         }
-        Free(perturb_prob);
+        FREE(perturb_prob);
         return(loglik);
 }
 
 double** posteriorEGenePos(double** Psi, int nsgenes, int negenes, int T, double*** D, double** egene_prior, int type, int nrep, double alpha, double beta){
-	double*** perturb_prob = (double***) Calloc(nsgenes, double**);
+	double*** perturb_prob = (double***) R_alloc(nsgenes, double**);
         int s, k, t, i;
         for(k = 0; k < nsgenes; k++)
                 perturb_prob[k] = (double**) getPerturbProb(Psi, T, nsgenes, k);
 
         double tmp;       
-	double** loglik_post = (double**) Calloc(negenes, double*);
+	double** loglik_post = (double**) R_alloc(negenes, double*);
         for (i=0; i<negenes; i++) {
                 loglik_tmp=0;
                 for (s=0; s<nsgenes; s++) {
-			loglik_post = (double*) Calloc(nsgenes, double);
+			loglik_post = (double*) R_alloc(nsgenes, double);
                         tmp=0;
                         for (k=0; k<nsgenes; k++) {
                                 for (t=0; t<T; t++) {
@@ -106,10 +106,10 @@ double** posteriorEGenePos(double** Psi, int nsgenes, int negenes, int T, double
         }
         for(k = 0; k < nsgenes; k++){
                 for(s = 0; s < nsgenes; s++)
-                        Free(perturb_prob[k][s]);
-                Free(perturb_prob[k]);
+                        FREE(perturb_prob[k][s]);
+                FREE(perturb_prob[k]);
         }
-        Free(perturb_prob);
+        FREE(perturb_prob);
         return(loglik_post);
 }
 
@@ -155,12 +155,12 @@ void print_network(double** net, int nsgenes){
 
 
 double learn_network(int T, int nsgenes,int negenes, double*** D, double** initial, double** network_prior, double** Egene_prior, double prior_scale, double **net, int type, int nrep, double alpha, double beta){
-        double** tmp = (double**) Calloc(nsgenes, double*);
-        double** tmp2 = (double**) Calloc(nsgenes, double*);
+        double** tmp = (double**) R_alloc(nsgenes, sizeof(double*));
+        double** tmp2 = (double**) R_alloc(nsgenes, sizeof(double*));
         int i, s, k, j, t;
 	for(i = 0; i < nsgenes; i++){
-		tmp[i] = (double*) Calloc(nsgenes, double);
-		tmp2[i] = (double*) Calloc(nsgenes, double);
+		tmp[i] = (double*) R_alloc(nsgenes, sizeof(double));
+		tmp2[i] = (double*) R_alloc(nsgenes, sizeof(double));
 	}
 	double lik_incr;
 	double lik_decr;
@@ -174,16 +174,17 @@ double learn_network(int T, int nsgenes,int negenes, double*** D, double** initi
 			}
 		}
 	}
-	double*** perturb_prob = (double***) calloc(nsgenes, sizeof(double**));        
+	double*** perturb_prob = (double***) R_alloc(nsgenes, sizeof(double**));        
 	for(i = 0; i < nsgenes; i++){ // changed to nsgenes from SAMPLE	
-		perturb_prob[i] = (double**) calloc(nsgenes, sizeof(double*));// calloc changed to calloc
+		perturb_prob[i] = (double**) R_alloc(nsgenes, sizeof(double*));// R_alloc changed to R_alloc
 		for(j = 0; j < nsgenes; j++){
-			perturb_prob[i][j] = (double*) calloc(T , sizeof(double));// calloc changed to calloc
+			perturb_prob[i][j] = (double*) R_alloc(T , sizeof(double));// R_alloc changed to R_alloc
 			for(t = 0; t < T; t++)
 				perturb_prob[i][j][t] = 0;
 		}
 	}   
-	double loglik = network_likelihood(initial, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob) + logPrior(nsgenes, initial, network_prior, prior_scale);
+	double* loglik0 = (double*) R_alloc(nsgenes + 1, sizeof(double));
+	double loglik = network_likelihood(initial, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0) + logPrior(nsgenes, initial, network_prior, prior_scale);
 	copyNet(nsgenes, initial, net);
 	print_network(net, nsgenes);
 	//hill climbing algorithm implemented
@@ -200,7 +201,7 @@ double learn_network(int T, int nsgenes,int negenes, double*** D, double** initi
                                         if (net[s][k]<T) {
                                                 copyNet(nsgenes, net, tmp);
                                                 tmp[s][k] += 1.0;
-                                                lik_incr = network_likelihood(tmp, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob) + logPrior(nsgenes, tmp, network_prior, prior_scale);
+                                                lik_incr = network_likelihood(tmp, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0) + logPrior(nsgenes, tmp, network_prior, prior_scale);
                                                 if (lik_incr > loglik) {
                                                         loglik = lik_incr;
                                                         copyNet(nsgenes, tmp, tmp2);
@@ -212,7 +213,7 @@ double learn_network(int T, int nsgenes,int negenes, double*** D, double** initi
                                         if (net[s][k]>0){
                                                 copyNet(nsgenes, net, tmp);
                                                 tmp[s][k] -= 1.0;
-                                                lik_decr = network_likelihood(tmp, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob) + logPrior(nsgenes, tmp, network_prior, prior_scale);
+                                                lik_decr = network_likelihood(tmp, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0) + logPrior(nsgenes, tmp, network_prior, prior_scale);
                                                 if (lik_decr > loglik) { // loglik is now the likelihood after adding an edge!
                                                         loglik = lik_decr;
                                                         copyNet(nsgenes, tmp, tmp2);
@@ -225,7 +226,7 @@ double learn_network(int T, int nsgenes,int negenes, double*** D, double** initi
                                                 copyNet(nsgenes, net, tmp);
                                                 tmp[k][s] = tmp[s][k];
                                                 tmp[s][k] = 0.0;
-                                                lik_rev = network_likelihood(tmp, nsgenes, negenes, T, D, Egene_prior,  type, nrep, alpha, beta, perturb_prob) + logPrior(nsgenes, tmp, network_prior, prior_scale);
+                                                lik_rev = network_likelihood(tmp, nsgenes, negenes, T, D, Egene_prior,  type, nrep, alpha, beta, perturb_prob, loglik0) + logPrior(nsgenes, tmp, network_prior, prior_scale);
                                                 if (lik_rev > loglik) { // loglik is now max{likelihood after adding an edge, likelihood after removing an edge}!
                                                         loglik = lik_rev;
                                                         copyNet(nsgenes, tmp, tmp2);
@@ -242,13 +243,17 @@ double learn_network(int T, int nsgenes,int negenes, double*** D, double** initi
 		Rprintf("\n\niteration %d: log-likelihood = %g\n", iterator, loglik);
 	}
 
-	for(i = 0; i < nsgenes; i++){
-		Free(tmp[i]);
-		Free(tmp2[i]);
+	/*for(i = 0; i < nsgenes; i++){
+		FREE(tmp[i]);
+		FREE(tmp2[i]);
+		for(k = 0; k < nsgenes; k++)
+			FREE(perturb_prob[i][k]);
+		FREE(perturb_prob[i]);	
 	}
-	Free(tmp);
-	Free(tmp2);
-	loglik = network_likelihood(net, nsgenes, negenes, T, D, Egene_prior,  type, nrep, alpha, beta, perturb_prob);
+	FREE(tmp);
+	FREE(tmp2);		
+	FREE(perturb_prob);*/
+	loglik = network_likelihood(net, nsgenes, negenes, T, D, Egene_prior,  type, nrep, alpha, beta, perturb_prob, loglik0);
 	return(loglik);
 }
 

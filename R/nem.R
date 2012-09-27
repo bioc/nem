@@ -158,8 +158,8 @@ else if(inference == "dynoNEM"){
 	names(result)[names(result) == "all.likelihoods"] = "mLL"
 	take = which(result$mLL != Inf)
 	if(length(take) > 0 & control$mcmc.nsamples*control$mcmc.nburnin > 0){
-		plot(take, result$mLL[take], type="l", main=paste("posterior log-likelihood along MCMC sampling"), xlab="step", ylab="log likelihood")
-		abline(v=control$mcmc.nburnin, lty=3)		
+		try(plot(take, result$mLL[take], type="l", main=paste("posterior log-likelihood along MCMC sampling"), xlab="step", ylab="log likelihood"), silent=TRUE)
+		try(abline(v=control$mcmc.nburnin, lty=3), silent=TRUE)		
 	}	
 	result$avg = result$network
 	result$avg[result$avg - 2*result$SDconf < 0] = 0 # filter low confidence edges

@@ -80,7 +80,8 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 			else
 				edgeattr = list(arrowhead = arr, fontcolor = fontcol, color=fontcol, style=penwidth)	
 		}		
-		el = buildEdgeList(gR, recipEdges="combined", edgeAttrs=edgeattr) 
+		edge.type = ifelse(plot.probs | class(x) == "dynoNEM", "distinct", "combined")
+		el = buildEdgeList(gR, recipEdges=edge.type, edgeAttrs=edgeattr) 
 		nodeattr=list(color=rep("white",length(nodes(gR))), penwidth=rep(0, length(nodes(gR))), fontsize=rep(14,length(nodes(gR))))			
 		names(nodeattr$color)=nodes(gR)
 		names(nodeattr$penwidth)=nodes(gR)
@@ -92,8 +93,8 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 			edgeattr = c(edgeattr, args[[match("edgeAttrs", names(args))]])			
 		main=NULL			
 		if("main" %in% names(args))
-			main = args[["main"]]			
-		G = agopen(gR,name="test",edges=el, edgeAttrs=edgeattr, nodeAttrs=nodeattr)		
+			main = args[["main"]]					
+		G = agopen(gR,name="test",edges=el, edgeAttrs=edgeattr, nodeAttrs=nodeattr, recipEdges=edge.type)		
 		
 		if (PDF) pdf(file=filename)   
 		par(cex.main=2, cex=1) 		

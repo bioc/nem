@@ -93,7 +93,7 @@ double** getPerturbProb(double** Psi, int T, int nsgenes, int k, double** pertur
 }// working ###OK
 // ########################################
 
-double network_likelihood (double** Psi, int nsgenes, int negenes, int T, double*** D, double** egene_prior, int type, int nrep, double alpha, double beta, double*** perturb_prob){ // Egene_prior ????               
+double network_likelihood (double** Psi, int nsgenes, int negenes, int T, double*** D, double** egene_prior, int type, int nrep, double alpha, double beta, double*** perturb_prob, double* loglik0){              
         int s, k, t, i;
     
         for(k = 0; k < nsgenes; k++){
@@ -101,10 +101,11 @@ double network_likelihood (double** Psi, int nsgenes, int negenes, int T, double
         }    
         	
         double tmp;
-        double loglik0;
         double loglik = 0;
         
         double loglik_tmp;
+	double maxtmp;
+	int max_loglik0_idx;
         for (i=0; i<negenes; i++) {
                 loglik_tmp=0;
                 
@@ -134,28 +135,35 @@ double network_likelihood (double** Psi, int nsgenes, int negenes, int T, double
 					}
                                 }
                         }			
-                        if (s==0) {
-                                loglik0 = tmp;				
-                        }
-                        else {
-                                loglik_tmp += exp(tmp - loglik0);
+                        loglik0[s] = tmp;				
+		}	
+		maxtmp = -1e100;
+		for(s = 0; s < (nsgenes + 1); s++){
+			if(loglik0[s] >= maxtmp){
+				max_loglik0_idx = s;
+				maxtmp = loglik0[s];
+			}
+		}
+		for(s = 0; s < (nsgenes + 1); s++){
+			if(s != max_loglik0_idx){
+				loglik_tmp += exp(loglik0[s] - loglik0[max_loglik0_idx]);
 				if(isnan(loglik_tmp) || !isfinite(loglik_tmp)){
-					Rprintf("Numerical problem! loglik_tmp = NaN or Inf (i=%i, s=%i, tmp=%g, loglik0=%g)\n", i, s, tmp, loglik0);			
+					Rprintf("Numerical problem! loglik_tmp = NaN or Inf (i=%i, s=%i, loglik0[s]=%g, max loglik0=%g)\n", i, s, loglik0[s], loglik0[max_loglik0_idx]);			
 				}
-                        }
-                }
-                loglik += loglik0 +log(1 + loglik_tmp); // No O/P from here * removed b4 loglik     
+			}
+		}		
+                loglik += loglik0[max_loglik0_idx] + log(1 + loglik_tmp); // the "1" is there, because exp(loglik0[max_loglik0_idx] - loglik0[max_loglik0_idx]) = 1, which is omitted in the loop above
         }
-       return(loglik);
+        return(loglik);
 }
 
 /*double** posteriorEGenePos(double** Psi, int nsgenes, int negenes, int T, double*** D, double** egene_prior, int type, int nrep, double alpha, double beta){
-	double*** perturb_prob = (double***) calloc(nsgenes, sizeof(double**));
+	double*** perturb_prob = (double***) R_alloc(nsgenes, sizeof(double**));
         int s, k, t, i;	
 	for(i = 0; i < nsgenes; i++){
-		perturb_prob[i] = (double**) calloc(nsgenes, sizeof(double*));// calloc changed to calloc
+		perturb_prob[i] = (double**) R_alloc(nsgenes, sizeof(double*));// R_alloc changed to R_alloc
 		for(k = 0; k < nsgenes; k++){
-        	        perturb_prob[i][k] = (double*) calloc(T , sizeof(double));// calloc changed to calloc
+        	        perturb_prob[i][k] = (double*) R_alloc(T , sizeof(double));// R_alloc changed to R_alloc
 			for(t = 0; t < T; t++)
 				perturb_prob[i][k][t] = 0;
 		}
@@ -165,9 +173,9 @@ double network_likelihood (double** Psi, int nsgenes, int negenes, int T, double
 	}
 
         double tmp;      
-	double** loglik_post = (double**) calloc(negenes, sizeof(double*));
+	double** loglik_post = (double**) R_alloc(negenes, sizeof(double*));
         for (i=0; i<negenes; i++) {
-		loglik_post[i] = (double*) calloc(nsgenes, sizeof(double));
+		loglik_post[i] = (double*) R_alloc(nsgenes, sizeof(double));
                 for (s=0; s<nsgenes; s++) {			
                         tmp=0.0;
                         for (k=0; k<nsgenes; k++) {
@@ -188,10 +196,10 @@ double network_likelihood (double** Psi, int nsgenes, int negenes, int T, double
         }
         for(k = 0; k < nsgenes; k++){
                 for(s = 0; s < nsgenes; s++)
-                        free(perturb_prob[k][s]);
-                free(perturb_prob[k]);
+                        FREE(perturb_prob[k][s]);
+                FREE(perturb_prob[k]);
         }	
-        free(perturb_prob);
+        FREE(perturb_prob);
         return(loglik_post);
 }*/
 
@@ -359,7 +367,7 @@ void copyNet(int nsgenes, double** net, double** netCopy)
 }
 //############################ ###################
 
-void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, int T, double*** D, double** networkPrior,  double **Egene_prior, double priorScale, double theta, int type, int nrep, double alpha, double beta, int seed, double* allLikelihoods, double** sdMat, double** matrix_r){ // Egene_prior ????
+void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, int T, double*** D, double** networkPrior,  double **Egene_prior, double priorScale, double theta, int type, int nrep, double alpha, double beta, int seed, double* allLikelihoods, double** sdMat, double** matrix_r){ 
   Rprintf("SAMPLE = %ld\nBURNIN = %ld\nNSGENES = %d\nNEGENES = %d\nT = %d\nTYPE = %d\nNREP = %d\nALPHA = %lf\nBETA = %lf\nTHETA = %lf\n", sample, burnin, nsgenes, negenes, T, type, nrep, alpha, beta, theta); // ###OK
   //
     int i, j, t;
@@ -367,30 +375,30 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
     double loglikMean, loglikSum, mutinf, delta, logPrior_cur_scale;  
     srand(seed);
    //# // Sum of likelihoods 
-    double** oldNet = (double**) calloc(nsgenes, sizeof(double*)); 
-    double** matrix = (double**) calloc(nsgenes, sizeof(double*)); 	// for DIC calculation
-//    double** matrix_r = (double**) calloc(nsgenes, sizeof(double*));	// rounded off matrix
-    double** M = (double**) calloc(nsgenes, sizeof(double*)); 		// for variance calculation
-    //double** varMat= (double**) calloc(nsgenes, sizeof(double*)); 	// for variance calculation
-    double** var_mean = (double**) calloc(nsgenes, sizeof(double*));
-    double** newNet = (double**) calloc(nsgenes, sizeof(double*));
-   /* double*** networks = (double***) calloc(TIMELAG, sizeof(double**));           
+    double** oldNet = (double**) R_alloc(nsgenes, sizeof(double*)); 
+    double** matrix = (double**) R_alloc(nsgenes, sizeof(double*)); 	// for DIC calculation
+//    double** matrix_r = (double**) R_alloc(nsgenes, sizeof(double*));	// rounded off matrix
+    double** M = (double**) R_alloc(nsgenes, sizeof(double*)); 		// for variance calculation
+    //double** varMat= (double**) R_alloc(nsgenes, sizeof(double*)); 	// for variance calculation
+    double** var_mean = (double**) R_alloc(nsgenes, sizeof(double*));
+    double** newNet = (double**) R_alloc(nsgenes, sizeof(double*));
+   /* double*** networks = (double***) R_alloc(TIMELAG, sizeof(double**));           
     for(i = 0; i < TIMELAG; i++){ // BURNIN changed to nsgenes
-	networks[i] = (double**) calloc(nsgenes, sizeof(double*));
+	networks[i] = (double**) R_alloc(nsgenes, sizeof(double*));
 	for(j = 0; j < nsgenes; j++) // SAMPLE changed to nsgenes
-	  networks[i][j] = (double*) calloc (nsgenes, sizeof(double));
+	  networks[i][j] = (double*) R_alloc (nsgenes, sizeof(double));
     }*/
-    double*** perturb_prob = (double***) calloc(nsgenes, sizeof(double**));        
+    double*** perturb_prob = (double***) R_alloc(nsgenes, sizeof(double**));        
     for(i = 0; i < nsgenes; i++){ // changed to nsgenes from SAMPLE
-	matrix[i] = (double*) calloc (nsgenes, sizeof(double));	// for DIC calculation
-	//matrix_r[i] = (double*) calloc (nsgenes, sizeof(double));	// rounded off matrix
-	M[i] = (double*)calloc(nsgenes, sizeof(double));		// for variance calculation
-	//varMat[i]= (double*)calloc(nsgenes, sizeof(double));		// for variance calculation
-	var_mean[i] = (double*) calloc(nsgenes, sizeof(double));
-	newNet[i] = (double*) calloc (nsgenes, sizeof(double));	
-	oldNet[i] = (double*) calloc (nsgenes, sizeof(double));	
+	matrix[i] = (double*) R_alloc (nsgenes, sizeof(double));	// for DIC calculation
+	//matrix_r[i] = (double*) R_alloc (nsgenes, sizeof(double));	// rounded off matrix
+	M[i] = (double*)R_alloc(nsgenes, sizeof(double));		// for variance calculation
+	//varMat[i]= (double*)R_alloc(nsgenes, sizeof(double));		// for variance calculation
+	var_mean[i] = (double*) R_alloc(nsgenes, sizeof(double));
+	newNet[i] = (double*) R_alloc (nsgenes, sizeof(double));	
+	oldNet[i] = (double*) R_alloc (nsgenes, sizeof(double));	
 	
-	perturb_prob[i] = (double**) calloc(nsgenes, sizeof(double*));// calloc changed to calloc
+	perturb_prob[i] = (double**) R_alloc(nsgenes, sizeof(double*));// R_alloc changed to R_alloc
 	for(j = 0; j < nsgenes; j++){
 		matrix[i][j] = 0;
 		matrix_r[i][j] = 0;
@@ -398,12 +406,13 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 		var_mean[i][j] = 0;
 		newNet[i][j] = 0;
 		oldNet[i][j] = 0;
-                perturb_prob[i][j] = (double*) calloc(T , sizeof(double));// calloc changed to calloc
+                perturb_prob[i][j] = (double*) R_alloc(T , sizeof(double));// R_alloc changed to R_alloc
 		for(t = 0; t < T; t++)
 			perturb_prob[i][j][t] = 0;
         }
 	
     }   
+    double* loglik0 = (double*) R_alloc(nsgenes + 1, sizeof(double));
     // M
     long counter = 0;
     long stored = 0;
@@ -417,7 +426,7 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
     //
     copyNet(nsgenes, net, oldNet);
     
-    double likLogOld = network_likelihood(oldNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob);
+    double likLogOld = network_likelihood(oldNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0);
     double logPriorOld = logPrior(nsgenes, oldNet, networkPrior, priorScale);
     double logPriorScale = logPriorLambda(priorScale, theta);
     long accept = 0;
@@ -450,7 +459,7 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 	}
 	alterNet(net, nsgenes, T, newNet);
 	//
-	likelihood = network_likelihood(newNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta,  perturb_prob);	
+	likelihood = network_likelihood(newNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta,  perturb_prob, loglik0);	
 	logPrior_cur = logPrior(nsgenes, newNet, networkPrior, priorScale_new);
 		
 	hfactor = updateFactor(likLogOld, logPriorOld, logPriorScale, likelihood, logPrior_cur, logPrior_cur_scale);
@@ -521,25 +530,25 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
       
       //Dhat;
    //  Rprintf("Converged at %ld and Mutual Information is %lf \n ", burnin, mutinf);
-     double Dhat = network_likelihood(matrix_r, nsgenes, nsgenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob); // Egene_prior ????
+     double Dhat = network_likelihood(matrix_r, nsgenes, nsgenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0); // Egene_prior ????
      Rprintf("The Dhat is %lf\n",Dhat);
      double DIC = Dhat - 2*loglikMean;
      Rprintf("DIC is %lf\n", DIC);
 
-     for(i = 0; i < nsgenes; i++){
-	free(matrix[i]);
-	free(M[i]);
-	free(var_mean[i]);
-	free(newNet[i]);
-	free(oldNet[i]);
+    /*for(i = 0; i < nsgenes; i++){
+	FREE(matrix[i]);
+	FREE(M[i]);
+	FREE(var_mean[i]);
+	FREE(newNet[i]);
+	FREE(oldNet[i]);
 	for(j = 0; j < nsgenes; j++)
-		free(perturb_prob[i][j]);
-	free(perturb_prob[i]);
+		FREE(perturb_prob[i][j]);
+	FREE(perturb_prob[i]);
      }
-     free(matrix);
-     free(M);
-     free(var_mean);
-     free(newNet);
-     free(oldNet);
-     free(perturb_prob);
+     FREE(matrix);
+     FREE(M);
+     FREE(var_mean);
+     FREE(newNet);
+     FREE(oldNet);
+     FREE(perturb_prob);*/
 }

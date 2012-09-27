@@ -24,9 +24,10 @@
 #define EFFECT_PROB 1
 #define DISCRETE 2
 
+
 double** getPerturbProb(double** Psi, int T, int nsgenes, int k, double** perturb_prob);
 double updateFactor (double likLogOld, double logPriorOld, double logPriorScaleOld, double likLogNew, double logPriorNew, double logPriorScaleNew);
-double network_likelihood (double** Psi, int nsgenes, int negenes, int T, double*** D, double** egene_prior, int type, int nrep, double alpha, double beta, double*** perturb_prob); // Egene_prior ????
+double network_likelihood (double** Psi, int nsgenes, int negenes, int T, double*** D, double** egene_prior, int type, int nrep, double alpha, double beta, double*** perturb_prob, double* loglik0); 
 double logPrior(int nsgenes, double** net, double** prior, double inv_nu);
 double logPriorLambda(double inv_nu, double theta);
 void copyNet(int nsgenes, double** net, double** netCopy);//

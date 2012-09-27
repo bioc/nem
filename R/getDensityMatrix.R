@@ -28,6 +28,6 @@ fitBUM <- function(cname,Porig,dirname,startab,startlam,tol){
 }
 
 getDensityMatrix = function(Porig, dirname=NULL, startab=c(0.3,10), startlam=c(0.6,0.1,0.3), tol=1e-4){
-	D = sapply(colnames(Porig),fitBUM, Porig=Porig, dirname=dirname, startab=startab, startlam=startlam, tol=tol)	
+	D = sapply(colnames(Porig), fitBUM, Porig=Porig, dirname=dirname, startab=startab, startlam=startlam, tol=tol)	
 	log(D)
 }
