@@ -23,8 +23,8 @@
 
 //########## Function to calculate Hastings ratio /// 1. checked and changes suggested // ***** 2. Neighborhood removed
 
-double updateFactor (double likLogOld, double logPriorOld, double logPriorScaleOld, double likLogNew, double logPriorNew, double logPriorScaleNew){ 
-	return((likLogNew - likLogOld) + (logPriorNew - logPriorOld) + (logPriorScaleNew - logPriorScaleOld));   // hastings ratio ### Modified to handle Prior information		
+double updateFactor (double likLogOld, double logPriorOld, double logPriorScaleOld, double likLogNew, double logPriorNew, double logPriorScaleNew, int oldNeighborhood, int newNeighborhood){ 
+	return((likLogNew - likLogOld) + (logPriorNew - logPriorOld) + (logPriorScaleNew - logPriorScaleOld) + (log((double)oldNeighborhood) - log((double)newNeighborhood)));   // hastings ratio ### Modified to handle Prior information		
 }
 // ###############################################
 // Function to get log prior for the network 
@@ -71,8 +71,7 @@ double** getPerturbProb(double** Psi, int T, int nsgenes, int k, double** pertur
                                         if(Psi[p][s] != 0 && abs(Psi[p][s]) <= t){ // p is a parent
                                                 if(t > 0){
                                                         parent_perturb_prob = perturb_prob[p][t-1];
-
-                                                        }
+                                                }
                                                 else
                                                         parent_perturb_prob = (p == k);
                                                 if(parent_perturb_prob){
@@ -157,57 +156,8 @@ double network_likelihood (double** Psi, int nsgenes, int negenes, int T, double
         return(loglik);
 }
 
-/*double** posteriorEGenePos(double** Psi, int nsgenes, int negenes, int T, double*** D, double** egene_prior, int type, int nrep, double alpha, double beta){
-	double*** perturb_prob = (double***) R_alloc(nsgenes, sizeof(double**));
-        int s, k, t, i;	
-	for(i = 0; i < nsgenes; i++){
-		perturb_prob[i] = (double**) R_alloc(nsgenes, sizeof(double*));// R_alloc changed to R_alloc
-		for(k = 0; k < nsgenes; k++){
-        	        perturb_prob[i][k] = (double*) R_alloc(T , sizeof(double));// R_alloc changed to R_alloc
-			for(t = 0; t < T; t++)
-				perturb_prob[i][k][t] = 0;
-		}
-        }
-        for(k = 0; k < nsgenes; k++){
-                perturb_prob[k] = (double**) getPerturbProb(Psi, T, nsgenes, k, perturb_prob[k]);
-	}
 
-        double tmp;      
-	double** loglik_post = (double**) R_alloc(negenes, sizeof(double*));
-        for (i=0; i<negenes; i++) {
-		loglik_post[i] = (double*) R_alloc(nsgenes, sizeof(double));
-                for (s=0; s<nsgenes; s++) {			
-                        tmp=0.0;
-                        for (k=0; k<nsgenes; k++) {
-                                for (t=0; t<T; t++) {
-                                        if(egene_prior[i][s] > 0){
-                                          if(type == PVAL_DENS) // for p-value densities:
-                                                tmp += log((D[t][i][k]*perturb_prob[k][s][t] + (1-perturb_prob[k][s][t])*1) * egene_prior[i][s]);
-                                          else if(type == EFFECT_PROB) // for effect probabilities
-                                                tmp += log((D[t][i][k]*perturb_prob[k][s][t] + (1-perturb_prob[k][s][t])*(1 - D[t][i][k])) * egene_prior[i][s]);
-                                          else // for count data:
-                                                tmp += log((pow(1-beta, D[t][i][k]*perturb_prob[k][s][t])*pow(beta, (nrep-D[t][i][k])*perturb_prob[k][s][t]) +
-                                                       pow(alpha, D[t][i][k]*(1-perturb_prob[k][s][t]))*pow(1-alpha, (nrep-D[t][i][k])*(1-perturb_prob[k][s][t]))) * egene_prior[i][s]);
-					}
-                                }
-                        }			
-			loglik_post[i][s] = tmp;			
-                }
-        }
-        for(k = 0; k < nsgenes; k++){
-                for(s = 0; s < nsgenes; s++)
-                        FREE(perturb_prob[k][s]);
-                FREE(perturb_prob[k]);
-        }	
-        FREE(perturb_prob);
-        return(loglik_post);
-}*/
-
-//############ Function to change the network // ***** To be reviewed // Modified
-// Modified to remove the neighborhood ratio, random selection of altering operation
-// Replaced the edge reversal operation with edge swpping operation
-
-void alterNet(double** net, int nsgenes, int T, double** temp1){
+int alterNet(double** net, int nsgenes, int T, double** temp1){
 
   int i, j, noperations;
  
@@ -257,7 +207,8 @@ void alterNet(double** net, int nsgenes, int T, double** temp1){
    
     int r = rand()%noperations;
     //Rprintf("r = %d\n", r);
-
+    
+   int delta_poss_operations = 0;
    //#$ Random number generated between 0 to noperations
     int kk = 0;
     for(k = 0; k < 3; k++){  // changed to 4 to get edge deletion else 3
@@ -276,12 +227,28 @@ void alterNet(double** net, int nsgenes, int T, double** temp1){
 	if(k == 0){ //# edge weight increment	
 // 	 Rprintf("edge weight increment\n");
 	 temp1[i][j] += 1;
+	 if(temp1[i][j] >= T - 1) // if after edge weight increase we are at maximum, we have an allowed operation less
+		delta_poss_operations--;
+	 if(temp1[i][j] == 1) // if after edge weight increase we have a new edge, we have an allowed operation *more* 
+		delta_poss_operations++; // additional edge weight decrease possible
+         if(temp1[i][j] == temp1[j][i]) // swap not possible any more
+		delta_poss_operations--;
+	 if((temp1[i][j] != temp1[j][i]) && (net[i][j] == net[j][i])) // additional swap possible
+		delta_poss_operations++;
 	}
 	else if(k == 1){ //# edge weight decrement
 	  temp1[i][j] -= 1;
+	  if(temp1[i][j] == 0) // if after edge weight increase we are at minimum, we have an allowed operation less
+		delta_poss_operations--;
+	  if(temp1[i][j] == T - 2) // if after edge weight decrease we are below the maximum, we have an allowed operation *more* 
+		delta_poss_operations++; // additional edge weight increase possible
+          if(temp1[i][j] == temp1[j][i]) // swap not possible any more
+		delta_poss_operations--;
+	  if((temp1[i][j] != temp1[j][i]) && (net[i][j] == net[j][i])) // additional swap possible
+		delta_poss_operations++;
 // 	  Rprintf("edge weight decrement\n");
 	}    
-	else if(k == 2){ //# edge weight swap
+	else if(k == 2){ //# edge weight swap: number of possible operations does not change
 	  double tmp = temp1[i][j];
 	  temp1[i][j] = temp1[j][i];
 	  temp1[j][i] = tmp;
@@ -292,16 +259,32 @@ void alterNet(double** net, int nsgenes, int T, double** temp1){
 // 	}	// till this
 	break;
       }	
-    }
-    
+   } 
 //       Rprintf("new network:\n");
 //      for(i= 0; i<nsgenes; i++){
 //     	for(j = 0; j<nsgenes; j++){
 //     		Rprintf("%lf\t",temp1[i][j]);
 //     	} Rprintf("\n");
 //     }//
+   return(delta_poss_operations);
+}  
 
-}  // ### OK (returns a new nwtwork) // 
+
+int neighborhoodSize(double** net, int nsgenes, int T){
+	int nsize = 0;
+	for(int i = 0; i < nsgenes; i++){
+		for(int j = 0; j < nsgenes; j++){
+			 if (net[i][j] < T - 1) // increment operation
+				nsize++;
+			 if(net[i][j] > 0) // decrement operation
+				nsize++;
+		         if(net[i][j] != net[j][i]) // edge swap
+				nsize++;
+		}
+	}
+	return(nsize);
+}
+
 //################## Mutual Information Functions
 //
 /*double mutInfo(double** net1, double** net2, int nsgenes, int T){
@@ -426,12 +409,14 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
     //
     copyNet(nsgenes, net, oldNet);
     
+    int n_neighbors = neighborhoodSize(oldNet, nsgenes, T);
     double likLogOld = network_likelihood(oldNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0);
     double logPriorOld = logPrior(nsgenes, oldNet, networkPrior, priorScale);
     double logPriorScale = logPriorLambda(priorScale, theta);
     long accept = 0;
     loglikSum = 0.0;     
     allLikelihoods[0] = likLogOld;
+    int delta_poss_operations;
     GetRNGstate();
     //
    // copyNet(nsgenes, oldNet, networks[0]);
@@ -457,12 +442,12 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 		priorScale_new = priorScale;		
 		logPrior_cur_scale = logPriorScale;
 	}
-	alterNet(net, nsgenes, T, newNet);
+	delta_poss_operations = alterNet(net, nsgenes, T, newNet);
 	//
 	likelihood = network_likelihood(newNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta,  perturb_prob, loglik0);	
 	logPrior_cur = logPrior(nsgenes, newNet, networkPrior, priorScale_new);
 		
-	hfactor = updateFactor(likLogOld, logPriorOld, logPriorScale, likelihood, logPrior_cur, logPrior_cur_scale);
+	hfactor = updateFactor(likLogOld, logPriorOld, logPriorScale, likelihood, logPrior_cur, logPrior_cur_scale, n_neighbors, n_neighbors + delta_poss_operations);
 		
 	//#// random number between 0 and 1 
 	double r2 = 0;
@@ -489,6 +474,7 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 	    likLogOld = likelihood;
 	    logPriorOld = logPrior_cur;
 	    logPriorScale = logPrior_cur_scale;
+	    n_neighbors += delta_poss_operations;
 	}
         allLikelihoods[counter + 1] = likelihood; // Put likelihoods into an array
 	if(counter % 100 == 0){
@@ -536,19 +522,19 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
      Rprintf("DIC is %lf\n", DIC);
 
     /*for(i = 0; i < nsgenes; i++){
-	FREE(matrix[i]);
-	FREE(M[i]);
-	FREE(var_mean[i]);
-	FREE(newNet[i]);
-	FREE(oldNet[i]);
+	free(matrix[i]);
+	free(M[i]);
+	free(var_mean[i]);
+	free(newNet[i]);
+	free(oldNet[i]);
 	for(j = 0; j < nsgenes; j++)
-		FREE(perturb_prob[i][j]);
-	FREE(perturb_prob[i]);
+		free(perturb_prob[i][j]);
+	free(perturb_prob[i]);
      }
-     FREE(matrix);
-     FREE(M);
-     FREE(var_mean);
-     FREE(newNet);
-     FREE(oldNet);
-     FREE(perturb_prob);*/
+     free(matrix);
+     free(M);
+     free(var_mean);
+     free(newNet);
+     free(oldNet);
+     free(perturb_prob);*/
 }
