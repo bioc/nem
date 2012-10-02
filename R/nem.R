@@ -6,7 +6,7 @@ set.default.parameters = function(Sgenes, ...){
 			trans.close=TRUE, backward.elimination=FALSE, mode="continous_Bayesian", lambda.intervention=4, lambda.no_intervention=4,  df.intervention=4.4, 
 			df.no_intervention=4.4, nu.intervention=0.6, nu.no_intervention=0.95, scale.intervention=0.023, scale.no_intervention=0.023, map=map, outputdir="QualityControl", 
 			debug=FALSE, mc.cores=8,
-			mcmc.nsamples=1e6, mcmc.nburnin=1e6, mcmc.seed=1234, mcmc.hyperprior=10,
+			mcmc.nsamples=1e6, mcmc.nburnin=1e6, mcmc.seed=1234, mcmc.hyperprior=1,
 			eminem.maxsteps=1000, eminem.sdVal=1, eminem.changeHfreq=NULL,
 			prob.cutoff=0.5
 			)

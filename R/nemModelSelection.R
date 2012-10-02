@@ -1,6 +1,6 @@
 nemModelSelection <- function(lambdas,D,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))),verbose=TRUE, ...){	
 	if(inference %in% c("mc.eminem", "dynoNEM"))
-		stop("nemModelSelection is not applicable for 'mc.eminem' and 'dynoNEM'")
+		stop("nemModelSelection is not applicable for 'mc.eminem'")
     infer <- function(lam){                     
         control$lambda=lam          
         res <- nem:::nem(D,inference=inference,models=models,control=control, verbose=verbose) # ACHTUNG: nem spuckt immer den MAP score aus!!!       
@@ -10,8 +10,12 @@ nemModelSelection <- function(lambdas,D,inference="nem.greedy",models=NULL,contr
             controltmp = control
             controltmp$Pm = NULL
             controltmp$lambda=0 
-            if(control$type != "depn")
-                resmLL <- nem:::score(list(as(res$graph,"matrix")),D[res$selected,,drop=FALSE],controltmp,verbose=FALSE)$mLL # get true mLL
+            if(control$type != "depn"){
+				if(inference == "dynoNEM")
+					resmLL <- nem:::score(list(as(res$graph,"matrix")),D[,res$selected,,drop=FALSE],controltmp,verbose=FALSE)$mLL # get true mLL
+				else
+                	resmLL <- nem:::score(list(as(res$graph,"matrix")),D[res$selected,,drop=FALSE],controltmp,verbose=FALSE)$mLL # get true mLL
+			}
             else
                 resmLL <- nem:::score(list(as(res$graph,"matrix")),D,controltmp,verbose=FALSE)$mLL # get true mLL
             res$mLL = resmLL                

@@ -97,7 +97,7 @@ SEXP MCMCrunWrapper(SEXP SAMPLE, SEXP BURNIN, SEXP initial_R, SEXP nsgenes_R, SE
     int T = INTEGER(T_R)[0];
     int nsgenes = INTEGER(nsgenes_R)[0];
     int negenes = INTEGER(negenes_R)[0];
-    double priorScale = REAL(priorScale_R)[0];
+    double priorScale = REAL(priorScale_R)[0];    
     double theta = REAL(theta_R)[0];
     int type = INTEGER(type_R)[0];
     int nrep = INTEGER(nrep_R)[0];
@@ -154,6 +154,7 @@ SEXP MCMCrunWrapper(SEXP SAMPLE, SEXP BURNIN, SEXP initial_R, SEXP nsgenes_R, SE
         }
     }
     //
+    Rprintf("(initial) prior scale parameter = %g\n", priorScale);
     double loglik = learn_network( T, nsgenes,negenes, D, initial, networkPrior, Egene_prior, priorScale, mat, type, nrep, alpha, beta);    
     if(useMCMC){ // if proper arguments are given, use MCMC		
 		for(s = 0; s < nsgenes; s++){

@@ -49,9 +49,9 @@ double logPrior(int nsgenes, double** net, double** prior, double inv_nu){
         return 0;
 }
 
-// prior for 1/nu: logarithm of exponential distribution with parameter theta
+// prior for nu: logarithm of exponential distribution with parameter theta
 double logPriorLambda(double inv_nu, double theta){
-	return(log(theta) - theta * inv_nu);
+	return(log(theta) - theta / inv_nu);	
 }
 //
 //###########################################################################################################
@@ -403,7 +403,7 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
     long nsampled = 0;
     int converged = 0;
     double hfactor;
-    double likelihood, logPrior_cur, delta_loglambda, priorScale_new;    
+    double likelihood, logPrior_cur, loglambda, priorScale_new;    
     //
     Rprintf("counter = %ld and converged = %d \n",counter,converged);// ### OK
     //
@@ -413,6 +413,8 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
     double likLogOld = network_likelihood(oldNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0);
     double logPriorOld = logPrior(nsgenes, oldNet, networkPrior, priorScale);
     double logPriorScale = logPriorLambda(priorScale, theta);
+    if(priorScale != 0)
+	    loglambda = log2(priorScale);
     long accept = 0;
     loglikSum = 0.0;     
     allLikelihoods[0] = likLogOld;
@@ -432,20 +434,20 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 	    }
 	   
  	}*/
-	if(counter % 100 == 0){
-		delta_loglambda = rnorm(0, sqrt(0.5)); // sample such that new log-lambda is with 95% probability within one log-unit apart from current lambda
-		priorScale_new *= pow(2, delta_loglambda);
-		priorScale_new += 1e-7;
+	if(counter % 100 == 0 && priorScale != 0){
+		loglambda += rnorm(0, sqrt(0.5)); // sample such that new log-lambda is with 95% probability within one log-unit apart from current lambda		
+		priorScale_new = pow(2, loglambda) + 1e-7;
 		logPrior_cur_scale = logPriorLambda(priorScale_new, theta);
 	}
 	else{
 		priorScale_new = priorScale;		
 		logPrior_cur_scale = logPriorScale;
-	}
-	delta_poss_operations = alterNet(net, nsgenes, T, newNet);
-	//
-	likelihood = network_likelihood(newNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta,  perturb_prob, loglik0);	
-	logPrior_cur = logPrior(nsgenes, newNet, networkPrior, priorScale_new);
+
+		delta_poss_operations = alterNet(net, nsgenes, T, newNet);
+		
+		likelihood = network_likelihood(newNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta,  perturb_prob, loglik0);	
+		logPrior_cur = logPrior(nsgenes, newNet, networkPrior, priorScale_new);
+	}	
 		
 	hfactor = updateFactor(likLogOld, logPriorOld, logPriorScale, likelihood, logPrior_cur, logPrior_cur_scale, n_neighbors, n_neighbors + delta_poss_operations);
 		

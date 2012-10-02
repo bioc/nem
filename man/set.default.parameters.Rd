@@ -42,7 +42,7 @@ Since version 2.5.4 functions in the nem package do not have any more a large am
   \item{mcmc.nsamples}{Number of MCMC samples to take. Default: 1e6}
   \item{mcmc.nburnin}{Number of additional samples for burnin phase. Default: 1e6} 
   \item{mcmc.seed}{random seed. Default: 1234}
-  \item{mcmc.hyperprior}{Parameter for exponential distribution hyperprior for regularization parameter lambda. Default: 10}
+  \item{mcmc.hyperprior}{Parameter for exponential distribution hyperprior for regularization parameter 1/lambda. Default: 1}
   \item{eminem.maxsteps}{Maximum number of iterations for the EM algorithm (MC.EMINEM). Default: 1000}
   \item{eminem.sdVal}{positive number, between 1 and ncol(D)*(ncol(D)-1): number of edges to change in one MCMC step; see paper for the author's choice. Default: 1}
   \item{eminem.changeHfreq}{positive number, mcmc.nsamples must be a multiple: the Empirical Bayes step is performed every <changeHfreq> steps (see paper for the author's choice); set >= mcmc.nsamples (or leave to default) to exclude this step. Default: NULL}

@@ -11,7 +11,7 @@
 
 #dyn.load("~/workingAt/trunk/dynoNEM/dynoNEMMCMC/wrapper.so")
 
-dynoNEM_MCMC = function(D, SAMPLE=500000, BURNIN=1000000, initial=NULL, priorNet=NULL, priorE=NULL, delta=1, inv.nu=0.1, theta=0.01, type=c("CONTmLLBayes", "CONTmLL", "mLL"), nrep=4, alpha=0.1, beta=0.2, seed = 1234){	
+dynoNEM_MCMC = function(D, SAMPLE=500000, BURNIN=1000000, initial=NULL, priorNet=NULL, priorE=NULL, delta=1, inv.nu=0.01, theta=1, type=c("CONTmLLBayes", "CONTmLL", "mLL"), nrep=4, alpha=0.1, beta=0.2, seed = 1234){	
 
 	if(any(is.na(D) | is.infinite(D)))
 		stop("data contains NA or Inf")
@@ -34,6 +34,8 @@ dynoNEM_MCMC = function(D, SAMPLE=500000, BURNIN=1000000, initial=NULL, priorNet
 			stop("priorNet has to be a # S-genes x # S-genes matrix")
 		if(any(priorNet > T) | any(priorNet < 0))
 			stop("All entries in priorNet have to be between 0 and T")
+		if(inv.nu == 0)
+			inv.nu = 0.01
 	}
 	if(is.null(priorE)){ # The E-gene prior (Egene_prior) uniform prior
 		priorE = matrix(1/nsgenes, ncol=nsgenes, nrow=negenes)		
