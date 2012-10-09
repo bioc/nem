@@ -24,6 +24,7 @@
 //########## Function to calculate Hastings ratio /// 1. checked and changes suggested // ***** 2. Neighborhood removed
 
 double updateFactor (double likLogOld, double logPriorOld, double logPriorScaleOld, double likLogNew, double logPriorNew, double logPriorScaleNew, int oldNeighborhood, int newNeighborhood){ 
+//Rprintf("likLogNew = %g, likLogOld = %g, logPriorNew = %g, logPriorOld = %g, logPriorScaleNew = %g, logPriorScaleOld = %g, oldNeigborhood = %i, newNeighborhood = %i\n", likLogNew, likLogOld, logPriorNew, logPriorOld, logPriorScaleNew, logPriorScaleOld, oldNeighborhood, newNeighborhood);
 	return((likLogNew - likLogOld) + (logPriorNew - logPriorOld) + (logPriorScaleNew - logPriorScaleOld) + (log((double)oldNeighborhood) - log((double)newNeighborhood)));   // hastings ratio ### Modified to handle Prior information		
 }
 // ###############################################
@@ -358,7 +359,7 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
     double loglikMean, loglikSum, mutinf, delta, logPrior_cur_scale;  
     srand(seed);
    //# // Sum of likelihoods 
-    double** oldNet = (double**) R_alloc(nsgenes, sizeof(double*)); 
+//    double** oldNet = (double**) R_alloc(nsgenes, sizeof(double*)); 
     double** matrix = (double**) R_alloc(nsgenes, sizeof(double*)); 	// for DIC calculation
 //    double** matrix_r = (double**) R_alloc(nsgenes, sizeof(double*));	// rounded off matrix
     double** M = (double**) R_alloc(nsgenes, sizeof(double*)); 		// for variance calculation
@@ -379,7 +380,7 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 	//varMat[i]= (double*)R_alloc(nsgenes, sizeof(double));		// for variance calculation
 	var_mean[i] = (double*) R_alloc(nsgenes, sizeof(double));
 	newNet[i] = (double*) R_alloc (nsgenes, sizeof(double));	
-	oldNet[i] = (double*) R_alloc (nsgenes, sizeof(double));	
+//	oldNet[i] = (double*) R_alloc (nsgenes, sizeof(double));	
 	
 	perturb_prob[i] = (double**) R_alloc(nsgenes, sizeof(double*));// R_alloc changed to R_alloc
 	for(j = 0; j < nsgenes; j++){
@@ -388,7 +389,7 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 		M[i][j] = 0;
 		var_mean[i][j] = 0;
 		newNet[i][j] = 0;
-		oldNet[i][j] = 0;
+		//oldNet[i][j] = 0;
                 perturb_prob[i][j] = (double*) R_alloc(T , sizeof(double));// R_alloc changed to R_alloc
 		for(t = 0; t < T; t++)
 			perturb_prob[i][j][t] = 0;
@@ -403,22 +404,21 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
     long nsampled = 0;
     int converged = 0;
     double hfactor;
-    double likelihood, logPrior_cur, loglambda, priorScale_new;    
+    double likelihood, logPrior_cur, priorScale_new;    
     //
     Rprintf("counter = %ld and converged = %d \n",counter,converged);// ### OK
     //
-    copyNet(nsgenes, net, oldNet);
+   // copyNet(nsgenes, net, oldNet);
     
-    int n_neighbors = neighborhoodSize(oldNet, nsgenes, T);
-    double likLogOld = network_likelihood(oldNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0);
-    double logPriorOld = logPrior(nsgenes, oldNet, networkPrior, priorScale);
-    double logPriorScale = logPriorLambda(priorScale, theta);
-    if(priorScale != 0)
-	    loglambda = log2(priorScale);
+    int n_neighbors = neighborhoodSize(net, nsgenes, T);
+    double likLogOld = network_likelihood(net, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0);
+    double logPriorOld = logPrior(nsgenes, net, networkPrior, priorScale);
+    double logPriorScale = logPriorLambda(priorScale, theta);  
     long accept = 0;
     loglikSum = 0.0;     
     allLikelihoods[0] = likLogOld;
     int delta_poss_operations;
+//Rprintf("n_neighbors = %i, likLogOld = %g, logPriorOld = %g, logPriorScale=%g\n", n_neighbors, likLogOld, logPriorOld, logPriorScale);
     GetRNGstate();
     //
    // copyNet(nsgenes, oldNet, networks[0]);
@@ -434,9 +434,8 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 	    }
 	   
  	}*/
-	if(counter % 100 == 0 && priorScale != 0){
-		loglambda += rnorm(0, sqrt(0.5)); // sample such that new log-lambda is with 95% probability within one log-unit apart from current lambda		
-		priorScale_new = pow(2, loglambda) + 1e-7;
+	if(counter % 100 == 0 && priorScale != 0 && counter > 0){
+		priorScale_new = pow(2, log2(priorScale) + rnorm(0, sqrt(0.5))) + 1e-7; // sample such that new log-lambda is with 95% probability within one log-unit apart from current lambda		
 		logPrior_cur_scale = logPriorLambda(priorScale_new, theta);
 	}
 	else{
@@ -444,6 +443,7 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 		logPrior_cur_scale = logPriorScale;
 
 		delta_poss_operations = alterNet(net, nsgenes, T, newNet);
+//Rprintf("n_neighbors = %i, delta_poss_operations = %i\n", n_neighbors, delta_poss_operations);
 		
 		likelihood = network_likelihood(newNet, nsgenes, negenes, T, D, Egene_prior, type, nrep, alpha, beta,  perturb_prob, loglik0);	
 		logPrior_cur = logPrior(nsgenes, newNet, networkPrior, priorScale_new);
@@ -458,7 +458,6 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 	// Random number between 0 and 1 generated to be compared to the Hastings ratio
 	if(hfactor >= log(r2)){	   // if hfactor is > 0, this condition is ALWAYS fullfilled	 (-INFINITY < log(r2) <= 0)    	    
 	    copyNet(nsgenes, newNet, net);
-	    priorScale = priorScale_new;
 	    if(counter % 100 == 0)
 		    Rprintf("new prior scale = %g\n", priorScale);
 	    accept++;
@@ -476,6 +475,7 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 	    likLogOld = likelihood;
 	    logPriorOld = logPrior_cur;
 	    logPriorScale = logPrior_cur_scale;
+	    priorScale = priorScale_new;
 	    n_neighbors += delta_poss_operations;
 	}
         allLikelihoods[counter + 1] = likelihood; // Put likelihoods into an array
@@ -518,7 +518,7 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
       
       //Dhat;
    //  Rprintf("Converged at %ld and Mutual Information is %lf \n ", burnin, mutinf);
-     double Dhat = network_likelihood(matrix_r, nsgenes, nsgenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0); // Egene_prior ????
+     double Dhat = network_likelihood(matrix_r, nsgenes, nsgenes, T, D, Egene_prior, type, nrep, alpha, beta, perturb_prob, loglik0); 
      Rprintf("The Dhat is %lf\n",Dhat);
      double DIC = Dhat - 2*loglikMean;
      Rprintf("DIC is %lf\n", DIC);
