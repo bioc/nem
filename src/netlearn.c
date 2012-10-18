@@ -236,7 +236,7 @@ double learn_network(int T, int nsgenes,int negenes, double*** D, double** initi
 			        }
 			}
 		}
-		if (!improved)
+		if (improved != 1)
 			break;
 		copyNet(nsgenes, tmp2, net);
 		print_network(net, nsgenes);

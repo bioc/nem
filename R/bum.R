@@ -62,7 +62,7 @@ bum.negLogLik <- function(hyper,X,lambda){
 	if(b == Inf)
 		b = 1000
 	nLL = -sum(log(dbum(X,c(a,b),lambda))) - dexp(b, 0.1, log=T)
-#	cat("a = ", a, "b = ", b, "\n")
+	#cat("a = ", a, "b = ", b, "\n")
 	if(a != 1)
 		nLL = nLL - dbeta(a,1,2, log=TRUE) 		
 	nLL
