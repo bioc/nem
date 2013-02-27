@@ -1,7 +1,7 @@
 plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL, draw.lines=FALSE, palette="BlueRed"){
 	if(is(D, "list"))
 		stop("Plotting of effects matrix is only implemented for one dataset, not for several.")
-	if(length(x$mLL) > 1){
+	if(length(x$mLL) > 1 & class(x) != "dynoNEM"){
 		winner <- which.max(x$mLL)
 		mappos <- x$mappos[[winner]]		
 	}

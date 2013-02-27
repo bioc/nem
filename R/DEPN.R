@@ -1,3 +1,5 @@
+# Deterministic Effects Propagation Networks for RPPA data with missing values (Fröhlich et al., BMC Bioinformatics, 2009)
+
 encode.interventions = function(datall, I, map){    
     antibodies = setdiff(colnames(datall), "time")
     interventions = paste("I", antibodies, sep="_")

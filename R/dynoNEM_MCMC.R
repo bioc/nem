@@ -76,13 +76,12 @@ dynoNEM_MCMC = function(D, SAMPLE=500000, BURNIN=1000000, initial=NULL, priorNet
 		else if(type == "mLL")
 			control = set.default.parameters(unique(colnames(myD)), Pm=priorNet, Pe=priorE[,1:nsgenes], lambda=inv.nu, para=c(alpha,beta), delta=delta)
 		initial = nem(myD, control=control, verbose=FALSE)		
-		sel = as.numeric(initial$selected) # ACHTUNG: automatische Feature Selection
+		#sel = as.numeric(initial$selected) # ACHTUNG: automatische Feature Selection
 		initial = as(initial$graph, "matrix")
 		cat("initial network:\n")
 		print(initial)		
 	}
-	else
-		sel = 1:negenes
+	sel = 1:negenes
 # Call the MCMC function
 	if(type == "CONTmLLBayes")
 		DD = exp(D[,sel,]) # IMPORTANT: code works with original p-value densities
@@ -211,7 +210,7 @@ dynoNEM.posteriorEGenePos = function(net, D, priorE=NULL, delta=1, type=c("CONTm
 			epos[i, s] = loglik0[s]
 		}
 		maxidx = which.max(loglik0)
-		loglik = loglik + loglik0[maxidx] + log(sum(loglik0 - loglik0[maxidx]))
+		loglik = loglik + loglik0[maxidx] + log(sum(exp(loglik0 - loglik0[maxidx])))
 	}
 	LLperGene = rowSums(epos)
 	epos = exp(epos)

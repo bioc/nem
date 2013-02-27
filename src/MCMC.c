@@ -437,6 +437,9 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 	if(counter % 100 == 0 && priorScale != 0 && counter > 0){
 		priorScale_new = pow(2, log2(priorScale) + rnorm(0, sqrt(0.5))) + 1e-7; // sample such that new log-lambda is with 95% probability within one log-unit apart from current lambda		
 		logPrior_cur_scale = logPriorLambda(priorScale_new, theta);
+		/*likelihood = likLogOld;
+		logPrior_cur = logPriorOld;
+		delta_poss_operations = 0;*/
 	}
 	else{
 		priorScale_new = priorScale;		
@@ -458,8 +461,8 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 	// Random number between 0 and 1 generated to be compared to the Hastings ratio
 	if(hfactor >= log(r2)){	   // if hfactor is > 0, this condition is ALWAYS fullfilled	 (-INFINITY < log(r2) <= 0)    	    
 	    copyNet(nsgenes, newNet, net);
-	    if(counter % 100 == 0)
-		    Rprintf("new prior scale = %g\n", priorScale);
+	    if(priorScale_new != priorScale)
+		    Rprintf("new prior scale = %g\n", priorScale_new);
 	    accept++;
 	    
 	  /*  if(!converged && counter <= burnin){ 		
@@ -477,17 +480,18 @@ void MCMCrun(long sample, long burnin, double** net, int nsgenes, int negenes, i
 	    logPriorScale = logPrior_cur_scale;
 	    priorScale = priorScale_new;
 	    n_neighbors += delta_poss_operations;
+	    delta_poss_operations = 0;
 	}
-        allLikelihoods[counter + 1] = likelihood; // Put likelihoods into an array
+	allLikelihoods[counter + 1] = likLogOld; // Put likelihoods into an array
 	if(counter % 100 == 0){
 	  Rprintf("iter = %ld, accepted = %ld, likelihood = %g\n",counter, accept, likLogOld);	   // Number of Accepted networks 
 	}
 	counter++;	
 					     	
     
-        if((counter > burnin) && counter%100 == 0){
+    if((counter >= burnin) && counter%100 == 0){
 	//printf("Burnin (convergence) complete %ld and Mutual Information is %lf\n", burnin, mutinf);
-		loglikSum += likelihood;
+		loglikSum += likLogOld;
 
 		nsampled++;
 		//#// Storing likelihood sum

@@ -126,7 +126,7 @@ plot.nem <- function(x, what="graph", remove.singletons=FALSE, PDF=FALSE, filena
 	}
 	
 	if(what=="pos"){    		
-		if(length(x$mLL) > 1){
+		if(length(x$mLL) > 1 & class(x) != "dynoNEM"){
 			winner <- which.max(x$mLL)
 			pos <- x$pos[[winner]]
 			effects <- rownames(x$pos[[winner]])

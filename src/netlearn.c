@@ -191,7 +191,7 @@ double learn_network(int T, int nsgenes,int negenes, double*** D, double** initi
 	Rprintf("initial log-likelihood = %g\n", loglik);
 	int iterator = 0;
 	int improved = 0;
-	while (converged == 0) {
+	while (converged == 0 || iterator > 100) {
 	        improved = 0;
 		iterator++;
 		for (s=0; s<nsgenes; s++) {
