@@ -21,7 +21,7 @@ nem.bootstrap <- function(D, thresh=0.5, nboot=1000,inference="nem.greedy",model
 	else
 		res.boot = boot:::boot(1:nrow(D), inferNetwork, nboot)
 	results =  res.boot$t
-	Sgenes = setdiff(unique(colnames(D)), "time")
+	Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
 	n = length(Sgenes)
 	overlapBoot = colMeans(results)
 	overlapBoot = matrix(round(overlapBoot,digits=2),ncol=n,nrow=n)
@@ -54,7 +54,7 @@ nem.bootstrap <- function(D, thresh=0.5, nboot=1000,inference="nem.greedy",model
 }
 
 nem.bootstrap.list = function(D, thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))), verbose=TRUE){
-	Sgenes = setdiff(colnames(D[[1]]), "time")	
+	Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")	
 	n = length(Sgenes)
 	res.all = matrix(0, ncol=nboot, nrow=n^2)
 	for(b in 1:nboot){

@@ -16,7 +16,7 @@ nem.jackknife <- function(D, thresh=0.5, inference="nem.greedy",models=NULL,cont
 		overlapJack[sgenesk,sgenesk] = overlapJack[sgenesk,sgenesk] + res
 		overlapJack
 	}
-	Sgenes = setdiff(unique(colnames(D)), "time")
+	Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
 	n = length(Sgenes)		
 	overlapJack = matrix(0,ncol=n,nrow=n)	
 	colnames(overlapJack) = Sgenes

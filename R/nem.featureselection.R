@@ -2,7 +2,7 @@ nem.featureselection <- function(D,inference="nem.greedy",models=NULL,control=se
 		
 	control$selEGenes=FALSE	
 	if(control$selEGenes.method == "regularization"){
-		Sgenes = setdiff(unique(colnames(D)), "time")
+		Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
 		nrS = length(Sgenes)
 		 if (is.null(control$Pe)){ 	
 			control$Pe <- matrix(1/nrS,nrow=nrow(D),ncol=nrS)

@@ -1,7 +1,7 @@
 triples.posterior <- function(D, control,verbose=TRUE){
 
   # Sgenes
-  Sgenes <- setdiff(unique(colnames(D)), "time")
+  Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
   nrS    <- length(Sgenes)
   nrTest <- choose(nrS,3) 
   cat(nrS,"perturbed genes ->", nrTest, "triples to check (lambda = ",control$lambda,")\n")
@@ -19,32 +19,37 @@ triples.posterior <- function(D, control,verbose=TRUE){
 
   ##=== 29 candidate models for each triple
   cnd.models   = enumerate.models(3,trans.close=control$trans.close,verbose=FALSE)
-
+  
+  fkt2 <- function(x,name){	  
+	  dimnames(x) <- list(name,name)
+	  x
+  }
   ##=== store maximum model in a list
   mll.models   = list()
   if (verbose) cat(".") 
   for(i in 1:nrow(triples)){
 
 	sel <- which(colnames(D)%in%Sgenes[triples[i,]])
-        D.tmp <- D[,sel]
-#         D.tmp <- D.tmp[rowSums(D.tmp)!=0,]	
-        colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,1]]] = "a"
-        colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,2]]] = "b"
-        colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,3]]] = "c"	
+    D.tmp <- D[,sel]	
+	cnd.models <- lapply(cnd.models,fkt2, Sgenes[triples[i,]])
+#        D.tmp <- D.tmp[rowSums(D.tmp)!=0,]	
+#        colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,1]]] = "a"
+#        colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,2]]] = "b"
+#        colnames(D.tmp)[colnames(D.tmp) == Sgenes[triples[i,3]]] = "c"	
 	controltmp = control
-        controltmp$Pe <- control$Pe[,sel,drop=FALSE]            
+    controltmp$Pe <- control$Pe[,sel,drop=FALSE]            
 	if(!is.null(control$Pm))    
-        	controltmp$Pm <- control$Pm[sel,sel,drop=FALSE]				
-        tmp.mdl = score(cnd.models,D.tmp, controltmp,verbose=FALSE)	
+        controltmp$Pm <- control$Pm[sel,sel,drop=FALSE]				
+   	tmp.mdl = score(cnd.models,D.tmp, controltmp,verbose=FALSE)	
  
         ##== do prior stuff
-        post = tmp.mdl$mLL + log(control$Pmlocal)
-        winner <- cnd.models[[which.max(post)]]
-        mll.models[[i]] = list()
-        mll.models[[i]]$graph = winner
-        mll.models[[i]]$posterior = post
-        dimnames(mll.models[[i]]$graph) = list(Sgenes[triples[i,]],Sgenes[triples[i,]]) #=== rename node to inds
-        if (verbose) cat(".")
+    post = tmp.mdl$mLL + log(control$Pmlocal)
+    winner <- cnd.models[[which.max(post)]]
+    mll.models[[i]] = list()
+    mll.models[[i]]$graph = winner
+    mll.models[[i]]$posterior = post
+    dimnames(mll.models[[i]]$graph) = list(Sgenes[triples[i,]],Sgenes[triples[i,]]) #=== rename node to inds
+    if (verbose) cat(".")
   }
 
   ##

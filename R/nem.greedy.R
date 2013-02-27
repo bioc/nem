@@ -45,9 +45,9 @@ get.reversions = function(Phi){
 
 nem.greedy <- function(D, initial=NULL,control, verbose=TRUE){ 
 	if(is(D, "list"))
-		Sgenes = setdiff(unique(colnames(D[[1]])), "time")
+		Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D[[1]]))]),"time")
 	else
-    	Sgenes = setdiff(unique(colnames(D)), "time")
+		Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
     n <- length(Sgenes)     
     cat("Greedy hillclimber for",n,"S-genes (lambda =", control$lambda,")...\n\n")
     if(is.null(initial))

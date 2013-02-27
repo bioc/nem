@@ -5,7 +5,7 @@
 pairwise.posterior = function (D, control, verbose = TRUE)
 {
   # Sgenes
-    Sgenes <- setdiff(unique(colnames(D)), "time")
+	Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
     nrS <- length(Sgenes)
     nrTest <- nrS*(nrS-1)/2
     if(verbose) cat(nrS,"perturbed genes ->", nrTest, "pairwise tests (lambda = ", control$lambda,")\n")

@@ -1,5 +1,5 @@
 moduleNetwork <- function(D,control,verbose=TRUE){              
-    Sgenes = setdiff(unique(colnames(D)), "time")   
+	Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")  
     n <- length(Sgenes) 
     P <- sapply(Sgenes, function(x) rowSums(D[, colnames(D) == x, drop=FALSE])) 
     cat("Estimating module network of",n,"S-genes (lambda =", control$lambda,")...\n\n")    
@@ -86,7 +86,7 @@ moduleNetwork.aux <- function(D,modeltotal, variables, control, verbose=TRUE){
 }
 
 connectModules <- function(D, Phi, modules, control, verbose=TRUE){
-    Sgenes = setdiff(unique(colnames(D)), "time")
+	Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
     n <- length(Sgenes) 
     if(verbose){    
         dev.off()
