@@ -4,7 +4,7 @@ score.aux <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
   if (class(models)=="matrix") models <- list(models)    
 
   # Which Sgenes were silenced?
-  Sgenes <- setdiff(unlist(control$map),"time")
+  Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
   nrS <- length(Sgenes)
   
   # check that all models have S-genes as names
