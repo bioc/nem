@@ -52,26 +52,18 @@ inv.logit <- function(x){
 }
 
 # negative log-likelihood for given data set X with given hyperparameters
-bum.negLogLik <- function(hyper,X,lambda){	
-	if(hyper[1] == 0)
-		hyper[1] = 1e-50
-	if(hyper[1] > 100)
-		hyper[1] = 100
+bum.negLogLik <- function(hyper,X,lambda){		
 	a = inv.logit(hyper[1]) + 1e-10
-	b = exp(hyper[2])+2 + 1e-10	
-	if(b == Inf)
-		b = 1000
-	nLL = -sum(log(dbum(X,c(a,b),lambda))) - dexp(b, 0.1, log=T)
-	#cat("a = ", a, "b = ", b, "\n")
-	if(a != 1)
-		nLL = nLL - dbeta(a,1,2, log=TRUE) 		
+	b = exp(hyper[2])+2 + 1e-10		
+	nLL = -sum(log(dbum(X,c(a,b),lambda))) - dexp(b, 0.1, log=TRUE) - dbeta(a,1,2, log=TRUE)
+	#cat("a = ", a, "b = ", b, "\n")	  	
 	nLL
 }
 
 # MLE estimates of parameters 
 bum.mle <- function(X,a,lambda){			
-	res <- nlm(bum.negLogLik,c(logit(a[1]),log(a[2]-2+1e-10)),X=X,lambda=lambda)
-	list(a=c(inv.logit(res$estimate[1]) + 1e-10,exp(res$estimate[2])+2),lambda=lambda,logLik=-res$minimum+1e-50)
+	res <- optim(c(logit(a[1]),log(a[2]-2+1e-10)), bum.negLogLik,X=X,lambda=lambda, method="L-BFGS-B", upper=10, lower=-10)
+	list(a=c(inv.logit(res$par[1]) + 1e-10,exp(res$par[2])+2 + 1e-10),lambda=lambda,logLik=-res$value+1e-50)
 }
 
 bum.EM <- function(X,starta=c(0.3,10),startlam=c(0.6,0.1,0.3), tol=1e-4){			
