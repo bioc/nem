@@ -1,7 +1,7 @@
 Package: nem
 Title: (Dynamic) Nested Effects Models and Deterministic Effects
         Propagation Networks to reconstruct phenotypic hierarchies
-Version: 2.37.2
+Version: 2.38.0
 Author: Holger Froehlich, Florian Markowetz, Achim Tresch, Theresa
         Niederberger, Christian Bender, Matthias Maneck, Claudio
         Lottaz, Tim Beissbarth
