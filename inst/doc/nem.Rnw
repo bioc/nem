@@ -127,6 +127,7 @@ disc <- cbind(res.disc$neg,res.disc$pos,res.disc$dat)
 e.2fold <- BoutrosRNAiExpression[res.disc$sel,]
 
 #--- hierarchisch clustern
+library(e1071)
 hc    <- hclust(as.dist(hamming.distance(disc[,9:16])))
 e.2fold <- e.2fold[hc$order, ]
 disc  <- disc [hc$order, ]
@@ -241,6 +242,7 @@ models <- enumerate.models(Sgenes)
 best5 <- -sort(-unique(result$mLL))[1:5]
 col<-c("yellow","yellow","green","blue")
 names(col) = Sgenes
+library(Rgraphviz)
 for (i in 1:5) {
    graph <- as(models[[which(result$mLL == best5[i])[1]]]-diag(4),"graphNEL")
    pdf(file=paste("topo",i,".pdf",sep=""))
