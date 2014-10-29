@@ -417,11 +417,16 @@ thus be estimated by taking the highest scoring of all possible network hypothes
 \caption{\label{fig:MNIdea} Basic idea of module networks: By successively moving down the cluster hierarchy we identify the clusters (modules) of S-genes, which are marked in red. They contain 4 S-genes at most and can be estimated via exhaustive search.}
 \end{figure}
 
-Once all modules have been estimated their connections are constructed. This is done in a constraint greedy hillcimbing fashion: We successively add that edge between any pair of S-genes being contained in different modules, which increases the likelihood of the complete network most. This procedure is continued until no improvement can be gained any more, i.e. we have reached a local maximum of the likelihood function. 
-
+Once all modules have been estimated their connections are constructed. For this purpose two different approaches have been proposed:
+\begin{itemize}
+\item In the original publication \cite{Frohlich2007RNAiBMC} pairs of modules are connected ignoring the rest of the network. That means between a pair of modules all (at most 4096) connection possibilities going from nodes in the first to nodes in the second module are tested. The connection model with highest likelihood is kept. This approach does not guarantee to reach a local maximum of the complete network, but only needs $O(|S-genes|^2)$ likelihood evaluations. 
+\item In \cite{Frohlich2008NEMsBioinformatics} a constraint greedy hill-climber is proposed: We successively add that edge between any pair of S-genes being contained in different modules, which increases the likelihood of the complete network most. This procedure is continued until no improvement can be gained any more, i.e. we have reached a local maximum of the likelihood function for the complete network.
+ \end{itemize}
+ 
 In the package \texttt{nem} we call the module network by
 <<eval=FALSE>>=
 resultMN <- nem(res.disc$dat,inference="ModuleNetwork",control=hyper, verbose=FALSE) # this will do exactly the same as the exhaustive search
+resultMN.orig <- nem(res.disc$dat,inference="ModuleNetwork.orig",control=hyper, verbose=FALSE) # this will do exactly the same as the exhaustive search
 @
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
