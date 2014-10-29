@@ -31,8 +31,10 @@ R. Sedgewick, Algorithms, Pearson, 2002.
    gc <- new("graphNEL",nodes=V,edgeL=edL,edgemode="directed")
    g <- transitive.reduction(gc)
     
-   par(mfrow=c(1,2))
-   plot(gc,main="shortcut A->C")
-   plot(as(g,"graphNEL"),main="shortcut removed")
+   if(require(Rgraphviz)){
+    par(mfrow=c(1,2))
+    plot(gc,main="shortcut A->C")
+    plot(as(g,"graphNEL"),main="shortcut removed")
+  }
 }
 \keyword{graphs}

@@ -27,7 +27,7 @@ nem.featureselection <- function(D,inference="nem.greedy",models=NULL,control=se
 						}			
 						net
 					})	
-		}		
+		}		    
  		s = -2*unlist(results["mLL",]) + log(nrow(D))*sapply(results["selected",], length) # BIC model selection
 # 		s = -unlist(results["mLL",])/sapply(results["selected",], length) # Achim's original approach		
  		winner = which.min(s)				

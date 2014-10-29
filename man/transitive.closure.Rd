@@ -32,8 +32,10 @@ returns a graphNEL object or adjacency matrix
    g <- new("graphNEL",nodes=V,edgeL=edL,edgemode="directed")
    gc <- transitive.closure(g,loops=FALSE)
     
-   par(mfrow=c(1,2))
-   plot(g,main="NOT transitively closed")
-   plot(gc,main="transitively closed")
+  if(require(Rgraphviz)){
+    par(mfrow=c(1,2))
+    plot(g,main="NOT transitively closed")
+    plot(gc,main="transitively closed")
+  }
 }
 \keyword{graphs}

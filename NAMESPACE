@@ -4,6 +4,7 @@ importMethodsFrom(graph, adj, degree, "edgeData<-", edgeDataDefaults,
                   inEdges, nodes, numEdges, removeEdge, toDotR)
 importMethodsFrom(Rgraphviz, AgNode, botLeft, boundBox, getNodeHeight,
                   getNodeXY, getX, getY, lines, name, plot, upRight)
+importFrom(Rgraphviz, agopen, buildEdgeList)
 importFrom(boot, boot)
 importFrom(e1071, bincombinations, hamming.distance)
 importFrom(graphics, abline, axis, box, close.screen, erase.screen,
@@ -11,11 +12,13 @@ importFrom(graphics, abline, axis, box, close.screen, erase.screen,
 importFrom(grDevices, colorRampPalette, dev.off, gray, pdf, x11)
 importFrom(RBGL, strongComp, transitive.closure, tsort)
 importFrom(RColorBrewer, brewer.pal)
-importFrom(Rgraphviz, agopen, buildEdgeList)
 importFrom(stats, as.dist, binom.test, cor, cutree, dbeta, dist, dnorm,
            ecdf, hclust, nlm, p.adjust, pbeta, quantile, rect.hclust,
-           rnorm, runif, sd, var)
+           rnorm, runif, sd, var, model.matrix)
 importFrom(utils, combn)
+importFrom(statmod, permp)
+importFrom(plotrix, color.legend)
+importFrom(limma, normalizeQuantiles, makeContrasts, lmFit, contrasts.fit, eBayes)
 
 export(BFSlevel, closest.transitive.greedy, sampleRndNetwork, sampleData,
        getDensityMatrix, infer.edge.type, local.model.prior, nem.bootstrap,

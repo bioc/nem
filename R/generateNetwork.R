@@ -25,7 +25,7 @@ sampleRndNetwork = function(Sgenes, scaleFree=TRUE, gamma=2.5, maxOutDegree=leng
 		}
 	}						
 	if(trans.close)
-		S = transitive.closure(S, mat=TRUE,loop=FALSE)					
+		S = transitive.closure(S, mat=TRUE,loops=FALSE)					
 	diag(S) = 0			
 	colnames(S) = Sgenes
 	rownames(S) = Sgenes

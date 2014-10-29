@@ -8,7 +8,7 @@ set.default.parameters = function(Sgenes, ...){
 			debug=FALSE, mc.cores=8,
 			mcmc.nsamples=1e6, mcmc.nburnin=1e6, mcmc.seed=1234, mcmc.hyperprior=1,
 			eminem.maxsteps=1000, eminem.sdVal=1, eminem.changeHfreq=NULL,
-			prob.cutoff=0.5
+			prob.cutoff=0.5			
 			)
     args = list(...)
     na = names(args)
@@ -18,13 +18,13 @@ set.default.parameters = function(Sgenes, ...){
     control
 }
 
-nem <- function(D, inference="nem.greedy",models=NULL,control=set.default.parameters(setdiff(unique(colnames(D)),"time")), verbose=TRUE){
+nem <- function(D, inference="nem.greedy",models=NULL,control=set.default.parameters(setdiff(unique(colnames(D)),"time")), verbose=FALSE){
 #------------------------------
 # Sanity checks              
 if(inference == "nem.greedyMAP")
     control$type = "CONTmLLMAP"
   
-if (!(inference %in% c("pairwise", "triples", "search","ModuleNetwork","nem.greedy","nem.greedyMAP","BN.greedy","BN.exhaustive","mc.eminem","dynoNEM"))) 
+if (!(inference %in% c("pairwise", "triples", "search","ModuleNetwork","ModuleNetwork.orig", "nem.greedy","nem.greedyMAP","BN.greedy","BN.exhaustive","mc.eminem","dynoNEM"))) 
     stop("\nnem> argument 'inference' is not valid\n")
 if (!(control$type %in% c("mLL", "FULLmLL", "CONTmLL","CONTmLLBayes","CONTmLLMAP", "CONTmLLDens", "CONTmLLRatio","depn"))) 
     stop("\nnem> argument 'type' is not valid")
@@ -53,8 +53,8 @@ if(is(D, "list"))
 else
 	Sgenes = setdiff(unique(colnames(D)), "time")
 if(control$selEGenes){  
-    if(inference %in% c("BN.greedy","BN.exhaustive","depn"))
-        stop("No automatic feature selection implemented for this inference method so far!\n")
+    if(inference %in% c("BN.greedy","BN.exhaustive","depn", "search"))
+        stop("No automatic tuning of reporter filtering implemented for this inference method so far!\n")
     return(nem.featureselection(D, inference, models, control, verbose))
 }
 
@@ -76,6 +76,9 @@ if (inference == "pairwise"){
 # MODULE NETWORK                       
 else if(inference == "ModuleNetwork"){
     result <- moduleNetwork(D,control,verbose=verbose)  
+}
+else if(inference == "ModuleNetwork.orig"){
+	result <- moduleNetwork.orig(D,control,verbose=verbose)  
 }
 
 #------------------------------
@@ -141,7 +144,7 @@ else if(inference == "dynoNEM"){
 			dimnames(Dnew) = list(as.character(1:dim(D)[1]), dimnames(D)[[2]], control$Sgenes)
 			for(s in control$Sgenes){
 				for(t in 1:dim(D)[1]){
-					Dnew[t,,] = rowSums(D[t,, colnames(D[t,,]) == s])
+					Dnew[t,,s] = rowSums(D[t,, colnames(D[t,,]) == s])
 				}			
 			}
 		}

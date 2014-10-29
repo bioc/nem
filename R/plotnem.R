@@ -1,4 +1,6 @@
-plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL, draw.lines=FALSE, palette="BlueRed"){
+plotnem = function(D, G, x, SCC, main=NULL, zlim=NULL, draw.lines=FALSE, palette="BlueRed"){ 
+  if(!"Rgraphviz" %in% loadedNamespaces())
+    stop("Rgraphviz is required for plotting!")
 	if(is(D, "list"))
 		stop("Plotting of effects matrix is only implemented for one dataset, not for several.")
 	if(length(x$mLL) > 1 & class(x) != "dynoNEM"){

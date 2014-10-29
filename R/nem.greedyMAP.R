@@ -2,7 +2,7 @@ nem.greedyMAP <- function(D, control, verbose=TRUE){
 	Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
 	n <- length(Sgenes)		
 	cat("Alternating optimization for",n,"S-genes (lambda =", control$lambda,")...\n\n")
-	Theta = apply(D,1, function(e) (e == max(e)) & (e>0))*1			
+	Theta = apply(D,1, function(e) (e == max(e)) & (e>0))*1	  
 	best = NULL
 	converged = FALSE
 	control$type="CONTmLLMAP"

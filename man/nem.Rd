@@ -14,14 +14,15 @@
 \title{Nested Effects Models - main function}
 \description{The main function to perform model learning from data}
 \usage{
-nem(D,inference="nem.greedy",models=NULL,control=set.default.parameters(setdiff(unique(colnames(D)),"time")), verbose=TRUE)
+nem(D,inference="nem.greedy",models=NULL,control=set.default.parameters(setdiff(unique(colnames(D)),"time")), verbose=FALSE)
 
 \method{print}{nem}(x, ...)
 }
 
 \arguments{
   \item{D}{data matrix with experiments in the columns (binary or continious)}
-  \item{inference}{\code{search} to use exhaustive enumeration, \code{triples} for triple-based inference, \code{pairwise} for the pairwise heuristic, \code{ModuleNetwork} for the module based inference, \code{nem.greedy} for greedy hillclimbing, \code{nem.greedyMAP} for alternating MAP optimization using log odds or log p-value densities, \code{mc.eminem} for EM based inference using log odds or log p-value densities, \code{BN.greedy}, \code{BN.exhaustive} for a conventional Bayesian Network treatment using binomial or normal distribution assumptions, \code{dynoNEM} for MCMC based inference from time series data, \code{mc.eminem} for EM based inference}
+  \item{inference}{\code{search} to use exhaustive enumeration, \code{triples} for triple-based inference, \code{pairwise} for the pairwise heuristic, 
+  \code{ModuleNetwork} for the module based inference proposed in Fr\"ohlich et al. 2008, \code{ModuleNetwork.orig} for the module based inference proposed in Fr\"ohlich et al. 2007, \code{nem.greedy} for greedy hillclimbing, \code{nem.greedyMAP} for alternating MAP optimization using log odds or log p-value densities, \code{mc.eminem} for EM based inference using log odds or log p-value densities, \code{BN.greedy}, \code{BN.exhaustive} for a conventional Bayesian Network treatment using binomial or normal distribution assumptions, \code{dynoNEM} for MCMC based inference from time series data, \code{mc.eminem} for EM based inference}
   \item{models}{a list of adjacency matrices for model search. If NULL, an  exhaustive enumeration of all possible models is performed.}
   \item{control}{list of parameters: see \code{set.default.parameters}}
   \item{verbose}{do you want to see progression statements? Default: TRUE}

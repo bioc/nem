@@ -26,8 +26,8 @@ Niederberger, T.; Etzold, S.; Lidschreiber, M; Maier, K.; Martin, D.; Fr\"ohlich
    D <- BoutrosRNAiDens
    control = set.default.parameters(unique(colnames(D)), Pe=prior.EgeneAttach.EB(D), mcmc.nsamples=100, mcmc.nburnin=50, type="CONTmLLBayes")  # these are *not* realistic values
    res <- nem(D,inference="mc.eminem", control=control)        
-       
-   plot(res)   
+   if(require(Rgraphviz))    
+    plot(res)   
 }
 \keyword{graphs}
 \keyword{models}

@@ -38,6 +38,7 @@ plotEffects(D,nem,border=TRUE,legend=TRUE,order=NULL,orderSCC=TRUE,palette="Blue
    data("BoutrosRNAi2002")
    D <- BoutrosRNAiDiscrete[,9:16]
    res <- nem(D,control=set.default.parameters(unique(colnames(D)), para=c(.13,.05)))
-   plotEffects(D,res)
+   if(require(Rgraphviz))
+    plotEffects(D,res)
 }
 \keyword{graphs}

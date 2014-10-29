@@ -6,7 +6,7 @@ get.insertions = function(Phi, trans.close=TRUE){
             Phinew = Phi
             Phinew[idx[i]] = 1
             if(trans.close)
-                Phinew = transitive.closure(Phinew, mat=TRUE,loop=TRUE) 
+                Phinew = transitive.closure(Phinew, mat=TRUE,loops=TRUE) 
             models[[i]] <- Phinew
         }
     } 

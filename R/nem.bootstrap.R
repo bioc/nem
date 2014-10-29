@@ -1,8 +1,12 @@
 nem.bootstrap <- function(D, thresh=0.5, nboot=1000,inference="nem.greedy",models=NULL,control=set.default.parameters(unique(colnames(D))), verbose=TRUE){
 	if(inference == "dynoNEM")
 		stop("nem.bootstrap is not applicable for dynoNEMs")
-	if(is(D, "list"))
-		return(nem.bootstrap.list(D, thresh, nboot, inference, models, control, verbose))  
+	if(is(D, "list")){
+		if(length(D) > 1)
+			return(nem.bootstrap.list(D, thresh, nboot, inference, models, control, verbose))
+		else
+			D = D[[1]]
+	}
 	inferNetwork <- function(idx.orig=1:nrow(D), boot){				
 		controltmp = control				
 		controltmp$Pe = control$Pe[boot,]		
@@ -14,12 +18,21 @@ nem.bootstrap <- function(D, thresh=0.5, nboot=1000,inference="nem.greedy",model
 		res
 	}
 	#results = bootstrap(1:nrow(D),nboot,theta=inferNetwork)$thetastar	
-	if(!is.null(rownames(D)) & "time"  %in% colnames(D)){		
-		group = as.factor(paste(rownames(D), D[,"time"],sep=""))		
-		res.boot = boot:::boot(1:nrow(D), inferNetwork, nboot, strata=group)
+	if("multicore" %in% loadedNamespaces())
+		use.parallel = "multicore"
+	else if("snow" %in% loadedNamespaces()){
+		use.parallel = "snow"
+		cl <- makeCluster(control$mc.cores, type = "SOCK")
 	}
 	else
-		res.boot = boot:::boot(1:nrow(D), inferNetwork, nboot)
+		use.parallel = "no"
+	cat("--> parallel bootstrap: ", use.parallel, "\n")	
+	if(!is.null(rownames(D)) & "time"  %in% colnames(D)){		
+		group = as.factor(paste(rownames(D), D[,"time"],sep=""))		
+		res.boot = boot::boot(1:nrow(D), inferNetwork, nboot, strata=group, parallel=use.parallel, ncpus=control$mc.cores, cl=cl)
+	}
+	else
+		res.boot = boot::boot(1:nrow(D), inferNetwork, nboot, parallel=use.parallel, ncpus=control$mc.cores, cl=cl)
 	results =  res.boot$t
 	Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
 	n = length(Sgenes)
@@ -30,6 +43,7 @@ nem.bootstrap <- function(D, thresh=0.5, nboot=1000,inference="nem.greedy",model
 	print(overlapBoot)
 	control$lambda = 0
 	control$Pm = NULL
+	control$Pe = NULL
 	res = nem(D,models=list((overlapBoot>thresh)*1),inference="search",control, verbose=verbose)
 	res$pos = res$pos[[1]]
 	res$mappos = res$mappos[[1]]

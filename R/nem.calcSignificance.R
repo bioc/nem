@@ -24,7 +24,7 @@ nem.calcSignificance <- function(D, x, N=1000, which.test=c("permutation", "rand
 			idx = sample(which(Phi0 == 0),1)
 			Phinew[idx] = 1
 			if(x$control$trans.close)		
-				Phinew = transitive.closure(Phinew, mat=TRUE,loop=TRUE)					
+				Phinew = transitive.closure(Phinew, mat=TRUE,loops=TRUE)					
 		}
 		else if(act == "deletion"){
 			Phinew = Phired
@@ -32,7 +32,7 @@ nem.calcSignificance <- function(D, x, N=1000, which.test=c("permutation", "rand
 			idx = sample(which(Phired == 1),1)
 			Phinew[idx] = 0
 			if(x$control$trans.close)		
-				Phinew = transitive.closure(Phinew, mat=TRUE,loop=TRUE)			
+				Phinew = transitive.closure(Phinew, mat=TRUE,loops=TRUE)			
 		}	
 		else if(act == "reversion"){
 			Phinew = Phi0

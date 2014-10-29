@@ -37,7 +37,9 @@ SCCgraph(x,name=TRUE,nlength=20)
    sccg <- SCCgraph(res$graph,name=TRUE)
    #
    par(mfrow=c(1,2))
-   plot.nem(res, main="inferred from data")
-   plot(sccg$graph, main="condensed (rel,key)")
+   if(require(Rgraphviz)){
+    plot.nem(res, main="inferred from data")      
+    plot(sccg$graph, main="condensed (rel,key)")
+    }
 }
 \keyword{graphs}

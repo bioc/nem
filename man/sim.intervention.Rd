@@ -17,8 +17,9 @@ sim.intervention(x, int, T=1)
 }
 \value{
 list with two slots:
-\item{Sgenes.effected}{effected network nodes}
-\item{Egenes.effected}{effected downstream effect reporters}
+\item{Sgenes.effected}{effected network nodes (by intervention)}
+\item{Egenes.effected}{most likely effected downstream effect reporters (by intervention)}
+\item{Egenes.effected.prob}{probability of each reporter to be effected by the respective intervention experiment.}
 }
 
 \author{Holger Froehlich}

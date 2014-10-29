@@ -10,8 +10,8 @@ score.aux <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
   # check that all models have S-genes as names
   fkt <- function(x,s){
      ss <- sort(s)
-     c1 <- all(sort(colnames(x))==ss)
-     c2 <- all(sort(rownames(x))==ss)
+     c1 <- all(sort(setdiff(colnames(x), "unknown"))==ss)
+     c2 <- all(sort(setdiff(rownames(x), "unknown"))==ss)
      return(c1 & c2)
   }  
   if (!all(sapply(models,fkt,s=Sgenes))) stop("\nnem:score> models must have same names as data")
@@ -29,14 +29,20 @@ score.aux <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
     # if no prior is supplied:
   # assume uniform prior over E-gene positions      
   if (is.null(control$Pe)){ 	
-	control$Pe <- matrix(1/nrS,nrow=nrow(D1),ncol=nrS)
-	colnames(control$Pe) <- Sgenes  		
-  }          
-  if(control$selEGenes.method == "regularization" && ncol(control$Pe) == nrS){		
+	  control$Pe <- matrix(1/nrS,nrow=nrow(D1),ncol=nrS)
+	  colnames(control$Pe) <- Sgenes  		
+  }  
+  if("unknown" %in% colnames(models[[1]])){
+    control$Pe = cbind(control$Pe, 1/nrS)
+    control$Pe = control$Pe/rowSums(control$Pe)  	
+    colnames(control$Pe)[ncol(control$Pe)] = "unknown"
+  }    
+  if(control$selEGenes.method == "regularization" && !("null" %in% colnames(control$Pe))){		
   	control$Pe = cbind(control$Pe, double(nrow(D1)))  			
   	control$Pe[,ncol(control$Pe)] = control$delta/nrS
-	control$Pe = control$Pe/rowSums(control$Pe)		
-  }  
+	  control$Pe = control$Pe/rowSums(control$Pe)		
+    colnames(control$Pe)[ncol(control$Pe)] = "null"
+  }    
   if(is.null(control$Pm) & (control$lambda != 0)){
 	cat(">>> Regularization parameter non-zero: Generating sparsity prior automatically! <<<\n")
 	control$Pm = diag(length(Sgenes))
@@ -106,7 +112,7 @@ score.aux <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
   winner <- models[[which.max(s)]]  
   diag(winner) <- 0  
   if(graphClass == "graphNEL"){
-  	gR <- new("graphAM",adjMat=winner,edgemode="directed")  
+  	gR <- new("graphAM",adjMat=winner[Sgenes,Sgenes],edgemode="directed")  
   	gR <- as(gR,"graphNEL")    
   }
   else

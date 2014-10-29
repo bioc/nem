@@ -43,10 +43,10 @@ If the number is bigger than a user-defined cutoff, all incoming (outgoing) edge
     gP <- prune.graph(g)
     
     # plot
-    par(mfrow=c(1,2))
-    plot(g,main="two spurious edges")
-    plot(gP$graph,main="pruned")
-    
-    
+    if(require(Rgraphviz)){
+      par(mfrow=c(1,2))    
+      plot(g,main="two spurious edges")
+      plot(gP$graph,main="pruned")
+    }
 }
 \keyword{graphs}

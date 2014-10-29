@@ -55,7 +55,7 @@ moduleNetwork <- function(D,control,verbose=TRUE){
         res <- connectModules(D, modeltotal, idx, control,verbose=verbose)
     else{
         if(control$trans.close)
-            modeltotal <- transitive.closure(modeltotal, mat=TRUE,loop=TRUE)    
+            modeltotal <- transitive.closure(modeltotal, mat=TRUE,loops=TRUE)    
         diag(modeltotal) <- 0   
         ep <- score(list(modeltotal),D,control,verbose=FALSE)       
     # output        
@@ -90,7 +90,7 @@ connectModules <- function(D, Phi, modules, control, verbose=TRUE){
     n <- length(Sgenes) 
     if(verbose){    
         dev.off()
-        cat("Connecting modules using constraint greedy hillclimbing ...\n\n")  
+        cat("Connecting module pairs via constraint hill climbing ...\n\n")  
     }
     sco0 <- score(list(Phi),D,control,verbose=verbose,graphClass="matrix")$mLL          
     BetweenModules = matrix(0,n,n)

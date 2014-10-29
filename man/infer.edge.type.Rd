@@ -33,6 +33,7 @@ infer.edge.type(x, logFC, alpha=0.05, adj.method="BY", method=c("direct", "indir
 	D <- BoutrosRNAiDiscrete[,9:16]   	
 	result = nem(D, control=set.default.parameters(unique(colnames(D)), para=c(0.13,0.05)))
    	resEdgeInf = infer.edge.type(result, BoutrosRNAiLogFC)
+  if(require(Rgraphviz))
    	plot.nem(resEdgeInf)
 }
 
