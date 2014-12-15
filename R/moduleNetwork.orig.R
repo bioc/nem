@@ -52,7 +52,7 @@ moduleNetwork.orig <- function(D,control,verbose=TRUE){
         }       
     }
     if(length(idx) > 1)
-        res <- connectModules(D, modeltotal, idx, control,verbose=verbose)
+        res <- connectModules.orig(D, modeltotal, idx, control,verbose=verbose)
     else{
         if(control$trans.close)
             modeltotal <- transitive.closure(modeltotal, mat=TRUE,loops=TRUE)    
@@ -68,30 +68,13 @@ moduleNetwork.orig <- function(D,control,verbose=TRUE){
     return(res)
 }
 
-moduleNetwork.aux <- function(D,modeltotal, variables, control, verbose=TRUE){
-    if(verbose){
-        cat("estimating network of genes:\n")
-        cat(variables,"\n")
-    }
-    n <- length(variables)
-    if(n > 1){          
-        models <- enumerate.models(n,name=unique(colnames(D)), trans.close=control$trans.close, verbose=verbose)
-        sco <- score(models,D,control,verbose=verbose,graphClass="matrix")
-        modellocal <- sco$graph
-    }
-    else
-        modellocal <- 0
-    modeltotal[variables,variables] <- modellocal
-    modeltotal
-}
-
 connectModules.aux = function(D, Phi, mod1, mod2, control, verbose){
 	models = list()
 	k = 1
-	variables = c(mod1, mod2)
+	variables = colnames(Phi)[c(mod1, mod2)]
 	controltmp = control
 	controltmp$Pe = control$Pe[,variables]
-	controltmp$Pm = control$Pm[variables,variables]
+	controltmp$Pm = control$Pm[variables,variables]  
 	varidx <- sapply(variables,function(x) which(colnames(D) %in% x)) 
 	sco0 <- score(list(Phi[variables,variables]),D[,varidx,drop=FALSE],controltmp,verbose=verbose,graphClass="matrix")$mLL # onyl focus on the subnetwork between modules mod1 and mod2
 	bi = bincombinations(length(mod1)*length(mod2))
@@ -100,10 +83,12 @@ connectModules.aux = function(D, Phi, mod1, mod2, control, verbose){
 		fkt1 <- function(x, a, b) {
 			M = Phi[variables,variables]
 			M[a, b] <- x		
-			if(trans.close)    
+			if(control$trans.close)    
 				M <- transitive.closure(M,mat=TRUE,loops=TRUE)    
 			return(list(M))
 		}
+    a = match(a, c(mod1, mod2))
+    b = match(b, c(mod1, mod2))
 		models <- apply(bi,1,fkt1, a, b) 
 		models <- unique(matrix(unlist(models),ncol=length(variables)^2,byrow=TRUE))
 		
@@ -121,18 +106,19 @@ connectModules.aux = function(D, Phi, mod1, mod2, control, verbose){
 			modellocal <- sconew$graph			
 		}	
 		else
-			modellocal = 0
+			modellocal = matrix(0, ncol=NCOL(sconew$graph), nrow=NROW(sconew$graph))
 		modellocal
 	}
 	
 	modellocal1 = aux2(mod1, mod2)
 	modellocal2 = aux2(mod2, mod1)
-	Phi[mod1, mod2] = modellocal1
-	Phi[mod2, mod1] = modellocal2
+  allmod = c(mod1, mod2)
+	Phi[mod1, mod2] = modellocal1[match(mod1, allmod), match(mod2, allmod)]
+	Phi[mod2, mod1] = modellocal2[match(mod2, allmod), match(mod1, allmod)]
 	Phi
 }
 
-connectModules <- function(D, Phi, modules, control, verbose=TRUE){
+connectModules.orig <- function(D, Phi, modules, control, verbose=TRUE){
 	Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
     n <- length(Sgenes) 
     if(verbose){    

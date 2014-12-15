@@ -3,7 +3,7 @@ mLL <- function(Phi,D1,D0=NULL,control, verbose=FALSE) {
   if (!all(diag(Phi)==1)) 
   	diag(Phi) <- 1    
   if(control$selEGenes.method == "regularization"){
-		Phi2 = cbind(Phi, double(nrow(Phi)))
+		Phi2 = cbind(Phi, double(NROW(Phi)))
 		colnames(Phi2)[ncol(Phi2)] = "null"
   }    
   else

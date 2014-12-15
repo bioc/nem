@@ -52,7 +52,7 @@ moduleNetwork <- function(D,control,verbose=TRUE){
         }       
     }
     if(length(idx) > 1)
-        res <- connectModules(D, modeltotal, idx, control,verbose=verbose)
+        res <- connectModules2(D, modeltotal, idx, control,verbose=verbose)
     else{
         if(control$trans.close)
             modeltotal <- transitive.closure(modeltotal, mat=TRUE,loops=TRUE)    
@@ -85,7 +85,7 @@ moduleNetwork.aux <- function(D,modeltotal, variables, control, verbose=TRUE){
     modeltotal
 }
 
-connectModules <- function(D, Phi, modules, control, verbose=TRUE){
+connectModules2 <- function(D, Phi, modules, control, verbose=TRUE){
 	Sgenes <- setdiff(unlist(control$map[intersect(names(control$map), colnames(D))]),"time")
     n <- length(Sgenes) 
     if(verbose){    

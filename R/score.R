@@ -29,7 +29,7 @@ score.aux <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
     # if no prior is supplied:
   # assume uniform prior over E-gene positions      
   if (is.null(control$Pe)){ 	
-	  control$Pe <- matrix(1/nrS,nrow=nrow(D1),ncol=nrS)
+	  control$Pe <- matrix(1/nrS,nrow=NROW(D1),ncol=nrS)
 	  colnames(control$Pe) <- Sgenes  		
   }  
   if("unknown" %in% colnames(models[[1]])){
@@ -37,8 +37,8 @@ score.aux <- function(models, D, control, verbose=TRUE, graphClass="graphNEL") {
     control$Pe = control$Pe/rowSums(control$Pe)  	
     colnames(control$Pe)[ncol(control$Pe)] = "unknown"
   }    
-  if(control$selEGenes.method == "regularization" && !("null" %in% colnames(control$Pe))){		
-  	control$Pe = cbind(control$Pe, double(nrow(D1)))  			
+  if(control$selEGenes.method == "regularization" && !("null" %in% colnames(control$Pe))){	    
+  	control$Pe = cbind(control$Pe, double(NROW(D1)))  			
   	control$Pe[,ncol(control$Pe)] = control$delta/nrS
 	  control$Pe = control$Pe/rowSums(control$Pe)		
     colnames(control$Pe)[ncol(control$Pe)] = "null"
