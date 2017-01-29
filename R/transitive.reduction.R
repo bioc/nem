@@ -54,14 +54,16 @@ transitive.reduction <- function(g){
 # 	else{
 # 	if(class(g) == "matrix"){		
 		# modified algorithm from Sedgewick book: just remove transitive edges instead of inserting them		
-		g = g - diag(diag(g))		
-		type = (g > 1)*1 - (g < 0)*1		
+    g = nem::transitive.closure(g, mat=TRUE) # bug fix: algorithm only works for transitively closed graphs!
+		g = g - diag(diag(g))
+		type = (g > 1)*1 - (g < 0)*1	
 		for(y in 1:nrow(g)){
 			for(x in 1:nrow(g)){
 				if(g[x,y] != 0){
 					for(j in 1:nrow(g)){
-						if((g[y,j] != 0) && (g[x,j] != 0) & (sign(type[x,j])*sign(type[x,y])*sign(type[y,j]) != -1))
-							g[x,j] = 0						
+						if((g[y,j] != 0) & sign(type[x,j])*sign(type[x,y])*sign(type[y,j]) != -1){ 
+						    g[x,j] = 0
+						}
 					}
 				}
 			}

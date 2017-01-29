@@ -47,7 +47,10 @@ moduleNetwork <- function(D,control,verbose=TRUE){
                 controltmp = control
                 controltmp$Pe = control$Pe[,variables]
                 controltmp$Pm = control$Pm[variables,variables]
-                modeltotal <- moduleNetwork.aux(D[,varidx,drop=FALSE],modeltotal,variables,controltmp,verbose=verbose)
+                if(typeof(varidx)=='list'){ # bug fix: consider varidx also as list
+                  modeltotal <-moduleNetwork.aux(D[,unlist(varidx),drop=FALSE],modeltotal,variables,controltmp,verbose=verbose)
+                }else
+                  modeltotal <- moduleNetwork.aux(D[,varidx,drop=FALSE],modeltotal,variables,controltmp,verbose=verbose)
             }   
         }       
     }
