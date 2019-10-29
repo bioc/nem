@@ -1,6 +1,6 @@
 Package: nem
 Title: (Dynamic) Nested Effects Models and Deterministic Effects Propagation Networks to reconstruct phenotypic hierarchies
-Version: 2.59.0
+Version: 2.60.0
 Author: Holger Froehlich, Florian Markowetz, Achim Tresch, Theresa Niederberger, Christian Bender, Matthias Maneck, Claudio Lottaz, Tim Beissbarth
 Description: The package 'nem' allows to reconstruct features of pathways from the nested structure of perturbation effects. It takes as input (1.) a set of pathway components, which were perturbed, and (2.) phenotypic readout of these perturbations (e.g. gene expression, protein expression). The output is a directed graph representing the phenotypic hierarchy.
 Reference: Froehlich H, Beissbarth T, Tresch A, Kostka D, Jacob J, Spang R, Markowetz F: Analyzing gene perturbation screens with nested effects models in R and bioconductor, Bioinformatics, 2008, 24:2549-50.
